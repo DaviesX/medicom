@@ -2,18 +2,19 @@ import { Meteor } from 'meteor/meteor';
 import { Mongo } from 'meteor/mongo';
 
 // models
-function MongoDB() {
-        // connect to the database
-//        this.__mongo_client = require('mongodb').MongoClient;
-//        this.__mongo_client.connect(db_location, function(err, db) {
-//                if(!err) {
-//                        console.log("MongoDB - have been connected to: " + db_location);
-//                } else {
-//                        console.log("MongoDB - failed to connect to: " + db_location);
-//                        console.log("MongoDB - error: " + err);
-//                }
-//        });
+function ErrorMessageQueue() {
+        this.__queue = new Array();
+        
+        this.log = function(message) {
+                queue.push(message);
+        }
+        
+        this.fetch_all = function() {
+                return this.__queue;
+        }
+}
 
+function MongoDB() {
         // maintain a unique id collection
         this.c_Unique_Id_Collection = "UniqueIDCollection2";
         this.__uuid_coll = new Mongo.Collection(this.c_Unique_Id_Collection);
@@ -24,7 +25,6 @@ function MongoDB() {
                 console.log("MongoDB - The Unique ID Collection exists, reusing the information");
         }
 
-//        this.get_mongo_connection = function() { return this.__mongo_client; }
         this.get_uuid = function() {
                 var entry = this.__uuid_coll.find().fetch()[0];
                 var uuid = entry.uuid;
@@ -82,46 +82,6 @@ function AdminRecord(account_type, password) {
         this.is_activated = function() { return this.__activator === "-1"; }
 }
 
-function AdminRecordsManager() {
-        // handle the collection
-        this.c_Collection_Name = "AdminRecordsCollection";
-        this.__admin_records= new Mongo.Collection(this.c_Collection_Name);
-        
-        this.has_record(account_id) {
-                return this.__admin_records.find({__account_id : account_id}).count() > 0;
-        }
-
-        this.create_new_record = function(account_type, password) {
-                var record = new AdminRecord(account_type, password);
-                record.set_account_id(this.__mongo.get_uuid());
-                record.set_activator(this.__mongo.get_string_uuid());
-                this.__admin_records.insert(record);
-                return record;
-        }
-
-        this.get_record_by_id = function(account_id) {
-                var result = this.__admin_records.find({__account_id : account_id});
-                if (result.count() > 0) {
-                        return result.fetch()[0];
-                } else {
-                        return null;
-                }
-        }
-        
-        this.get_record_by_activator = function(activator) {
-                var result = this.__admin_records.find({__activator : activator});
-                if (result.count() > 0) {
-                        return result.fetch()[0];
-                } else {
-                        return null;
-                }
-        }
-
-        this.update_record = function(record) {
-                this.__admin_records.update({__account_id : record.get_account_id()}, record);
-        }
-}
-
 function Profile(email, name, phone, avatar, description) {
         this.__account_id = "";
         this.__email = email; 
@@ -145,28 +105,37 @@ function Profile(email, name, phone, avatar, description) {
         this.get_avatar = function() { return this.__avatar; }
 }
 
-function ProfileManager() {
-        this.c_Collection_Name = "Profile";
+function AccountManager(mongo) {
+        this.__mongo = mongo
 
         // handle the collection
-        this.__profiles = new Mongo.Collection(this.c_Collection_Name);
+        this.c_Admin_Records_Coll_Name = "AdminRecordsCollection";
+        this.c_Profile_Coll_Name = "ProfileCollection";
         
-        this.has_profile(profile) {
+        this.__admin_records = new Mongo.Collection(this.c_Admin_Records_Coll_Name);
+        this.__profiles = new Mongo.Collection(this.c_Profile_Coll_Name);
+        
+        // private functions
+        this.__has_record = function(account_id) {
+                return this.__admin_records.find({__account_id : account_id}).count() > 0;
+        }
+        
+        this.__has_profile = function(profile) {
                 return this.__profiles.find({__account_id : profile.get_account_id()}).count() > 0 ||
                        this.__profiles.find({__email : profile.get_email()}).count() > 0;
         }
         
-        this.create_new_profile = function(account_id, profile) {
+        this.__create_new_profile = function(account_id, profile) {
                 profile.set_account_id(account_id);
-                if (has_profile(profile)) {
+                if (this.__has_profile(profile)) {
                         // profile has already existed
                         return null;
                 }
                 this.__profiles.insert(profile);
                 return profile;
         }
-
-        this.get_record_by_id = function(account_id) {
+        
+        this.__get_record_by_id = function(account_id) {
                 var result = this.__profiles.find({__account_id : account_id});
                 if (result.count() > 0) {
                         return result.fetch()[0];
@@ -175,7 +144,11 @@ function ProfileManager() {
                 }
         }
         
-        this.get_record_by_email = function(email) {
+        this.__remove_record_by_id = function(account_id) {
+                this.__admin_records.remove({__account_id : account_id});
+        }
+
+        this.__get_profile_by_email = function(email) {
                 var result = this.__profiles.find({__email : email});
                 if (result.count() > 0) {
                         return result.fetch()[0];
@@ -184,53 +157,102 @@ function ProfileManager() {
                 }
         }
 
-        this.put_record = function(profile) {
+        this.__update_profile = function(profile) {
                 this.__profiles.update({__account_id : profile.get_account_id()}, profile);
         }
+        
+        this.__create_new_record = function(account_type, password) {
+                var record = new AdminRecord(account_type, password);
+                record.set_account_id(this.__mongo.get_uuid());
+                record.set_activator(this.__mongo.get_string_uuid());
+                this.__admin_records.insert(record);
+                return record;
+        }
+
+        this.__get_record_by_id = function(account_id) {
+                var result = this.__admin_records.find({__account_id : account_id});
+                if (result.count() > 0) {
+                        return result.fetch()[0];
+                } else {
+                        return null;
+                }
+        }
+        
+        this.__get_record_by_activator = function(activator) {
+                var result = this.__admin_records.find({__activator : activator});
+                if (result.count() > 0) {
+                        return result.fetch()[0];
+                } else {
+                        return null;
+                }
+        }
+
+        this.__update_record = function(record) {
+                this.__admin_records.update({__account_id : record.get_account_id()}, record);
+        }
+        
+        // Public functions
+        // Return an AdminRecord if successful, or otherwise null.
+        this.create_account = function(account_type, password, profile) {
+                var registered = this.__create_new_record(account_type, password);
+                if (registered == null) return registered;
+                if (this.__create_new_profile(registered.get_account_id(), profile) != null) {
+                        return registered;
+                } else {
+                        // failed to create the profile, need to remove the record_fetched.
+                        this.__remove_record_by_id(registered.get_account_id());
+                        return null;
+                }
+        }
+        
+        // Return an AdminRecord if successful, or otherwise null.
+        this.get_account_record_by_id = function(account_id) {
+                return this.__get_record_by_id(account_id);
+        }
+        
+        // Return an AdminRecord if successful, or otherwise null.
+        this.get_account_record_by_activator = function(activator) {
+                return this.__get_record_by_activator(activator);
+        }
+        
+        // Return an AdminRecord if successful, or otherwise null.
+        this.get_account_record_by_email = function(email) {
+                var profile = this.__get_profile_by_email(email);
+                if (!profile) return null;
+                return this.__get_record_by_id(profile.get_account_id());
+        }
+        
+        // Return true if the activation is successful, false when the record doesn't exist or the activator is invalid.
+        this.actviate_account = function(record, activator) {
+                if (!record || !record.activate(activator)) return false;
+                this.__update_record(record);
+                return true;
+        }
+        
+        // Return true if the activation is successful, false when the record doesn't exist
+        this.force_activate_account = function(record) {
+                if (!record) return false;
+                record.force_activate();
+                this.__update_record(record);
+                return true;
+        }
 }
+
+function Identity() {
+}
+
+function IdentityManager(mongo) {
+}
+
+
 
 // singletons
 var g_mongo = new MongoDB();
-var g_admin_mgr = new AdminRecordsManager();
-var g_profile_mgr = new ProfileManager();
-
-function account_register_user(account_type, password, profile)
-{
-        var registered = g_admin_mgr.create_new_record(account_type, password);
-        if (registered == null) return false;
-        return g_profile_mgr.create_new_profile(registered.get_account_id(), profile) != null;
-}
-
-function account_activate_user(activator)
-{
-        var record = g_admin_mgr.get_record_by_activator(activator);
-        if (!record || !record.activate(activator)) return false;
-        g_admin_mgr.update_record(record);
-        return true;
-}
-
-function account_force_activate_user(account_id)
-{
-        var record = g_admin_mgr.get_record_by_id(account_id);
-        if (!record) return false;
-        record.force_activate();
-        g_admin_mgr.update_record(record);
-        return true;
-}
-
+var g_account_mgr = new AccountManager(g_mongo);
+var g_identity_mgr = new IdentityManager(g_mongo);
 
 // Controllers
-function ErrorMessageQueue() {
-        this.__queue = new Array();
-        
-        this.log(message) {
-                queue.push(message);
-        }
-        
-        this.fetch_all() {
-                return this.__queue;
-        }
-}
+
 
 // constants
 var c_Account_Type_Admin = 0;
@@ -243,34 +265,45 @@ c_Account_Type2String[c_Account_Type_Provider] = "provider";
 c_Account_Type2String[c_Account_Type_Patient] = "patient";
 
 function AccountControl() {
+        // Public APIs
+        // Return an AdminRecord if successful, or otherwise null.
         this.register = function(account_type, password, profile, err) {
-                switch (admin_record.get_account_type()) {
+                switch (account_type) {
                 case c_Account_Type_Admin:
                         err.log("can't register an admin account");
-                        return false;
+                        return null;
                 default:
-                        if (!account_register_user(account_type, password, profile)) {
+                        var record = g_account_mgr.create_account(account_type, password, profile);
+                        if (!record) {
                                 err.log("account has been existed");
-                                return false;
+                                return null;
                         }
-                        return true;
+                        return record;
                 }
         }
-        this.activate = function(activator, user, err) {
-                if (!account_activate_user(activator)) {
+        
+        // Return true if the activation is successful, or otherwise false, error message is left in the ErrorMessageQueue.
+        this.activate = function(record, activator, err) {
+                if (!g_account_mgr.activate_account(record, activator)) {
                         err.log("Failed to activate, possbily due to an invalid activator: " + activator);
                         return false;
                 }
                 return true;
         }
-        this.force_activate = function(account_id, user, err) {
-                var record = g_admin_mgr.get_record_by_id(user.get_account_id());
-                if (!record) return false;
+        
+        // Return true if the activation is successful, or otherwise false, error message is left in the ErrorMessageQueue.
+        this.force_activate = function(record, account_id, err) {
+                // verify that the record is valid.
+//                var record = g_account_mgr.get_record_by_id(user.get_account_id());
+                if (!record) {
+                        err.log("Your account is invalid");
+                        return false;
+                }
                 if (record.get_account_type() !== c_Account_Type_Admin) {
                         err.log("It needs to be the administrator to force activate an account");
                         return false;
                 }
-                if (!account_force_activate_user(account_id)) {
+                if (!g_account_mgr.force_activate_account(record)) {
                         err.log("No such account to activate");
                         return false;
                 }
@@ -281,24 +314,18 @@ function AccountControl() {
 
 // Web APIs
 // test cases
-function TestAdminRecordsManager() {
-        console.log("TestAdminRecordsManager - begins");
-        var record = g_admin_mgr.create_new_record(c_Account_Type_Provider, "12345abcde");
-        console.log("created record: ");
-        console.log(record);
-        var record_fetched = g_admin_mgr.get_record_by_id(record.get_account_id());
-        console.log("fetched record: ");
-        console.log(record_fetched);
-        console.log("TestAdminRecordsManager - ends");
-}
-
 function TestAccountControl() {
         console.log("TestAccountControl - begins");
+        var acc_ctrl = new AccountControl()
+        var profile = new Profile("example@mail.org", "Chifeng Wen", "424-299-7492", null, "Hello World!");
+        var record = acc_ctrl.register(c_Account_Type_Provider, "12345abcde", profile);
+        console.log("created record: ");
+        console.log(record); 
         console.log("TestAccountControl - ends");
 }
 
 Meteor.startup(() => {
                 // code to run on server at startup
                 console.log("Meteor - starting up medicom server...");
-                // TestAdminRecordsManager();
+                TestAccountControl();
                 });
