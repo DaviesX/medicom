@@ -258,7 +258,8 @@ function AccountManager(mongo) {
         }
 }
 
-function Identity() {
+function Identity(record, session_id) {
+        
 }
 
 function IdentityManager(mongo) {
