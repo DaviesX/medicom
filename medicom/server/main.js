@@ -74,6 +74,7 @@ function AdminRecord(account_type, password) {
                         this.__activator = "-1"; 
                 } 
         }
+        this.is_activated = function() { return this.__activator === "-1"; }
 }
 
 function AdminRecordsManager(mongo) {
