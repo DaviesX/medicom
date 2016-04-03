@@ -6,7 +6,7 @@ function ErrorMessageQueue() {
         this.__queue = new Array();
         
         this.log = function(message) {
-                queue.push(message);
+                this.__queue.push(message);
         }
         
         this.fetch_all = function() {
@@ -16,14 +16,22 @@ function ErrorMessageQueue() {
 
 function MongoDB() {
         // maintain a unique id collection
-        this.c_Unique_Id_Collection = "UniqueIDCollection2";
-        this.__uuid_coll = new Mongo.Collection(this.c_Unique_Id_Collection);
-        if (this.__uuid_coll.find().count() === 0) {
-                console.log("MongoDB - It must be the first time loading the DB? Initializing Unique ID Collection");
-                this.__uuid_coll.insert({uuid : 0});
-        } else {
-                console.log("MongoDB - The Unique ID Collection exists, reusing the information");
+        this.c_Unique_Id_Collection = "UniqueIDCollection";
+        this.__uuid_coll = null;
+        
+        this.__init = function() {
+                if (this.__uuid_coll == null) {
+                        this.__uuid_coll = new Mongo.Collection(this.c_Unique_Id_Collection);
+                }
+                if (this.__uuid_coll.find().count() === 0) {
+                        console.log("MongoDB - It must be the first time loading the DB? Initializing Unique ID Collection");
+                        this.__uuid_coll.insert({uuid : 0});
+                } else {
+                        console.log("MongoDB - The Unique ID Collection exists, reusing the information");
+                }
         }
+        
+        this.__init();
 
         this.get_uuid = function() {
                 var entry = this.__uuid_coll.find().fetch()[0];
@@ -31,6 +39,7 @@ function MongoDB() {
                 this.__uuid_coll.update({}, {uuid : ++ entry.uuid});
                 return uuid;
         }
+        
         this.get_string_uuid = function() {
                 var holder = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx';
                 var hex = '0123456789abcdef';
@@ -54,6 +63,11 @@ function MongoDB() {
                         }
                 }
                 return guid;
+        }
+        
+        this.reset = function() {
+                this.__uuid_coll.remove({});
+                this.__init();
         }
 }
 
@@ -108,7 +122,7 @@ function Profile(email, name, phone, avatar, description) {
 function AccountManager(mongo) {
         this.__mongo = mongo
 
-        // handle the collection
+        // handle the collection.
         this.c_Admin_Records_Coll_Name = "AdminRecordsCollection";
         this.c_Profile_Coll_Name = "ProfileCollection";
         
@@ -128,7 +142,7 @@ function AccountManager(mongo) {
         this.__create_new_profile = function(account_id, profile) {
                 profile.set_account_id(account_id);
                 if (this.__has_profile(profile)) {
-                        // profile has already existed
+                        // profile has already existed.
                         return null;
                 }
                 this.__profiles.insert(profile);
@@ -236,6 +250,12 @@ function AccountManager(mongo) {
                 this.__update_record(record);
                 return true;
         }
+        
+        // Reset all the account information.
+        this.reset = function() {
+                this.__admin_records.remove({});
+                this.__profiles.remove({});
+        }
 }
 
 function Identity() {
@@ -275,7 +295,7 @@ function AccountControl() {
                 default:
                         var record = g_account_mgr.create_account(account_type, password, profile);
                         if (!record) {
-                                err.log("account has been existed");
+                                err.log("account has existed");
                                 return null;
                         }
                         return record;
@@ -316,11 +336,25 @@ function AccountControl() {
 // test cases
 function TestAccountControl() {
         console.log("TestAccountControl - begins");
-        var acc_ctrl = new AccountControl()
+        console.log("TestAccountControl - reset database");
+        g_mongo.reset();
+        g_account_mgr.reset();
+        
+        console.log("TestAccountControl - creating account");
+        var acc_ctrl = new AccountControl();
         var profile = new Profile("example@mail.org", "Chifeng Wen", "424-299-7492", null, "Hello World!");
-        var record = acc_ctrl.register(c_Account_Type_Provider, "12345abcde", profile);
+        var err = new ErrorMessageQueue();
+        var record = acc_ctrl.register(c_Account_Type_Provider, "12345abcde", profile, err);
         console.log("created record: ");
-        console.log(record); 
+        console.log(record);
+        console.log("error: " + err.fetch_all());
+        
+        console.log("TestAccountControl - creating the same account(error expected).");
+        record = acc_ctrl.register(c_Account_Type_Provider, "12345abcde", profile, err);
+        console.log("created record: ");
+        console.log(record);
+        console.log("error: " + err.fetch_all());
+        
         console.log("TestAccountControl - ends");
 }
 
