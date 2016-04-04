@@ -59,13 +59,17 @@ export function AccountManager(mongo) {
         this.__remove_record_by_id = function(account_id) {
                 this.__admin_records.remove({__account_id : account_id});
         }
-
-        this.__create_new_record = function(account_type, password) {
+        
+        this.__create_new_record_with_id = function(account_type, account_id, password) {
                 var record = new AdminRecord(account_type, password);
-                record.set_account_id(this.__mongo.get_uuid());
+                record.set_account_id(account_id);
                 record.set_activator(this.__mongo.get_string_uuid());
                 this.__admin_records.insert(record);
                 return record;
+        }
+        
+        this.__create_new_record = function(account_type, password) {
+                return this.__create_new_record_with_id(account_type, this.__mongo.get_uuid(), password);
         }
 
         this.__get_record_by_id = function(account_id) {
@@ -94,6 +98,19 @@ export function AccountManager(mongo) {
         // Return an AdminRecord if successful, or otherwise null.
         this.create_account = function(account_type, password, profile) {
                 var registered = this.__create_new_record(account_type, password);
+                if (registered === null) return registered;
+                if (this.__create_new_profile(registered.get_account_id(), profile) != null) {
+                        return registered;
+                } else {
+                        // failed to create the profile, need to remove the record_fetched.
+                        this.__remove_record_by_id(registered.get_account_id());
+                        return null;
+                }
+        }
+        
+        this.create_account_with_id = function(account_type, account_id, password, profile) {
+                if (this.__has_record(account_id)) return null;
+                var registered = this.__create_new_record_with_id(account_type, account_id, password);
                 if (registered === null) return registered;
                 if (this.__create_new_profile(registered.get_account_id(), profile) != null) {
                         return registered;

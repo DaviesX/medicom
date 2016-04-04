@@ -13,6 +13,7 @@ export function TestAccountControl() {
         console.log("TestAccountControl - reset database");
         singletons.g_mongo.reset();
         singletons.g_account_mgr.reset();
+        singletons.g_identity_mgr.reset();
         
         console.log("TestAccountControl - creating account");
         var acc_ctrl = new AccountControl();

@@ -17,6 +17,12 @@ export function AccountInfo(account_id, name, email) {
 }
 
 export function AccountControl() {
+        // Create a super user account
+        singletons.g_account_mgr.create_account_with_id(singletons.c_Account_Type_Admin,
+                                                        singletons.c_Admin_Account_ID,
+                                                        singletons.c_Admin_Account_Password,
+                                                        new Profile("", "",  "", "", null, ""));
+
         // Public APIs
         // Return account info if successful, or otherwise null.
         this.register = function(account_type, password, profile, err) {
