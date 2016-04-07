@@ -7,10 +7,13 @@
 
   {{> hello}}
   {{> info}}
+  {{> login}}
+  {{> signup}}
+  {{> loginstate}}
 </body>
 
 <template name="hello">
-  <button>Click Me</button>
+  <button id="click-me">Click Me</button>
   <p>You've pressed the button {{counter}} times.</p>
 </template>
 
@@ -22,4 +25,27 @@
     <li><a href="https://docs.meteor.com">Read the Docs</a></li>
     <li><a href="https://forums.meteor.com">Discussions</a></li>
   </ul>
+</template>
+
+<template name="signup">
+        <h2>Sign up</h2>
+        <form>
+                <div><input name="email" value="example@mail.org" /></div>
+                <div><input name="password" value="1234abcd" /></div>
+                <div><input name="name" value="Joe" /></div>
+                <div><input type="submit" value="sign up" /></div>
+        </form>
+</template>
+
+<template name="login">
+        <h2>Log in</h2>
+        <form>
+                <div><input name="email" value="example@mail.org" /></div>
+                <div><input name="password" value="1234abcd" /></div>
+                <div><input type="submit" value="log in" /></div>
+        </form>
+</template>
+
+<template name="loginstate">
+        <div>has been logged in: {{is_logged_in}} </div>
 </template>
