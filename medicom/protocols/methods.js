@@ -61,7 +61,7 @@ function provider_get_patient_set(identity, identity) {
 function user_get_patient_bp_graph(identity, patient_id) {
 }
 
-function user_get_patient_sleep_quality(identity, patient_id) {
+function user_get_patient_symptoms(identity, patient_id) {
 }
 
 function patient_super_update_bp_from_file(identity, patient_id) {
@@ -163,13 +163,13 @@ user_get_patient_bp_graph: function(arg) {
                 },
 
 /**
- * Get a patient's sleep quality data.
+ * Get a patient's symptom data.
  * @param {Identity} Identity of the provider/patient.
  * @param {Integer} Account ID of the patient.
- * @return {SleepQltyTable, String} return a {SleepQltyTable, ""} object if sucessful, or otherwise, {null, "..."}.
+ * @return {SymptomsTable, String} return a {SymptomsTable, ""} object if sucessful, or otherwise, {null, "..."}.
  */
-user_get_patient_sleep_quality: function(arg) {
-                        return user_get_patient_sleep_quality(arg.identity, arg.id);
+user_get_patient_symptoms: function(arg) {
+                        return user_get_patient_symptoms(arg.identity, arg.id);
                 },
 
 /**
