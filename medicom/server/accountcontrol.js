@@ -11,17 +11,28 @@ import {DataModelContext, G_DataModelContext} from "./datamodelcontext.js"
 export var c_Account_Type_Admin = 0;
 export var c_Account_Type_Provider = 1;
 export var c_Account_Type_Patient = 2;
+export var c_Account_Type_SuperIntendant = 3;
 
 export var c_Account_Type2String = [];
 c_Account_Type2String[c_Account_Type_Admin] = "admin";
 c_Account_Type2String[c_Account_Type_Provider] = "provider";
 c_Account_Type2String[c_Account_Type_Patient] = "patient";
+c_Account_Type2String[c_Account_Type_SuperIntendant] = "super intendant";
+
+export var c_String2Account_type = [];
+c_String2Account_type["admin"] = c_Account_Type_Admin;
+c_String2Account_type["provider"] = c_Account_Type_Provider;
+c_String2Account_type["patient"] = c_Account_Type_Patient;
+c_String2Account_type["super intendant"] = c_Account_Type_SuperIntendant;
 
 
-export function AccountInfo(account_id, name, email) {
+
+export function AccountInfo(record, account_id, name, email) {
+        this.__record = record;
         this.__account_id = account_id;
         this.__name = name;
         this.__email = email;
+        this.get_record = function() { return this.__record; }
         this.get_account_id = function() { return this.__account_id; }
         this.get_name = function() { return this.__name; }
         this.get_email = function() { return this.__email; }
@@ -39,23 +50,48 @@ export function AccountControl() {
 
         // Public APIs
         // Return account info if successful, or otherwise null.
-        this.register = function(account_type, password, profile, err) {
+        this.register = function(saccount_type, email, name, phone, password, err) {
+                var account_type = c_String2Account_type[saccount_type];
                 switch (account_type) {
                 case c_Account_Type_Admin:
                         err.log("Cannot register an admin account");
                         return null;
+                case c_Account_Type_SuperIntendant:
+                        err.log("Cannot register a super intendant, but it can be made");
+                        return null;
                 default:
+                        // Build an initial profile.                
+                        var profile = new Profile(email, name, phone, null, "");
                         var record = G_DataModelContext.get_account_manager().create_account(
                                                         account_type, password, profile);
                         if (!record) {
                                 err.log("Cannot register, account existed");
                                 return null;
                         }
-                        var account_info = new AccountInfo(record.get_account_id(),
+                        var account_info = new AccountInfo(record,
+                                                           record.get_account_id(),
                                                            profile.get_name(),
                                                            profile.get_email());
                         return account_info;
                 }
+        }
+        
+        this.make_account = function(identity, saccount_type, email, name, phone, password, err) {
+                var account_type = c_String2Account_type[saccount_type];
+                
+                // Build an initial profile.                
+                var profile = new Profile(email, name, phone, null, "");
+                var record = G_DataModelContext.get_account_manager().create_account(
+                                                account_type, password, profile);
+                if (!record) {
+                        err.log("Cannot register, account existed");
+                        return null;
+                }
+                var account_info = new AccountInfo(record,
+                                                   record.get_account_id(),
+                                                   profile.get_name(),
+                                                   profile.get_email());
+                return account_info;
         }
         
         this.get_all_account_infos = function(identity) {

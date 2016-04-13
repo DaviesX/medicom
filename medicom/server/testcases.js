@@ -19,15 +19,15 @@ export function TestAccountControl() {
         
         console.log("TestAccountControl - creating account");
         var acc_ctrl = new AccountControl();
-        var profile = new Profile("example@mail.org", "Chifeng Wen", "424-299-7492", null, "Hello World!");
         var err = new ErrorMessageQueue();
-        var account_info = acc_ctrl.register(M_AccountControl.c_Account_Type_Provider, "12345abcde", profile, err);
+        var account_info = acc_ctrl.register("provider", "example@mail.org", "Chifeng Wen", "424-299-7492", "12345abcde", err);
         console.log("created record: ");
         console.log(account_info);
         console.log("error: " + err.fetch_all());
         
         console.log("TestAccountControl - creating the same account(error expected).");
-        var account_info2 = acc_ctrl.register(M_AccountControl.c_Account_Type_Provider, "12345abcde", profile, err);
+        var account_info2 = acc_ctrl.register("provider", 
+                                              "example@mail.org", "Chifeng Wen", "424-299-7492", "12345abcde", err);
         console.log("created record: ");
         console.log(account_info2);
         console.log("error: " + err.fetch_all());

@@ -21,6 +21,7 @@ export function AdminRecord(account_type, password) {
         
         this.get_account_id = function() { return this.__account_id; }
         this.get_account_type = function() { return this.__account_type; }
+        this.get_activator = function() { return this.__activator; }
         this.verify_password = function(password) { return this.__internal_pass === this.__hash33(password); }
         this.verify_internal_pass = function(pass) { return this.__internal_pass === pass; }
         this.get_internal_pass = function() { return this.__internal_pass; }
