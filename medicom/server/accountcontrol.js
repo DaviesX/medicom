@@ -1,10 +1,21 @@
-import {Meteor} from 'meteor/meteor';
-import {ErrorMessageQueue, MongoDB} from './common.js'
-import {AdminRecord} from './adminrecord.js'
-import {Profile} from './profile.js'
-import {AccountManager} from './accountmanager.js'
-import {IdentityManager} from './identitymanager.js'
-import * as singletons from './singletons.js'
+import {Meteor} from "meteor/meteor";
+import {ErrorMessageQueue, MongoDB} from "./common.js"
+import {AdminRecord} from "./adminrecord.js"
+import {Profile} from "./profile.js"
+import {AccountManager} from "./accountmanager.js"
+import {IdentityManager} from "./identitymanager.js"
+import {DataModelContext, G_DataModelContext} from "./datamodelcontext.js"
+
+
+// constants
+export var c_Account_Type_Admin = 0;
+export var c_Account_Type_Provider = 1;
+export var c_Account_Type_Patient = 2;
+
+export var c_Account_Type2String = [];
+c_Account_Type2String[c_Account_Type_Admin] = "admin";
+c_Account_Type2String[c_Account_Type_Provider] = "provider";
+c_Account_Type2String[c_Account_Type_Patient] = "patient";
 
 
 export function AccountInfo(account_id, name, email) {
@@ -17,21 +28,25 @@ export function AccountInfo(account_id, name, email) {
 }
 
 export function AccountControl() {
+        this.__c_Admin_Account_ID = -1;
+        this.__c_Admin_Account_Password = "42f2d30a-f9fc-11e5-86aa-5e5517507c66";
         // Create a super user account
-        singletons.g_account_mgr.create_account_with_id(singletons.c_Account_Type_Admin,
-                                                        singletons.c_Admin_Account_ID,
-                                                        singletons.c_Admin_Account_Password,
+        G_DataModelContext.get_account_manager().create_account_with_id(
+                                                        c_Account_Type_Admin,
+                                                        this.__c_Admin_Account_ID,
+                                                        this.__c_Admin_Account_Password,
                                                         new Profile("", "",  "", "", null, ""));
 
         // Public APIs
         // Return account info if successful, or otherwise null.
         this.register = function(account_type, password, profile, err) {
                 switch (account_type) {
-                case singletons.c_Account_Type_Admin:
+                case c_Account_Type_Admin:
                         err.log("Cannot register an admin account");
                         return null;
                 default:
-                        var record = singletons.g_account_mgr.create_account(account_type, password, profile);
+                        var record = G_DataModelContext.get_account_manager().create_account(
+                                                        account_type, password, profile);
                         if (!record) {
                                 err.log("Cannot register, account existed");
                                 return null;
@@ -51,8 +66,8 @@ export function AccountControl() {
         
         // Return an identity if successful, or otherwise null.
         this.login_by_email = function(email, password, err) {
-                var record = singletons.g_account_mgr.get_account_record_by_email(email);
-                var identity = singletons.g_identity_mgr.login(record, password);
+                var record = G_DataModelContext.get_account_manager().get_account_record_by_email(email);
+                var identity = G_DataModelContext.get_identity_manager().login(record, password);
                 if (identity === null) {
                         err.log("Invalid user name/password");
                         return null;
@@ -62,8 +77,8 @@ export function AccountControl() {
         
         // Return an identity if successful, or otherwise null.
         this.login_by_account_id = function(account_id, password, err) {
-                var record = singletons.g_account_mgr.get_account_record_by_id(account_id);
-                var identity = singletons.g_identity_mgr.login(record, password);
+                var record = G_DataModelContext.get_account_manager().get_account_record_by_id(account_id);
+                var identity = G_DataModelContext.get_identity_manager().login(record, password);
                 if (identity === null) {
                         err.log("Invalid user name/password");
                         return null;
@@ -72,15 +87,15 @@ export function AccountControl() {
         }
         
         this.logout = function(identity, err) {
-                if (!singletons.g_account_mgr.verify_identity(identity))
+                if (!G_DataModelContext.get_account_manager().verify_identity(identity))
                         err.log("The identity is invalid");
-                singletons.g_account_mgr.logout(identity);
+                G_DataModelContext.get_identity_manager().logout(identity);
         }
         
         // Return true if the activation is successful, or otherwise false, error message is left in the ErrorMessageQueue.
         this.activate = function(activator, err) {
-                var record = singletons.g_account_mgr.get_account_record_by_activator(activator);
-                if (!singletons.g_account_mgr.activate_account(record, activator)) {
+                var record = G_DataModelContext.get_account_manager().get_account_record_by_activator(activator);
+                if (!G_DataModelContext.get_account_manager().activate_account(record, activator)) {
                         err.log("Failed to activate, possbily due to an invalid activator: " + activator);
                         return false;
                 }
@@ -89,7 +104,7 @@ export function AccountControl() {
         
         // Return true if the activation is successful, or otherwise false, error message is left in the ErrorMessageQueue.
         this.force_activate = function(identity, account_id, err) {
-                if (!singletons.g_identity_mgr.verify(identity)) {
+                if (!G_DataModelContext.get_identity_manager().verify(identity)) {
                         err.log("Your identity is invalid, please try to login");
                 }
                 var record = identity.get_account_record();
@@ -97,11 +112,11 @@ export function AccountControl() {
                         err.log("Your account is invalid");
                         return false;
                 }
-                if (record.get_account_type() !== singletons.c_Account_Type_Admin) {
+                if (record.get_account_type() !== c_Account_Type_Admin) {
                         err.log("It needs to be the administrator to force activate an account");
                         return false;
                 }
-                if (!singletons.g_account_mgr.force_activate_account(record)) {
+                if (!G_DataModelContext.get_account_manager().force_activate_account(record)) {
                         err.log("No such account to activate");
                         return false;
                 }

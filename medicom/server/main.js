@@ -9,6 +9,6 @@ Meteor.startup(() => {
                 console.log("Meteor - loading up methods...");
                 console.log(protocol.c_Meteor_Methods);
                 Meteor.methods(protocol.c_Meteor_Methods);
-                // testcases.TestAccountControl();
+                testcases.TestAccountControl();
                 // testcases.TestHttpSession();
                 });

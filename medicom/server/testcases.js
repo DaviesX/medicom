@@ -4,34 +4,36 @@ import {Profile} from './profile.js'
 import {AccountManager} from './accountmanager.js'
 import {IdentityManager} from './identitymanager.js'
 import {AccountInfo, AccountControl} from './accountcontrol.js'
-import * as singletons from './singletons.js'
+import * as M_AccountControl from "./accountcontrol.js"
+import {DataModelContext, G_DataModelContext} from "./datamodelcontext.js"
 
 
 // test cases
 export function TestAccountControl() {
         console.log("TestAccountControl - begins");
         console.log("TestAccountControl - reset database");
-        singletons.g_mongo.reset();
-        singletons.g_account_mgr.reset();
-        singletons.g_identity_mgr.reset();
+        
+        G_DataModelContext.get_mongodb().reset();
+        G_DataModelContext.get_account_manager().reset();
+        G_DataModelContext.get_identity_manager().reset();
         
         console.log("TestAccountControl - creating account");
         var acc_ctrl = new AccountControl();
         var profile = new Profile("example@mail.org", "Chifeng Wen", "424-299-7492", null, "Hello World!");
         var err = new ErrorMessageQueue();
-        var account_info = acc_ctrl.register(singletons.c_Account_Type_Provider, "12345abcde", profile, err);
+        var account_info = acc_ctrl.register(M_AccountControl.c_Account_Type_Provider, "12345abcde", profile, err);
         console.log("created record: ");
         console.log(account_info);
         console.log("error: " + err.fetch_all());
         
         console.log("TestAccountControl - creating the same account(error expected).");
-        var account_info2 = acc_ctrl.register(singletons.c_Account_Type_Provider, "12345abcde", profile, err);
+        var account_info2 = acc_ctrl.register(M_AccountControl.c_Account_Type_Provider, "12345abcde", profile, err);
         console.log("created record: ");
         console.log(account_info2);
         console.log("error: " + err.fetch_all());
         
         console.log("TestAccountControl - try to activate the account");
-        var record = singletons.g_account_mgr.get_account_record_by_id(account_info.get_account_id());
+        var record = G_DataModelContext.get_account_manager().get_account_record_by_id(account_info.get_account_id());
         if (!acc_ctrl.activate(record.__activator, err)) {
                 console.log("TestAccountControl - Failed to activate the account when it should, error: " + err.fetch_all());
         }
