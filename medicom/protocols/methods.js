@@ -31,6 +31,12 @@ function user_register(account_type, email, name, phone, password) {
         return { account_info: info, error: err.fetch_all() };
 }
 
+function user_activate(activator) {
+        var err = new ErrorMessageQueue();
+        var info = acc_ctrl.activate(activator);
+        return { account_info: info, error: err.fetch_all() };
+}
+
 function user_register_and_activate(account_type, email, name, phone, password) {
         var err = new ErrorMessageQueue();
         var info = acc_ctrl.register(account_type, email, name, phone, password, err);
@@ -58,13 +64,16 @@ function provider_get_patient_set(identity, identity) {
         return { patients: patients, error: err.fetch_all() };
 }
 
-function user_get_patient_bp_graph(identity, patient_id) {
+function user_get_patient_bp_graph(identity, patient_id, start_date, end_date, interval, method) {
 }
 
-function user_get_patient_symptoms(identity, patient_id) {
+function user_get_patient_symptoms(identity, patient_id, start_date, end_date, interval, method) {
 }
 
-function patient_super_update_bp_from_file(identity, patient_id) {
+function patient_super_update_bp_from_file(identity, patient_id, format, blob) {
+}
+
+function super_update_symptom(identity, patient_id, date, json) {
 }
 
 export var c_Meteor_Methods = {
@@ -124,6 +133,15 @@ user_register_and_activate: function(arg) {
                 },
 
 /**
+ * Activate an account.
+ * @param {String} An activator string
+ * @return {Boolean, String} return a {Boolean, ""} object if sucessful, or otherwise, {null, "..."}.
+ */
+user_activate: function(arg) {
+                        return user_activate(arg.activator);
+                },
+
+/**
  * Add a patient to the provider's account.
  * @param {Identity} Identity of the provider.
  * @param {Integer} Account ID of the patient.
@@ -156,30 +174,65 @@ provider_get_patient_set: function(arg) {
  * Get a patient's blood pressure graph data.
  * @param {Identity} Identity of the provider/patient.
  * @param {Integer} Account ID of the patient.
+ * @param {Date} start date.
+ * @param {Date} end date.
+ * @param {Interval} sampling interval.
+ * @param {String} sampling method, including, "uniform average", "uniform max", "uniform min." 
  * @return {BPTable, String} return a {BPTable, ""} object if sucessful, or otherwise, {null, "..."}.
  */
 user_get_patient_bp_graph: function(arg) {
-                        return user_get_patient_bp_graph(arg.identity, arg.id)
+                        return user_get_patient_bp_graph(arg.identity, 
+                                                         arg.id,
+                                                         arg.start_date, 
+                                                         arg.end_date,
+                                                         arg.interval,
+                                                         arg.method);
                 },
 
 /**
  * Get a patient's symptom data.
  * @param {Identity} Identity of the provider/patient.
  * @param {Integer} Account ID of the patient.
+ * @param {Date} start date.
+ * @param {Date} end date.
+ * @param {Interval} sampling interval.
+ * @param {String} method(Unused).
  * @return {SymptomsTable, String} return a {SymptomsTable, ""} object if sucessful, or otherwise, {null, "..."}.
  */
 user_get_patient_symptoms: function(arg) {
-                        return user_get_patient_symptoms(arg.identity, arg.id);
+                        return user_get_patient_symptoms(arg.identity, 
+                                                         arg.id,
+                                                         arg.start_date, 
+                                                         arg.end_date,
+                                                         arg.interval,
+                                                         arg.method);
                 },
 
 /**
  * Update blood pressure data from file.
  * @param {Identity} Identity of the provider/patient/super intendant.
  * @param {Integer} Account ID of the patient.
+ * @param {String} Format of the file blob.
  * @param {String} Text blob of the file.
  * @return {Boolean, String} return a {True, ""} object if sucessful, or otherwise, {False, "..."}.
  */
 patient_super_update_bp_from_file: function(arg) {
-                        return patient_super_update_bp_from_file(arg.identity, arg.id, arg.blob);
+                        return patient_super_update_bp_from_file(arg.identity, 
+                                                                 arg.id, 
+                                                                 arg.format,
+                                                                 arg.blob);
                 },
+                
+/**
+ * Update symptom of a patient.
+ * @param {Identity} Identity of the provider/patient/super intendant.
+ * @param {Integer} Account ID of the patient.
+ * @param {Date} date of the blob.
+ * @param {String} JSON blob of the symptom object.
+ * @return {Boolean, String} return a {True, ""} object if sucessful, or otherwise, {False, "..."}.
+ */
+super_update_symptom: function(arg) {
+                        return super_update_symptom(arg.identity, arg.id, arg.date, arg.blob);
+                },
+// note: fitbit has development js library on its website.
 };

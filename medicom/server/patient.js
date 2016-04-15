@@ -9,7 +9,7 @@ export function Patient(patient_id) {
         this.__curr_provider_id = null;
         this.__sessions_id = [];
         this.__curr_session = 0;
-        this.__phys_cond = null;
+        this.__phys_cond = new PhysicalCondition();
 
         this.start_participation_with = function(provider_id) {
                 this.__curr_provider_id = provider_id;
@@ -42,4 +42,14 @@ export function Patient(patient_id) {
         this.get_physical_condition = function() {
                 return this.__phys_cond;
         }
+}
+
+export function Patient_Create_From_POD(pod) {
+        var obj = new Patient(0);
+        this.__patient_id = pod.__patient_id;
+        this.__curr_provider_id = pod.__curr_provider_id;
+        this.__sessions_id = pod.__sessions_id;
+        this.__curr_session = pod.__curr_session;
+        this.__phys_cond = pod.__phys_cond;
+        return obj;
 }

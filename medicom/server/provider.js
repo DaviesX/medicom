@@ -22,3 +22,9 @@ export function Provider(provider_id) {
         this.get_patient_ids = function() { return this.__patient_ids; }
 }
 
+export function Provider_Create_From_POD(pod) {
+        var obj = new Provider(0);
+        this.__provider_id = pod.__provider_id;
+        this.__patient_ids = pod.__patient_ids;
+        return obj;
+}
