@@ -2,8 +2,8 @@ import {Meteor} from 'meteor/meteor';
 import {ErrorMessageQueue, MongoDB} from './common.js'
 
 
-export function Provider(provider_id) {
-        this.__provider_id = provider_id;
+export function Provider(account_id) {
+        this.__account_id = account_id;
         this.__patient_ids = new Set();
         
         this.add_patient = function(patient_id) {
@@ -18,13 +18,13 @@ export function Provider(provider_id) {
                 return this.__patient_ids.has(patient_id);
         }
         
-        this.get_provider_id = function() { return this.__provider_id; }
+        this.get_account_id = function() { return this.__account_id; }
         this.get_patient_ids = function() { return this.__patient_ids; }
 }
 
 export function Provider_Create_From_POD(pod) {
         var obj = new Provider(0);
-        this.__provider_id = pod.__provider_id;
+        this.__account_id = pod.__account_id;
         this.__patient_ids = pod.__patient_ids;
         return obj;
 }

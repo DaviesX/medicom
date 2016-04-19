@@ -1,7 +1,8 @@
-import {Meteor} from 'meteor/meteor';
-
+import {Meteor} from "meteor/meteor";
+import {Measure, c_Measure_Type_BP} from "./measure.js";
 
 function MeasureBP(measure_id) {
+        this.__parent = new Measure(c_Measure_Type_BP);
         this.__measure_id = measure_id;
         this.__date = new Date();
         this.__value = 0;

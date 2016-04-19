@@ -4,8 +4,8 @@ import {ErrorMessageQueue, MongoDB} from './common.js'
 export function PhysicalCondition() {
 }
 
-export function Patient(patient_id) {
-        this.__patient_id = patient_id;
+export function Patient(account_id) {
+        this.__account_id = account_id;
         this.__curr_provider_id = null;
         this.__sessions_id = [];
         this.__curr_session = 0;
@@ -42,11 +42,13 @@ export function Patient(patient_id) {
         this.get_physical_condition = function() {
                 return this.__phys_cond;
         }
+        
+        this.get_account_id = function() { return this.__account_id; }
 }
 
 export function Patient_Create_From_POD(pod) {
         var obj = new Patient(0);
-        this.__patient_id = pod.__patient_id;
+        this.__account_id = pod.__account_id;
         this.__curr_provider_id = pod.__curr_provider_id;
         this.__sessions_id = pod.__sessions_id;
         this.__curr_session = pod.__curr_session;
