@@ -52,6 +52,10 @@ export function AccountManager(mongo) {
                 this.__profiles.update({__account_id : profile.get_account_id()}, profile);
         }
         
+        this.__remove_profile_by_id = function(id) {
+                this.__profiles.remove({__account_id : id});
+        }
+        
         this.__has_record = function(account_id) {
                 return this.__admin_records.find({__account_id : account_id}).count() > 0;
         }
@@ -151,6 +155,11 @@ export function AccountManager(mongo) {
                 record.force_activate();
                 this.__update_record(record);
                 return true;
+        }
+        
+        this.remove_account_by_id = function(account_id) {
+                this.__remove_record_by_id(account_id);
+                this.__remove_profile_by_id(account_id);
         }
         
         // Reset all the account information.
