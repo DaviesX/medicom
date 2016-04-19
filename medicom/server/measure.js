@@ -19,6 +19,15 @@ export function Measure(type) {
         this.set_measure_id = function(measure_id) { this.__measure_id = measure_id; }
 }
 
+export function Measure_Parent_Create_From_POD(pod) {
+        var obj = new Measure("");
+        this.__measure_id = pod.__measure_id;
+        this.__session_id = pod.__session_id;
+        this.__type = pod.__type;
+        this.__date = pod.__date;
+        return obj;
+}
+
 export function Measure_Create_From_POD(pod) {
         switch (pod.__type) {
         case c_Measure_Type_BP:
