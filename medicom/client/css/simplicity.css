@@ -1,0 +1,206 @@
+/*
+Copyright (C) 2016 Chifeng Wen
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+/* 
+    Created on : Jan 18, 2016, 10:21:18 AM
+    Author     : davis
+*/
+body.simp_nature {
+    background-image: 	        url("/img/hilltop.jpg");
+    background-size:            cover;
+    background-repeat:          no-repeat;
+    background-position:        right;
+    overflow-x:                 hidden;
+    height:                     100%;
+    margin:                     0;
+}
+
+button.simp_login-link {
+    background-color:	transparent;
+    border: 		none;
+    min-width:          60px;
+    height: 		50px;
+    line-height:	50px; 
+    color: 		darkslategray;
+}
+
+button.simp_login-link:hover {
+    background:         radial-gradient(70px, rgba(200, 200, 200, 0.4) 40%, rgba(30, 30, 30, 0.8));
+    color:              lightcyan;
+    transition:		1s;
+}
+
+button.simp_banner-menu {
+    background-color:	transparent;
+    border: 		none;
+    height: 		50px;
+    line-height:	50px;
+    color: 		white;
+}
+
+button.simp_banner-menu:hover {
+    background-color:	rgba(30, 30, 30, 0.8);
+    transition:		1s;
+}
+
+button.simp_classic {
+    background-color:	rgba(250, 250, 250, 0.3);
+    border: 		none;
+    min-width:          80px;
+    height: 		40px;
+    line-height:	40px;
+    color: 		darkslategrey;
+}
+
+button.simp_classic:hover {
+    background:         rgba(230, 230, 230, 0.5);
+    color:              lightcyan;
+    transition:		0.2s;
+}
+
+button.simp_classic-fill-width {
+        background-color:   rgba(250, 250, 250, 0.3);
+        border:             none;
+        height:             40px;
+        line-height:        40px;
+        color:              darkslategrey;
+        width:              100%;
+}
+
+button.simp_classic-fill-width:hover{
+    background:         rgba(230, 230, 230, 0.5);
+    color:              lightcyan;
+    transition:		0.2s;
+}
+
+div.simp_login-link {
+    position:           relative;
+    float:              right;
+    top:                3px;
+    right:              60px;
+    height: 		50px;
+    line-height:	50px;
+    min-width: 		20%;
+    background:         radial-gradient(80px, rgba(230,230,230,0.4) 40%, rgba(30,30,30,0.0));
+    text-align: 	center;
+}
+
+div.simp_banner {
+    position: 		relative;
+    height: 		50px;
+    line-height:	50px;
+    width: 		85%;
+    left: 		5%;
+    background-color: 	rgba(0,0,0,0.6);
+    text-align: 	center;
+}
+
+div.simp_dropdown-group {
+    position:           relative;
+    display:            inline-block;
+}
+
+div.simp_dropdown-content {
+    display:            none;
+    position:           absolute;
+    background-color: 	rgba(0,0,0,0.6);
+    box-shadow: 	10px 10px 5px rgba(65, 80, 65, 0.6);
+    z-index:            999;
+    min-width:          200px;
+}
+
+div.simp_dropdown-content a {
+    background-color:	transparent;
+    border: 		none;
+    color: 		darkgray;
+    text-decoration:    none;
+    display:            block;
+}
+
+div.simp_dropdown-content a:hover {
+    background-color:	rgba(30, 30, 30, 0.8);
+    color:              lightcyan;
+    transition:		1s;
+}
+
+div.simp_show {
+    display:            block;
+}
+
+h1.simp_heading {
+    position: 		relative;
+    opacity:            0.5;
+    margin-top:         40px;
+    font-family:        "Sans-serif";
+    margin-bottom:      30px;
+    left: 		7%
+}
+
+a.simp_no-decoration {
+    color:              black;
+    text-decoration:    none;
+}
+
+div.simp_two-sided {
+    position:		relative;
+    width: 		85%;
+    left: 		5%;
+}
+
+div.simp_left, div.simp_right {
+    float: 		left;
+    min-height:		500px;
+}
+
+div.simp_forum-board {
+    width: 		30%;
+}
+
+div.simp_reminder-list {
+    width: 		70%;
+    background: 	linear-gradient(to left, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.0) 100%);
+}
+
+div.simp_content-board {
+    margin-left:	3%;
+    padding-top:	10px;
+    padding-bottom:	10px;
+    padding-left:	10px;
+    padding-right:	10px;
+    background-color:	rgba(220, 220, 200, 0.3);
+    border-radius: 	15px;
+    box-shadow: 	10px 10px 5px rgba(65, 80, 65, 0.6);
+}
+
+.simp_content-box {
+    background-color:   rgba(250, 250, 250, 0.3);
+    font-size:		16pt;
+    height:		40px;
+    margin-top:		5px;
+    margin-bottom:	5px;
+    box-shadow: 	2px 2px 5px rgba(65, 80, 65, 0.6);
+    border: 		2px solid rgba(200,200,200, 0.5);
+    border-radius:	2px;
+}
+
+.simp_content-box:hover {
+    background-color:   rgba(250, 250, 250, 0.3);
+    font-size:		30pt;
+    height:		60px;
+    box-shadow: 	10px 10px 5px rgba(65, 80, 65, 0.6);
+    transition: 	0.2s;
+}

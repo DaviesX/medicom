@@ -1,0 +1,177 @@
+/*
+Copyright (C) 2016 Chifeng Wen
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+/* 
+    Created on : Jan 18, 2016, 10:21:18 AM
+    Author     : Chifeng Wen
+*/
+
+body.tran_vernal {
+    background-image: 	url("/img/Dewy-Grass-972-x-648.jpg");
+    background-color: 	#cccccc;
+    background-repeat: 	no-repeat;
+    background-size: 	cover;
+}
+
+button.tran_login-link {
+    background-color:	transparent;
+    border: 		none;
+    min-width:          60px;
+    height: 		50px;
+    line-height:	50px; 
+    color: 		darkslategray;
+}
+
+button.tran_login-link:hover {
+    background:         radial-gradient(70px, rgba(200, 200, 200, 0.4) 40%, rgba(30, 30, 30, 0.8));
+    color:              lightcyan;
+    transition:		1s;
+}
+
+div.tran_login-link {
+    position:           relative;
+    float:              right;
+    top:                3px;
+    right:              60px;
+    height: 		50px;
+    line-height:	50px;
+    min-width: 		20%;
+    background:         radial-gradient(80px, rgba(230,230,230,0.4) 40%, rgba(30,30,30,0.0));
+    text-align: 	center;
+}
+
+button.tran_banner-menu {
+    background-color:	transparent;
+    border: 		none;
+    height: 		50px;
+    line-height:	50px;
+    color: 		white;
+}
+
+button.tran_banner-menu:hover {
+    background-color:	rgba(30, 30, 30, 0.8);
+    transition:		1s;
+}
+
+div.tran_banner {
+    position: 		relative;
+    height: 		50px;
+    line-height:	50px;
+    width: 		85%;
+    left: 		5%;
+    background-color: 	rgba(0,0,0,0.6);
+    text-align: 	center;
+}
+
+div.tran_dropdown-group {
+    position:           relative;
+    display:            inline-block;
+}
+
+div.tran_dropdown-content {
+    display:            none;
+    position:           absolute;
+    background-color: 	rgba(0,0,0,0.6);
+    box-shadow: 	10px 10px 5px rgba(65, 80, 65, 0.6);
+    z-index:            999;
+    min-width:          200px;
+}
+
+div.tran_dropdown-content a {
+    background-color:	transparent;
+    border: 		none;
+    color: 		darkgray;
+    text-decoration:    none;
+    display:            block;
+}
+
+div.tran_dropdown-content a:hover {
+    background-color:	rgba(30, 30, 30, 0.8);
+    color:              lightcyan;
+    transition:		1s;
+}
+
+div.tran_show {
+    display:            block;
+}
+
+h1.tran_heading {
+    position: 		relative;
+    opacity:            0.5;
+    margin-top:         40px;
+    font-family:        "Sans-serif";
+    margin-bottom:      30px;
+    left: 		7%
+}
+
+a.tran_no-decoration {
+    color:              black;
+    text-decoration:    none;
+}
+
+div.tran_two-sided {
+    position:		relative;
+    width: 		85%;
+    left: 		5%;
+}
+
+div.tran_left, div.tran_right {
+    float: 		left;
+    min-height:		500px;
+}
+
+div.tran_forum-board {
+    width: 		70%;
+    background: 	linear-gradient(to left, rgba(255,255,255,0.0) 0%, rgba(255,255,255,0.7) 100%);
+}
+
+div.tran_reminder-list {
+    width: 		30%;
+    background: 	linear-gradient(to left, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.0) 100%);
+}
+
+div.tran_content-board {
+    margin-left:	7%;
+    padding-top:	10px;
+    padding-bottom:	10px;
+    padding-left:	10px;
+    padding-right:	10px;
+    background-color:	rgba(220, 220, 200, 0.5);
+    border-radius: 	15px;
+    box-shadow: 	10px 10px 5px rgba(65, 80, 65, 0.6);
+    width:		85%;
+}
+
+#tran_forum-thread {
+    font-size:		16pt;
+    height:		40px;
+    margin-top:		10px;
+    margin-bottom:	10px;
+    box-shadow: 	2px 2px 5px rgba(65, 80, 65, 0.6);
+    border: 		2px solid rgba(200,200,200, 0.5);
+    border-radius:	2px;
+}
+
+#tran_forum-thread:hover {
+    font-size:		30pt;
+    height:		60px;
+    background-color:	rgba(220, 220, 200, 0.8);
+    box-shadow: 	10px 10px 5px rgba(65, 80, 65, 0.6);
+    transition: 	0.5s;
+}
+
+

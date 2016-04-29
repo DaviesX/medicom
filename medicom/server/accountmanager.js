@@ -12,10 +12,9 @@ export function AccountManager(mongo, admin_record_mgr, profile_mgr, provider_mg
         this.__patient_mgr = patient_mgr;
         
         // Public functions
-        // Return an AdminRecord if successful, or otherwise null.
-        this.create_account = function(account_type, password, profile) {
-                var registered = this.__admin_record_mgr.create_new_record(account_type, password);
-                if (registered === null) return registered;
+        this.__make_account_derivatives = function(registered, profile) {
+                // create profile.
+                if (registered === null) return null;
                 if (this.__profile_mgr.create_new_profile(registered.get_account_id(), profile) != null) {
                         return registered;
                 } else {
@@ -23,19 +22,21 @@ export function AccountManager(mongo, admin_record_mgr, profile_mgr, provider_mg
                         this.__admin_record_mgr.remove_record_by_id(registered.get_account_id());
                         return null;
                 }
+                // create account-type specific record.
+                switch (registered.get_account_type()) {
+                }
         }
-        
+        // Return an AdminRecord if successful, or otherwise null.
         this.create_account_with_id = function(account_type, account_id, password, profile) {
                 if (this.__admin_record_mgr.has_record(account_id)) return null;
                 var registered = this.__admin_record_mgr.create_new_record_with_id(account_type, account_id, password);
-                if (registered === null) return registered;
-                if (this.__profile_mgr.create_new_profile(registered.get_account_id(), profile) != null) {
-                        return registered;
-                } else {
-                        // failed to create the profile, need to remove the record_fetched.
-                        this.__admin_record_mgr.remove_record_by_id(registered.get_account_id());
-                        return null;
-                }
+                return this.__make_account_derivatives(registered, profile);
+        }
+        
+        // Return an AdminRecord if successful, or otherwise null.
+        this.create_account = function(account_type, password, profile) {
+                var registered = this.__admin_record_mgr.create_new_record(account_type, password);
+                return this.__make_account_derivatives(registered, profile);
         }
         
         // Return an AdminRecord if successful, or otherwise null.
