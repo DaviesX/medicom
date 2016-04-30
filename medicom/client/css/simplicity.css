@@ -20,9 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
     Author     : davis
 */
 body.simp_nature {
-    background-image: 	        url("/img/hilltop.jpg");
+    background-image: 	        url("/img/hilltop2.png");
     background-size:            cover;
-    background-repeat:          no-repeat;
     background-position:        right;
     overflow-x:                 hidden;
     height:                     100%;

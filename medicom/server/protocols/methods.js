@@ -1,9 +1,9 @@
 // Web APIs go here
 import {Meteor} from 'meteor/meteor';
-import {Profile} from "../server/profile.js"
-import {ErrorMessageQueue} from "../server/common.js"
-import {AccountControl} from "../server/accountcontrol.js"
-import {ProviderControl} from "../server/providercontrol.js"
+import {Profile} from "../profile.js";
+import {ErrorMessageQueue} from "../common.js";
+import {AccountControl} from "../accountcontrol.js";
+import {ProviderControl} from "../providercontrol.js";
 
 
 var g_acc_ctrl = new AccountControl();
@@ -13,35 +13,39 @@ function server_print(arg) {
         console.log(arg);
 }
 
+function user_account_types() {
+        return g_acc_ctrl.get_registerable_account_types();
+}
+
 function user_login_by_email(email, password) {
         var err = new ErrorMessageQueue();
-        var identity = acc_ctrl.login_by_id(email, password, err);
+        var identity = g_acc_ctrl.login_by_id(email, password, err);
         return { identity: identity, error: err.fetch_all() };
 }
 
 function user_login_by_id(id, password) {
         var err = new ErrorMessageQueue();
-        var identity = acc_ctrl.login_by_id(id, password);
+        var identity = g_acc_ctrl.login_by_id(id, password);
         return { identity: identity, error: err.fetch_all() };
 }
 
 function user_register(account_type, email, name, phone, password) {
         var err = new ErrorMessageQueue();
-        var info = acc_ctrl.register(account_type, email, name, phone, password, err);
+        var info = g_acc_ctrl.register(account_type, email, name, phone, password, err);
         return { account_info: info, error: err.fetch_all() };
 }
 
 function user_activate(activator) {
         var err = new ErrorMessageQueue();
-        var info = acc_ctrl.activate(activator);
+        var info = g_acc_ctrl.activate(activator);
         return { account_info: info, error: err.fetch_all() };
 }
 
 function user_register_and_activate(account_type, email, name, phone, password) {
         var err = new ErrorMessageQueue();
-        var info = acc_ctrl.register(account_type, email, name, phone, password, err);
+        var info = g_acc_ctrl.register(account_type, email, name, phone, password, err);
         if (info != null) {
-                acc_ctrl.activate(info.get_account_record().get_activator(), err);
+                g_acc_ctrl.activate(info.get_record().get_activator(), err);
         }
         return { account_info: info, error: err.fetch_all() };
 }
@@ -83,8 +87,12 @@ export var c_Meteor_Methods = {
  * @return {null}
  */
 server_print: function(arg) {
-                       server_print(arg.test_string);
-               },
+                        server_print(arg.str);
+                },
+
+user_account_types: function(arg) {
+                        return user_account_types();
+                },
 
 /**
  * Login a user using email.
@@ -116,7 +124,11 @@ user_login_by_id: function(arg) {
  * @return {AccountInfo, String} return a {AccountInfo, ""} object if sucessful, or otherwise, {null, "..."}.
  */
 user_register: function(arg) {
-                        return user_register(arg.account_type, email, name, phone, password);
+                        return user_register(arg.account_type, 
+                                             arg.email, 
+                                             arg.user_name, 
+                                             arg.phone, 
+                                             arg.password);
                 },
 
 /**
@@ -129,7 +141,11 @@ user_register: function(arg) {
  * @return {AccountInfo, String} return a {AccountInfo, ""} object if sucessful, or otherwise, {null, "..."}.
  */
 user_register_and_activate: function(arg) {
-                        return user_register_and_activate(arg.account_type, email, name, phone, password);
+                        return user_register_and_activate(arg.account_type, 
+                                                          arg.email, 
+                                                          arg.user_name, 
+                                                          arg.phone, 
+                                                          arg.password);
                 },
 
 /**

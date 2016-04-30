@@ -13,6 +13,12 @@ export var c_Account_Type_Provider = 1;
 export var c_Account_Type_Patient = 2;
 export var c_Account_Type_SuperIntendant = 3;
 
+export var c_Account_Type_Strings = 
+["admin", "provider", "patient", "super intendant"];
+
+export var c_Account_Type_Strings_Registerable = 
+["provider", "patient", "super intendant"];
+
 export var c_Account_Type2String = [];
 c_Account_Type2String[c_Account_Type_Admin] = "admin";
 c_Account_Type2String[c_Account_Type_Provider] = "provider";
@@ -49,6 +55,14 @@ export function AccountControl() {
                                                         new Profile("", "",  "", "", null, ""));
 
         // Public APIs
+        this.get_registerable_account_types = function() {
+                return c_Account_Type_Strings_Registerable;
+        }
+        
+        this.get_accoun_types = function(){
+                return c_Account_Type_Strings;
+        }
+        
         // Return account info if successful, or otherwise null.
         this.register = function(saccount_type, email, name, phone, password, err) {
                 var account_type = c_String2Account_type[saccount_type];
