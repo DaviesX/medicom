@@ -1,7 +1,9 @@
 // Data models go here
-import {Meteor} from 'meteor/meteor';
-import {AdminRecordManager} from './adminrecordmanager.js'
-import {ProfileManager} from './profilemanager.js'
+import {Meteor} from "meteor/meteor";
+import {AdminRecordManager} from "./adminrecordmanager.js";
+import {ProfileManager} from "./profilemanager.js";
+import {ProviderManager} from "./providermanager.js";
+import * as M_AccountType from "../api/accounttype.js";
 
 
 export function AccountManager(mongo, admin_record_mgr, profile_mgr, provider_mgr, patient_mgr) {
@@ -15,16 +17,24 @@ export function AccountManager(mongo, admin_record_mgr, profile_mgr, provider_mg
         this.__make_account_derivatives = function(registered, profile) {
                 // create profile.
                 if (registered === null) return null;
-                if (this.__profile_mgr.create_new_profile(registered.get_account_id(), profile) != null) {
-                        return registered;
-                } else {
+                if (this.__profile_mgr.create_new_profile(registered.get_account_id(), profile) == null) {
                         // failed to create the profile, need to remove the record_fetched.
                         this.__admin_record_mgr.remove_record_by_id(registered.get_account_id());
                         return null;
                 }
                 // create account-type specific record.
                 switch (registered.get_account_type()) {
+                case M_AccountType.c_Account_Type_Provider:
+                        this.__provider_mgr.create_provider(registered.get_account_id());
+                        break;
+                case M_AccountType.c_Account_Type_Patient:
+                        this.__patient_mgr.create_provider(registered.get_account_id());
+                        break;
+                case M_AccountType.c_Account_Type_SuperIntendant:
+                        throw "Unsupported Operation Exception";
+                        break;
                 }
+                return registered;
         }
         // Return an AdminRecord if successful, or otherwise null.
         this.create_account_with_id = function(account_type, account_id, password, profile) {
@@ -72,8 +82,25 @@ export function AccountManager(mongo, admin_record_mgr, profile_mgr, provider_mg
         }
         
         this.remove_account_by_id = function(account_id) {
-                this.__admin_record_mgr.remove_record_by_id(account_id);
+                var record = this.__admin_record_mgr.get_record_by_id(account_id);
+                if (record == null) return false;
+                var account_type = record.get_account_type();
+                
+                switch (account_type) {
+                case M_AccountType.c_Account_Type_Provider:
+                        this.__provider_mgr.remove_provider_by_id(account_id);
+                        break;
+                case M_AccountType.c_Account_Type_Patient:
+                        this.__patient_mgr.remove_patient_by_id(account_id);
+                        break;
+                case M_AccountType.c_Account_Type_SuperIntendant:
+                        throw "Unsupported Operation Exception";
+                        break;
+                }
+                
                 this.__profile_mgr.remove_profile_by_id(account_id);
+                this.__admin_record_mgr.remove_record_by_id(account_id);
+                return true;
         }
         
         // Reset all the account information.

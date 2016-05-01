@@ -1,5 +1,6 @@
 import {Meteor} from "meteor/meteor";
-import {ErrorMessageQueue, MongoDB} from "../api/common.js"
+import {Provider, Provider_Create_From_POD} from "../api/provider.js";
+import {ErrorMessageQueue, MongoDB} from "../api/common.js";
 
 export function ProviderManager(mongodb) {
         this.__mongodb = mongodb;

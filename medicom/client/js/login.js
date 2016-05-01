@@ -48,7 +48,6 @@ Template.tmpllogin.events({"click #btn-login"(event) {
         };
         console.log("logging in...");
         Meteor.call("user_login_by_email", form_content, function(error, result) {
-                console.log(result);
                 if (result.error != "") {
                         Meteor.call("user_login_by_id", form_content, function(error, result) {
                                 if (result.error != "") {

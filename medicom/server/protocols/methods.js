@@ -77,7 +77,7 @@ function provider_get_patient_set(identity) {
                 for (var i = 0; i < patients.length; i ++) {
                         account_ids[i] = patients[i].get_account_id();
                 }
-                account_infos = get_account_infos_by_ids(identity, account_ids, err);
+                account_infos = g_account_ctrl.get_account_infos_by_ids(identity, account_ids, err);
         } else {
                 err.log("failed to find patients");
         }
