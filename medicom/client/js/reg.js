@@ -1,5 +1,6 @@
 import { Template } from "meteor/templating";
 import {SessionManager} from "./session.js";
+import {ErrorMessageQueue} from "../../api/common.js";
 import {AccountInfo_Create_From_POD} from "../../api/accountinfo.js";
 import "../html/reg.html";
 import "../html/regresult.html";
@@ -23,22 +24,20 @@ Template.tmplreg.onRendered(function () {
 
 
 Template.tmplreg.events({"click #btn-signup"(event) {
-        var regerror = "";
+        var regerror = new ErrorMessageQueue();
         
         if ($("#txb-password").val() != $("#txb-retype-password").val()) {
                 console.log("password doesn't match");
-                regerror += "password doesn't match\n";
+                regerror.log("password doesn't match");
         }
         if ($("#txb-password").val().length < 5) {
                 console.log("password too short");
-                regerror += "password too short\n";
+                regerror.log("password too short");
         }
-        if (regerror != "") {
-                Session.set("regerror", regerror);
+        G_Session.set_error_message(regerror);
+        if (!regerror.is_empty()) {
                 Router.go("/regresult");
                 return;
-        } else {
-                Session.set("regerror", "");
         }
         var form_content = {
                 user_name:      $("#txb-user-name").val(),
@@ -52,7 +51,11 @@ Template.tmplreg.events({"click #btn-signup"(event) {
         Meteor.call("user_register_and_activate", form_content, function(error, result) {
                 console.log(result.account_info);
                 console.log(result.error);
-                Session.set("reginfo", result);
+                if (error != "") {
+                        regerror.log(error);
+                        G_Session.set_error_message(regerror);
+                }
+                G_Session.set_account_info(result.account_info);
                 Router.go("/regresult");
         });
         return;
@@ -60,21 +63,17 @@ Template.tmplreg.events({"click #btn-signup"(event) {
 
 Template.tmplregresult.onRendered(function () {
         console.log("regresult template rendered");
-        var regerror = Session.get("regerror");
-        var reginfo = Session.get("reginfo");
-        if ((regerror != null && regerror != "") || reginfo == null) {
+        var regerror = G_Session.get_error_message();
+        var reginfo = G_Session.get_account_info();
+        console.log(regerror);
+        if (!regerror.is_empty()) {
                 $("#h-reg-info").css("color", "red");
-                $("#h-reg-info").html("Failed to register: " + regerror);
-                console.log("user input error: " + regerror);
-        } else if (reginfo.account_info == null) {
-                $("#h-reg-info").css("color", "red");
-                $("#h-reg-info").html("Failed to register: " + reginfo.error);
-                console.log("Registration error: " + regerror);
+                $("#h-reg-info").html("Failed to register: " + regerror.fetch_all());
+                console.log("user input error: " + regerror.fetch_all());
         } else {
-                var account_info = AccountInfo_Create_From_POD(reginfo.account_info);
-                console.log(account_info);
+                console.log(reginfo);
                 $("#h-reg-info").css("color", "green");
                 $("#h-reg-info").html("Registration is successful, your account ID is: " + 
-                        account_info.get_account_id());
+                        reginfo.get_account_id());
         }
 });

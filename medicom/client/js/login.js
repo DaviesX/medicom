@@ -39,11 +39,11 @@ function redirect_page_on(result) {
 
 Template.tmpllogin.events({"click #btn-login"(event) {
         var regerror = new ErrorMessageQueue();
-        var email = $("#txb-email").val();
+        var email_id = $("#txb-email-id").val();
         var password = $("#txb-password").val();
         var form_content = {
-                id: parseInt(email, 10),
-                email: email,
+                id: parseInt(email_id, 10),
+                email: email_id,
                 password: password
         };
         console.log("logging in...");

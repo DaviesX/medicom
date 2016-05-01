@@ -9,14 +9,27 @@ export function ErrorMessageQueue() {
                 this.__queue.push(message);
         }
         
+        this.is_empty = function() {
+                return this.fetch_all() == "";
+        }
+        
         this.fetch_all = function() {
                 var answer = [];
                 for (var i = 0; i < this.__queue.length; i ++) {
                         answer[i] = this.__queue[i];
                 }
-                this.__queue = [];
                 return answer;
         }
+        
+        this.clear = function() {
+                this.__queue = [];
+        }
+}
+
+export function ErrorMessageQueue_Create_From_POD(pod) {
+        var obj = new ErrorMessageQueue();
+        obj.__queue = pod.__queue;
+        return obj;
 }
 
 
