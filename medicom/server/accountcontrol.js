@@ -30,7 +30,7 @@ export function AccountControl() {
         
         // Return account info if successful, or otherwise null.
         this.register = function(saccount_type, email, name, phone, password, err) {
-                var account_type = M_AccountType.AccountType.get_account_type_from_string(saccount_type);
+                var account_type = new M_AccountType.AccountType().get_account_type_from_string(saccount_type);
                 switch (account_type) {
                 case M_AccountType.c_Account_Type_Admin:
                         err.log("Cannot register an admin account");

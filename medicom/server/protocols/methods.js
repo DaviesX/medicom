@@ -25,7 +25,7 @@ function user_login_by_email(email, password) {
 
 function user_login_by_id(id, password) {
         var err = new ErrorMessageQueue();
-        var identity = g_acc_ctrl.login_by_account_id(id, password);
+        var identity = g_acc_ctrl.login_by_account_id(id, password, err);
         return { identity: identity, error: err.fetch_all() };
 }
 
