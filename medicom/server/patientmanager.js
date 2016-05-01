@@ -1,6 +1,6 @@
-import {Meteor} from 'meteor/meteor';
-import {ErrorMessageQueue, MongoDB} from "../api/common.js"
-import {Patient, Patient_Create_From_POD} from './patient.js'
+import {Meteor} from "meteor/meteor";
+import {ErrorMessageQueue, MongoDB} from "../api/common.js";
+import {Patient, Patient_Create_From_POD} from "../api/patient.js";
 
 export function PatientManager(mongodb) {
         this.__mongodb = mongodb;

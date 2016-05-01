@@ -1,5 +1,5 @@
-import {Meteor} from 'meteor/meteor';
-import {Profile, Profile_create_from_POD} from './profile.js'
+import {Meteor} from "meteor/meteor";
+import {Profile, Profile_create_from_POD} from "../api/profile.js";
 
 
 export function ProfileManager(mongodb) {

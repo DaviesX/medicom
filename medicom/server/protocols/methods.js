@@ -1,6 +1,6 @@
 // Web APIs go here
 import {Meteor} from 'meteor/meteor';
-import {Profile} from "../profile.js";
+import {Profile} from "../../api/profile.js";
 import {ErrorMessageQueue} from "../../api/common.js";
 import {AccountControl} from "../accountcontrol.js";
 import {ProviderControl} from "../providercontrol.js";

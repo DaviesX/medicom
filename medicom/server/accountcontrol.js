@@ -1,8 +1,8 @@
 import {Meteor} from "meteor/meteor";
-import {Profile} from "./profile.js";
 import {AccountManager} from "./accountmanager.js";
 import {IdentityManager} from "./identitymanager.js";
 import {DataModelContext, G_DataModelContext} from "./datamodelcontext.js";
+import {Profile} from "../api/profile.js";
 import {ErrorMessageQueue, MongoDB} from "../api/common.js";
 import {AdminRecord} from "../api/adminrecord.js";
 import {AccountInfo} from "../api/accountinfo.js";
