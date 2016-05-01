@@ -1,5 +1,6 @@
 import { Template } from "meteor/templating";
 import {SessionManager} from "./session.js";
+import {ErrorMessageQueue} from "../../api/common.js";
 import {Identity_create_from_POD} from "../../api/identity.js";
 import {AccountType} from "../../api/accounttype.js";
 import "../html/login.html";
@@ -37,11 +38,11 @@ function redirect_page_on(result) {
 }
 
 Template.tmpllogin.events({"click #btn-login"(event) {
-        var regerror = "";
+        var regerror = new ErrorMessageQueue();
         var email = $("#txb-email").val();
         var password = $("#txb-password").val();
         var form_content = {
-                id: email,
+                id: parseInt(email, 10),
                 email: email,
                 password: password
         };
@@ -52,6 +53,7 @@ Template.tmpllogin.events({"click #btn-login"(event) {
                         Meteor.call("user_login_by_id", form_content, function(error, result) {
                                 if (result.error != "") {
                                         console.log(result.error);
+                                        regerror.log(result.error);
                                         Router.go("/autherror");
                                 } else {
                                         redirect_page_on(result);

@@ -31,7 +31,7 @@ export function MongoDB() {
                 }
                 if (this.__uuid_coll.find().count() === 0) {
                         console.log("MongoDB - It must be the first time loading the DB? Initializing Unique ID Collection");
-                        this.__uuid_coll.insert({uuid : 0});
+                        this.__uuid_coll.insert({uuid : 5092});
                 } else {
                         console.log("MongoDB - The Unique ID Collection exists, reusing the information");
                 }

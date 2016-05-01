@@ -1,5 +1,6 @@
 import { Template } from "meteor/templating";
-import {SessionManager} from "./session.js"
+import {SessionManager} from "./session.js";
+import {AccountInfo_Create_From_POD} from "../../api/accountinfo.js";
 import "../html/reg.html";
 import "../html/regresult.html";
 
@@ -70,9 +71,10 @@ Template.tmplregresult.onRendered(function () {
                 $("#h-reg-info").html("Failed to register: " + reginfo.error);
                 console.log("Registration error: " + regerror);
         } else {
-                console.log(reginfo.account_info);
+                var account_info = AccountInfo_Create_From_POD(reginfo.account_info);
+                console.log(account_info);
                 $("#h-reg-info").css("color", "green");
                 $("#h-reg-info").html("Registration is successful, your account ID is: " + 
-                        reginfo.account_info.__account_id);
+                        account_info.get_account_id());
         }
 });
