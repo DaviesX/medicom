@@ -8,6 +8,11 @@ import {AdminRecord} from "../api/adminrecord.js";
 import {AccountInfo} from "../api/accountinfo.js";
 import * as M_AccountType from "../api/accounttype.js";
 
+var c_Account_Privilege = [];
+c_Account_Privilege[M_AccountType.c_Account_Type_Admin] = 100;
+c_Account_Privilege[M_AccountType.c_Account_Type_SuperIntendant] = 50;
+c_Account_Privilege[M_AccountType.c_Account_Type_Provider] = 50;
+c_Account_Privilege[M_AccountType.c_Account_Type_Patient] = 20;
 
 export function AccountControl() {
         this.__c_Admin_Account_ID = -1;
@@ -24,7 +29,7 @@ export function AccountControl() {
                 return M_AccountType.c_Account_Type_Strings_Registerable;
         }
         
-        this.get_accoun_types = function(){
+        this.get_account_types = function(){
                 return M_AccountType.c_Account_Type_Strings;
         }
         
@@ -77,6 +82,42 @@ export function AccountControl() {
         }
         
         this.remove_account = function(identity, account_id, err) {
+        }
+        
+        this.get_account_infos_by_ids = function(identity, account_ids, err) {
+                if (account_ids == null) {
+                        err.log("Account IDs given are invalid");
+                        return null;
+                }
+                if (!G_DataModelContext.get_identity_manager().verify_identity(identity)) {
+                        err.log("Your identity is invalid");
+                        return null;
+                }
+                var self_record = identity.get_account_record();
+                var infos = [];
+                for (var i = 0; i < account_ids.length; i ++) {
+                        var record = G_DataModelContext.get_account_manager().
+                                                get_account_record_by_id(account_ids[i]);
+                        if (c_Account_Privilege[self_record.get_account_type()] <= 
+                            c_Account_Privilege[record.get_account_type()]) {
+                                err.log("You don't have the privilege to obtain such account");
+                                continue;
+                        }
+                        var profile = G_DataModelContext.get_profile_manager().
+                                        get_profile_by_id(account_ids[i]);
+                        infos[i] = new AccountInfo(record, account_ids[i], 
+                                                   profile.get_name(), profile.get_email());
+                }
+                return infos;
+        }
+        
+        this.get_account_info_by_id = function(identity, account_id, err) {
+                if (account_id == null) {
+                        err.log("Account ID given is invalid");
+                        return null;
+                }
+                var infos = get_account_infos_by_ids(identity, [account_id], err);
+                return infos != null ? infos[0] : null;
         }
         
         // Return an identity if successful, or otherwise null.

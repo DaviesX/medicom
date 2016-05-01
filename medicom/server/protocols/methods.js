@@ -2,50 +2,51 @@
 import {Meteor} from 'meteor/meteor';
 import {Profile} from "../../api/profile.js";
 import {ErrorMessageQueue} from "../../api/common.js";
+import {Identity_create_from_POD} from "../../api/identity.js";
 import {AccountControl} from "../accountcontrol.js";
 import {ProviderControl} from "../providercontrol.js";
 
-
-var g_acc_ctrl = new AccountControl();
+var g_account_ctrl = new AccountControl();
 var g_provider_ctrl = new ProviderControl();
+
 
 function server_print(arg) {
         console.log(arg);
 }
 
 function user_account_types() {
-        return g_acc_ctrl.get_registerable_account_types();
+        return g_account_ctrl.get_registerable_account_types();
 }
 
 function user_login_by_email(email, password) {
         var err = new ErrorMessageQueue();
-        var identity = g_acc_ctrl.login_by_email(email, password, err);
+        var identity = g_account_ctrl.login_by_email(email, password, err);
         return { identity: identity, error: err.fetch_all() };
 }
 
 function user_login_by_id(id, password) {
         var err = new ErrorMessageQueue();
-        var identity = g_acc_ctrl.login_by_account_id(id, password, err);
+        var identity = g_account_ctrl.login_by_account_id(id, password, err);
         return { identity: identity, error: err.fetch_all() };
 }
 
 function user_register(account_type, email, name, phone, password) {
         var err = new ErrorMessageQueue();
-        var info = g_acc_ctrl.register(account_type, email, name, phone, password, err);
+        var info = g_account_ctrl.register(account_type, email, name, phone, password, err);
         return { account_info: info, error: err.fetch_all() };
 }
 
 function user_activate(activator) {
         var err = new ErrorMessageQueue();
-        var info = g_acc_ctrl.activate(activator);
+        var info = g_account_ctrl.activate(activator);
         return { account_info: info, error: err.fetch_all() };
 }
 
 function user_register_and_activate(account_type, email, name, phone, password) {
         var err = new ErrorMessageQueue();
-        var info = g_acc_ctrl.register(account_type, email, name, phone, password, err);
+        var info = g_account_ctrl.register(account_type, email, name, phone, password, err);
         if (info != null) {
-                g_acc_ctrl.activate(info.get_record().get_activator(), err);
+                g_account_ctrl.activate(info.get_record().get_activator(), err);
         }
         return { account_info: info, error: err.fetch_all() };
 }
@@ -62,10 +63,26 @@ function provider_remove_patient_by_id(identity, patient_id) {
         return { patients: patients, error: err.fetch_all() };
 }
 
-function provider_get_patient_set(identity, identity) {
+function provider_get_patient_set(identity) {
+        if (identity == null) {
+                err.log("identity is required, but it's absent");
+                return { patients: null, account_infos: null, error: err.fetch_all() };
+        }
+        identity = Identity_create_from_POD(identity);
         var err = new ErrorMessageQueue();
-        patients = g_provider_ctrl.get_participated_patients(identity, err);
-        return { patients: patients, error: err.fetch_all() };
+        var patients = g_provider_ctrl.get_participated_patients(identity, err);
+        var account_infos = null;
+        if (patients != null) {
+                var account_ids = [];
+                for (var i = 0; i < patients.length; i ++) {
+                        account_ids[i] = patients[i].get_account_id();
+                }
+                account_infos = get_account_infos_by_ids(identity, account_ids, err);
+        } else {
+                err.log("failed to find patients");
+        }
+        
+        return { patients: patients, account_infos: account_infos, error: err.fetch_all() };
 }
 
 function user_get_patient_bp_graph(identity, patient_id, start_date, end_date, interval, method) {

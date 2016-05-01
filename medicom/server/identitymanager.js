@@ -13,7 +13,7 @@ export function IdentityManager(mongo, account_mgr, session_out_intv) {
         this.__identities = new Mongo.Collection(this.c_Identity_Coll_Name);
         
         this.verify_identity = function(identity) {
-                if (identity === null) return false;
+                if (identity == null) return false;
                 var result = this.__identities.find({__session_id : identity.get_session_id()});
                 if (result.count() == 0) return false;
                 
@@ -21,8 +21,8 @@ export function IdentityManager(mongo, account_mgr, session_out_intv) {
                 var db_account = db_iden.get_account_record();
                 var param_account = identity.get_account_record();
                 if (db_account.get_account_id() !== param_account.get_account_id() ||
-                    db_account.verify_internal_pass(param_account.get_internal_pass() ||
-                    !db_account.is_activated())) {
+                    !db_account.verify_internal_pass(param_account.get_internal_pass()) ||
+                    !db_account.is_activated()) {
                         return false;
                 }
                 

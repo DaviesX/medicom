@@ -35,7 +35,7 @@ export function AccountType() {
                 return c_Account_Type_Strings_Registerable;
         }
         
-        this.get_accoun_type_strings = function() {
+        this.get_account_type_strings = function() {
                 return c_Account_Type_Strings;
         }
 }

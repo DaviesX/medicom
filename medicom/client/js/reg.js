@@ -64,13 +64,13 @@ Template.tmplreg.events({"click #btn-signup"(event) {
 Template.tmplregresult.onRendered(function () {
         console.log("regresult template rendered");
         var regerror = G_Session.get_error_message();
-        var reginfo = G_Session.get_account_info();
         console.log(regerror);
         if (!regerror.is_empty()) {
                 $("#h-reg-info").css("color", "red");
                 $("#h-reg-info").html("Failed to register: " + regerror.fetch_all());
                 console.log("user input error: " + regerror.fetch_all());
         } else {
+                var reginfo = G_Session.get_account_info();
                 console.log(reginfo);
                 $("#h-reg-info").css("color", "green");
                 $("#h-reg-info").html("Registration is successful, your account ID is: " + 
