@@ -1,7 +1,7 @@
 // Web APIs go here
 import {Meteor} from 'meteor/meteor';
 import {Profile} from "../profile.js";
-import {ErrorMessageQueue} from "../common.js";
+import {ErrorMessageQueue} from "../../api/common.js";
 import {AccountControl} from "../accountcontrol.js";
 import {ProviderControl} from "../providercontrol.js";
 
@@ -19,13 +19,13 @@ function user_account_types() {
 
 function user_login_by_email(email, password) {
         var err = new ErrorMessageQueue();
-        var identity = g_acc_ctrl.login_by_id(email, password, err);
+        var identity = g_acc_ctrl.login_by_email(email, password, err);
         return { identity: identity, error: err.fetch_all() };
 }
 
 function user_login_by_id(id, password) {
         var err = new ErrorMessageQueue();
-        var identity = g_acc_ctrl.login_by_id(id, password);
+        var identity = g_acc_ctrl.login_by_account_id(id, password);
         return { identity: identity, error: err.fetch_all() };
 }
 

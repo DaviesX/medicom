@@ -1,76 +1,41 @@
 import {Meteor} from "meteor/meteor";
-import {ErrorMessageQueue, MongoDB} from "./common.js"
-import {AdminRecord} from "./adminrecord.js"
-import {Profile} from "./profile.js"
-import {AccountManager} from "./accountmanager.js"
-import {IdentityManager} from "./identitymanager.js"
-import {DataModelContext, G_DataModelContext} from "./datamodelcontext.js"
+import {Profile} from "./profile.js";
+import {AccountManager} from "./accountmanager.js";
+import {IdentityManager} from "./identitymanager.js";
+import {DataModelContext, G_DataModelContext} from "./datamodelcontext.js";
+import {ErrorMessageQueue, MongoDB} from "../api/common.js";
+import {AdminRecord} from "../api/adminrecord.js";
+import {AccountInfo} from "../api/accountinfo.js";
+import * as M_AccountType from "../api/accounttype.js";
 
-
-// constants
-export var c_Account_Type_Admin = 0;
-export var c_Account_Type_Provider = 1;
-export var c_Account_Type_Patient = 2;
-export var c_Account_Type_SuperIntendant = 3;
-
-export var c_Account_Type_Strings = 
-["admin", "provider", "patient", "super intendant"];
-
-export var c_Account_Type_Strings_Registerable = 
-["provider", "patient", "super intendant"];
-
-export var c_Account_Type2String = [];
-c_Account_Type2String[c_Account_Type_Admin] = "admin";
-c_Account_Type2String[c_Account_Type_Provider] = "provider";
-c_Account_Type2String[c_Account_Type_Patient] = "patient";
-c_Account_Type2String[c_Account_Type_SuperIntendant] = "super intendant";
-
-export var c_String2Account_type = [];
-c_String2Account_type["admin"] = c_Account_Type_Admin;
-c_String2Account_type["provider"] = c_Account_Type_Provider;
-c_String2Account_type["patient"] = c_Account_Type_Patient;
-c_String2Account_type["super intendant"] = c_Account_Type_SuperIntendant;
-
-
-
-export function AccountInfo(record, account_id, name, email) {
-        this.__record = record;
-        this.__account_id = account_id;
-        this.__name = name;
-        this.__email = email;
-        this.get_record = function() { return this.__record; }
-        this.get_account_id = function() { return this.__account_id; }
-        this.get_name = function() { return this.__name; }
-        this.get_email = function() { return this.__email; }
-}
 
 export function AccountControl() {
         this.__c_Admin_Account_ID = -1;
         this.__c_Admin_Account_Password = "42f2d30a-f9fc-11e5-86aa-5e5517507c66";
         // Create a super user account
         G_DataModelContext.get_account_manager().create_account_with_id(
-                                                        c_Account_Type_Admin,
+                                                        M_AccountType.c_Account_Type_Admin,
                                                         this.__c_Admin_Account_ID,
                                                         this.__c_Admin_Account_Password,
                                                         new Profile("", "",  "", "", null, ""));
 
         // Public APIs
         this.get_registerable_account_types = function() {
-                return c_Account_Type_Strings_Registerable;
+                return M_AccountType.c_Account_Type_Strings_Registerable;
         }
         
         this.get_accoun_types = function(){
-                return c_Account_Type_Strings;
+                return M_AccountType.c_Account_Type_Strings;
         }
         
         // Return account info if successful, or otherwise null.
         this.register = function(saccount_type, email, name, phone, password, err) {
-                var account_type = c_String2Account_type[saccount_type];
+                var account_type = M_AccountType.AccountType.get_account_type_from_string(saccount_type);
                 switch (account_type) {
-                case c_Account_Type_Admin:
+                case M_AccountType.c_Account_Type_Admin:
                         err.log("Cannot register an admin account");
                         return null;
-                case c_Account_Type_SuperIntendant:
+                case M_AccountType.c_Account_Type_SuperIntendant:
                         err.log("Cannot register a super intendant, but it can be made");
                         return null;
                 default:
@@ -91,7 +56,7 @@ export function AccountControl() {
         }
         
         this.make_account = function(identity, saccount_type, email, name, phone, password, err) {
-                var account_type = c_String2Account_type[saccount_type];
+                var account_type = M_AccountType.c_String2Account_type[saccount_type];
                 
                 // Build an initial profile.                
                 var profile = new Profile(email, name, phone, null, "");
@@ -162,7 +127,7 @@ export function AccountControl() {
                         err.log("Your account is invalid");
                         return false;
                 }
-                if (record.get_account_type() !== c_Account_Type_Admin) {
+                if (record.get_account_type() !== M_AccountType.c_Account_Type_Admin) {
                         err.log("It needs to be the administrator to force activate an account");
                         return false;
                 }

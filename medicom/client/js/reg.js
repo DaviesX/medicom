@@ -1,6 +1,9 @@
-import { Template } from 'meteor/templating';
+import { Template } from "meteor/templating";
+import {SessionManager} from "./session.js"
 import "../html/reg.html";
 import "../html/regresult.html";
+
+var G_Session = new SessionManager();
 
 function option_make(value, text) {
         return '<option value="' + value + '">' + text + "</option>";

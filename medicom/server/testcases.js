@@ -1,5 +1,5 @@
-import {ErrorMessageQueue, MongoDB} from './common.js'
-import {AdminRecord} from './adminrecord.js'
+import {ErrorMessageQueue, MongoDB} from '../api/common.js'
+import {AdminRecord} from '../api/adminrecord.js'
 import {Profile} from './profile.js'
 import {AccountManager} from './accountmanager.js'
 import {IdentityManager} from './identitymanager.js'

@@ -1,4 +1,4 @@
-import {MongoDB} from "./common.js";
+import {MongoDB} from "../api/common.js";
 import {AdminRecordManager} from "./adminrecordmanager.js";
 import {ProfileManager} from "./profilemanager.js";
 import {AccountManager} from "./accountmanager.js";

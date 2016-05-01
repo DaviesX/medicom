@@ -1,5 +1,5 @@
 import {Meteor} from 'meteor/meteor';
-import {Identity, Identity_create_from_POD} from './identity.js'
+import {Identity, Identity_create_from_POD} from '../api/identity.js'
 
 
 export function IdentityManager(mongo, account_mgr, session_out_intv) {
