@@ -8,6 +8,10 @@ import "../html/login.html";
 
 var G_Session = new SessionManager();
 var G_AccountType = new AccountType();
+var G_KeyBrowsingMode = "browsingmode";
+const c_ValueBrowsingDefault = "browsingdefault";
+const c_ValueBrowsingSession = "browsingsession";
+const c_ValueBrowsingPresent = "browsingpresent";
 
 function ui_make_patient(patient_id, patient_name) {
         return '<div><button class="simp_classic-fill-width" id="' + patient_id + '">' + 
@@ -31,6 +35,7 @@ function ui_refresh_patient_list(holder, identity) {
 
 Template.tmplprovider.onRendered(function () {
         console.log("provider template rendered");
+        
         var identity = G_Session.get_identity_info();
         if (identity == null || 
             "provider" != G_AccountType.get_string_from_account_type(
@@ -52,4 +57,19 @@ Template.tmplprovider.onRendered(function () {
                 // List of patients.
                 ui_refresh_patient_list($("#div-patient-holder"), identity);
         }
+        // Data browser.
+        Session.set(G_KeyBrowsingMode, c_ValueBrowsingDefault);
 });
+
+// handling browsing mode state
+Template.tmplprovider.use_default = function() {
+        return Session.get(G_KeyBrowsingMode) == c_ValueBrowsingDefault;
+}
+
+Template.tmplprovider.use_session_browser = function() {
+        return Session.get(G_KeyBrowsingMode) == c_ValueBrowsingSession;
+}
+
+Template.tmplprovider.use_present = function() {
+        return Session.get(G_KeyBrowsingMode) == c_ValueBrowsingPresent;
+}

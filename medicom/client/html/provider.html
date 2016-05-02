@@ -29,9 +29,17 @@
 
             <div class="simp_reminder-list simp_right">
                 <div class="simp_content-board" style="min-height: 500px; overflow-y: scroll;">
-<!--                        {{> tmplproviderdefault}}-->
-                        {{> tmplprovidersession}}
-<!--                        {{> tmplproviderpresent}}-->
+                        {{#if use_default}}
+                                {{> tmplproviderdefault}}
+                        {{else}}
+                                {{#if use_session_browser}}
+                                        {{> tmplprovidersession}}
+                                {{else}}
+                                        {{#if use_present}}
+                                                {{> tmplproviderpresent}}
+                                        {{/if}}
+                                {{/if}}
+                        {{/if}}
                 </div>
             </div>
         </div>
