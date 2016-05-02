@@ -156,8 +156,8 @@ a.simp_no-decoration {
 
 div.simp_two-sided {
     position:		relative;
-    width: 		85%;
-    left: 		5%;
+    width: 		98%;
+    left: 		0%;
 }
 
 div.simp_left, div.simp_right {
@@ -171,7 +171,6 @@ div.simp_forum-board {
 
 div.simp_reminder-list {
     width: 		70%;
-    background: 	linear-gradient(to left, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.0) 100%);
 }
 
 div.simp_content-board {

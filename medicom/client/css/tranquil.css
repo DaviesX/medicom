@@ -27,7 +27,7 @@ body.tran_vernal {
     background-size: 	cover;
 }
 
-button.tran_login-link {
+a.tran_login-link, button.tran_login-link {
     background-color:	transparent;
     border: 		none;
     min-width:          60px;
@@ -36,14 +36,14 @@ button.tran_login-link {
     color: 		darkslategray;
 }
 
-button.tran_login-link:hover {
+a.tran_login-link:hover, button.tran_login-link:hover {
     background:         radial-gradient(70px, rgba(200, 200, 200, 0.4) 40%, rgba(30, 30, 30, 0.8));
     color:              lightcyan;
     transition:		1s;
 }
 
 div.tran_login-link {
-    position:           relative;
+    position:           absolute;
     float:              right;
     top:                3px;
     right:              60px;

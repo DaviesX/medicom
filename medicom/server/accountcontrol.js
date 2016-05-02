@@ -96,12 +96,15 @@ export function AccountControl() {
                 var self_record = identity.get_account_record();
                 var infos = [];
                 for (var i = 0; i < account_ids.length; i ++) {
-                        var record = G_DataModelContext.get_account_manager().
-                                                get_account_record_by_id(account_ids[i]);
-                        if (c_Account_Privilege[self_record.get_account_type()] <= 
-                            c_Account_Privilege[record.get_account_type()]) {
-                                err.log("You don't have the privilege to obtain such account");
-                                continue;
+                        if (self_record.get_account_id() != account_ids[i]) {
+                                // Trying to obtain others information:
+                                var record = G_DataModelContext.get_account_manager().
+                                                        get_account_record_by_id(account_ids[i]);
+                                if (c_Account_Privilege[self_record.get_account_type()] <= 
+                                    c_Account_Privilege[record.get_account_type()]) {
+                                        err.log("You don't have the privilege to obtain such account");
+                                        continue;
+                                }
                         }
                         var profile = G_DataModelContext.get_profile_manager().
                                         get_profile_by_id(account_ids[i]);
@@ -116,7 +119,7 @@ export function AccountControl() {
                         err.log("Account ID given is invalid");
                         return null;
                 }
-                var infos = get_account_infos_by_ids(identity, [account_id], err);
+                var infos = this.get_account_infos_by_ids(identity, [account_id], err);
                 return infos != null ? infos[0] : null;
         }
         

@@ -18,6 +18,17 @@ function user_account_types() {
         return g_account_ctrl.get_registerable_account_types();
 }
 
+function user_account_info_by_id(identity, account_id) {
+        var err = new ErrorMessageQueue();
+        if (identity == null) {
+                err.log("identity is required, but it's absent");
+                return { patients: null, account_infos: null, error: err.fetch_all() };
+        }
+        identity = Identity_create_from_POD(identity);
+        var account_info = g_account_ctrl.get_account_info_by_id(identity, account_id, err);
+        return { account_info: account_info, error: err.fetch_all() };
+}
+
 function user_login_by_email(email, password) {
         var err = new ErrorMessageQueue();
         var identity = g_account_ctrl.login_by_email(email, password, err);
@@ -64,12 +75,12 @@ function provider_remove_patient_by_id(identity, patient_id) {
 }
 
 function provider_get_patient_set(identity) {
+        var err = new ErrorMessageQueue();
         if (identity == null) {
                 err.log("identity is required, but it's absent");
                 return { patients: null, account_infos: null, error: err.fetch_all() };
         }
-        identity = Identity_create_from_POD(identity);
-        var err = new ErrorMessageQueue();
+        identity = Identity_create_from_POD(identity);        
         var patients = g_provider_ctrl.get_participated_patients(identity, err);
         var account_infos = null;
         if (patients != null) {
@@ -81,7 +92,6 @@ function provider_get_patient_set(identity) {
         } else {
                 err.log("failed to find patients");
         }
-        
         return { patients: patients, account_infos: account_infos, error: err.fetch_all() };
 }
 
@@ -100,17 +110,29 @@ function super_update_symptom(identity, patient_id, date, json) {
 export var c_Meteor_Methods = {
 /**
  * Print a message on server side.
- * @param {String} the message string
+ * @param {String} The message string.
  * @return {null}
  */
 server_print: function(arg) {
                         server_print(arg.str);
                 },
-
+/**
+ * Get a list of registerable account types.
+ * @return An array of account types as strings.
+ */
 user_account_types: function(arg) {
                         return user_account_types();
                 },
-
+                
+/**
+ * Get account info by id.
+ * @param {Identity} The user identity.
+ * @param {Integer} The account ID.
+ * @return {AccountInfo, String} return a {AccountInfo, ""} object if sucessful, or otherwise, {null, "..."}.
+ */
+user_account_info_by_id: function(arg) {
+                        return user_account_info_by_id(arg.identity, arg.id);
+                },
 /**
  * Login a user using email.
  * @param {String} Email address.

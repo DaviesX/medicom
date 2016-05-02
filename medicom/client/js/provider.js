@@ -36,6 +36,20 @@ Template.tmplprovider.onRendered(function () {
             "provider" != G_AccountType.get_string_from_account_type(
                                 identity.get_account_record().get_account_type())) {
                 console.log("You don't have the permission to visit this page");
+                $("#div-welcome-holder").html("You haven't login yet");
+        } else {
+                // The welcome text.
+                var account_id = identity.get_account_record().get_account_id();
+                Meteor.call("user_account_info_by_id", 
+                            {identity: identity, id: account_id}, function(error, result) {
+                        if (result.error != "") {
+                                $("#div-welcome-holder").html("error: " + result.error);
+                        } else {
+                                var account_info = AccountInfo_Create_From_POD(result.account_info);
+                                $("#div-welcome-holder").html("Welcome, " + account_info.get_name());
+                        }
+                });
+                // List of patients.
+                ui_refresh_patient_list($("#div-patient-holder"), identity);
         }
-        ui_refresh_patient_list($("#div-patient-holder"), identity);
 });
