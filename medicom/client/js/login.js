@@ -37,7 +37,9 @@ function redirect_page_on(result) {
         }
 }
 
-Template.tmpllogin.events({"click #btn-login"(event) {
+Template.tmpllogin.events({"submit"(event) {
+        event.preventDefault();
+        
         var regerror = new ErrorMessageQueue();
         var email_id = $("#txb-email-id").val();
         var password = $("#txb-password").val();

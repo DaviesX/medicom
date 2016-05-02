@@ -27,7 +27,7 @@ export function SessionManager() {
         }
         
         this.set_account_info = function(account_info) {
-                Session.set("accountinfo", account_info);
+                Session.setPersistent("accountinfo", account_info);
         }
         
         this.get_identity_info = function() {
@@ -39,6 +39,6 @@ export function SessionManager() {
                 }
         }
         this.set_identity_info = function(identity_info) {
-                return Session.set("identityinfo", identity_info);
+                return Session.setPersistent("identityinfo", identity_info);
         }
 }

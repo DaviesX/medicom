@@ -23,9 +23,10 @@ Template.tmplreg.onRendered(function () {
 });
 
 
-Template.tmplreg.events({"click #btn-signup"(event) {
-        var regerror = new ErrorMessageQueue();
+Template.tmplreg.events({"submit"(event) {
+        event.preventDefault();
         
+        var regerror = new ErrorMessageQueue();
         if ($("#txb-password").val() != $("#txb-retype-password").val()) {
                 console.log("password doesn't match");
                 regerror.log("password doesn't match");
@@ -51,8 +52,9 @@ Template.tmplreg.events({"click #btn-signup"(event) {
         Meteor.call("user_register_and_activate", form_content, function(error, result) {
                 console.log(result.account_info);
                 console.log(result.error);
-                if (error != "") {
-                        regerror.log(error);
+                if (result.error != "") {
+                        console.log(result.error);
+                        regerror.log(result.error);
                         G_Session.set_error_message(regerror);
                 }
                 G_Session.set_account_info(result.account_info);

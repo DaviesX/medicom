@@ -34,7 +34,7 @@ export function AccountManager(mongo,
                         this.__provider_mgr.create_provider(registered.get_account_id());
                         break;
                 case M_AccountType.c_Account_Type_Patient:
-                        this.__patient_mgr.create_provider(registered.get_account_id());
+                        this.__patient_mgr.create_patient(registered.get_account_id());
                         break;
                 case M_AccountType.c_Account_Type_SuperIntendant:
                         throw "Unsupported Operation Exception";

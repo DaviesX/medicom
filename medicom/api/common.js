@@ -3,20 +3,22 @@ import { Meteor } from 'meteor/meteor';
 
 
 export function ErrorMessageQueue() {
-        this.__queue = new Array();
+        this.__queue = [];
         
         this.log = function(message) {
                 this.__queue.push(message);
         }
         
         this.is_empty = function() {
-                return this.fetch_all() == "";
+                return this.fetch_all().length == 0;
         }
         
         this.fetch_all = function() {
                 var answer = [];
-                for (var i = 0; i < this.__queue.length; i ++) {
-                        answer[i] = this.__queue[i];
+                for (var i = 0, j = 0; i < this.__queue.length; i ++) {
+                        if (this.__queue[i] != null || this.__queue[i] == "") {
+                                answer[j ++] = this.__queue[i];
+                        }
                 }
                 return answer;
         }
