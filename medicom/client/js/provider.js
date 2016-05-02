@@ -23,6 +23,7 @@ function ui_refresh_patient_list(holder, identity) {
                 if (result.error != "") {
                         console.log(result.error);
                 } else {
+                        holder.empty();
                         for (var i = 0; i < result.patients.length; i ++) {
                                 var patient = Patient_Create_From_POD(result.patients[i]);
                                 var account_info = AccountInfo_Create_From_POD(result.account_infos[i]);
@@ -61,15 +62,39 @@ Template.tmplprovider.onRendered(function () {
         Session.set(G_KeyBrowsingMode, c_ValueBrowsingDefault);
 });
 
+// Add patient button
+Template.tmplprovider.events({"click #btn-add-patient"(event) {
+        $("#div-add-patient-dlg").dialog();
+        $("#div-add-patient-dlg").css("visibility", "visible");
+}});
+
+// Add patient form
+Template.tmplprovideraddpatient.events({"click #btn_confirm-add-patient"(event) {
+        $("#div-add-patient-dlg").dialog("close");
+        var identity = G_Session.get_identity_info();
+        var account_id = $("#txb-id-email").value;
+        Meteor.call("provider_add_patient_by_id",
+                    {identity: identity, id: account_id}, function(error, result) {
+                if (result.error != "") {
+                        console.alert("Failed to add patient: " + result.error);             
+                } else {
+                        ui_refresh_patient_list($("#div-patient-holder"), identity);
+                        console.alert("Patient has been added");
+                }
+        });        
+}});
+
 // handling browsing mode state
-Template.tmplprovider.use_default = function() {
-        return Session.get(G_KeyBrowsingMode) == c_ValueBrowsingDefault;
-}
-
-Template.tmplprovider.use_session_browser = function() {
-        return Session.get(G_KeyBrowsingMode) == c_ValueBrowsingSession;
-}
-
-Template.tmplprovider.use_present = function() {
-        return Session.get(G_KeyBrowsingMode) == c_ValueBrowsingPresent;
-}
+Template.tmplprovider.helpers({ 
+        use_default() {
+                return Session.get(G_KeyBrowsingMode) == c_ValueBrowsingDefault;
+        },
+        
+        use_session_browser() {
+                return Session.get(G_KeyBrowsingMode) == c_ValueBrowsingSession;
+        },
+        
+        use_present() {
+                return Session.get(G_KeyBrowsingMode) == c_ValueBrowsingPresent;
+        }
+});

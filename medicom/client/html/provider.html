@@ -4,20 +4,21 @@
         document.title = "Medicom - Provider";
         document.body.className = "simp_nature";
 </script>
+
 <body>
         <div id="div-welcome-holder" class="tran_login-link">
         </div>
         <h1 id="txt-logo" class="simp_heading">
             <a class="simp_no-decoration" href="home">MediCom</a>
         </h1>
-
+        
         <div class="simp_two-sided">
 
             <div class="simp_forum-board simp_left">
                 <div class="simp_content-board" style="min-height: 500px;">
                     <div><input id="txt-search" type="search" value="Search"/></div>
                     <div style="margin-top: 10px; margin-bottom: 10px">
-                        <button class='simp_classic-fill-width'>Add Patient</button>
+                        <button id="btn-add-patient" class='simp_classic-fill-width'>Add Patient</button>
                     </div>
                     <div id="div-patient-holder" style="margin-top: 20px; margin-bottom: 20px; overflow-y: scroll;">
                         <div><button class="simp_classic-fill-width" id='btn-01'>John</button></div>
@@ -43,7 +44,19 @@
                 </div>
             </div>
         </div>
+        
+        <div class="simp_overlay">
+                <div id="div-add-patient-dlg" title="Add Patient" style="visibility: hidden;">
+                        {{> tmplprovideraddpatient}}
+                </div>
+        </div>
 </body>
+</template>
+
+<template name="tmplprovideraddpatient">
+        <div class="emo_central-text">Patient ID/Email</div>
+        <input id="txb-id-email" class="emo_central-input" type="text"/>
+        <button id="btn_confirm-add-patient" class="emo_central-button">Add</button>
 </template>
 
 <template name="tmplproviderdefault">

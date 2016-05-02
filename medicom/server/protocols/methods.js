@@ -202,8 +202,8 @@ user_activate: function(arg) {
  * @param {Integer} Account ID of the patient.
  * @return {Boolean, String} return a {true, ""} object if sucessful, or otherwise, {false, "..."}.
  */
-provider_add_patient: function(arg) {
-                        return provider_add_patient(arg.identity, arg.id);
+provider_add_patient_by_id: function(arg) {
+                        return provider_add_patient_by_id(arg.identity, arg.id);
                 },
 
 /**

@@ -21,3 +21,6 @@ autopublish             # Publish all data to the clients (for prototyping)
 insecure                # Allow all DB writes from clients (for prototyping)
 session
 iron:router
+peernohell:c3
+mizzao:jquery-ui
+u2622:persistent-session

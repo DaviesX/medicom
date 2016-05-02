@@ -98,6 +98,23 @@ div.simp_login-link {
     text-align: 	center;
 }
 
+div.simp_overlay {
+	width:          100%; 
+	height:         100%;
+	
+	filter:         alpha(opacity=50); 
+	-moz-opacity:   0.5; 
+	-khtml-opacity: 0.5; 
+	opacity:        0.5; 
+	background:     #000; 
+
+	position:       absolute; 
+	top:            0; 
+	left:           0; 
+	z-index:        3000; 
+	display:        none;
+}
+
 div.simp_banner {
     position: 		relative;
     height: 		50px;
