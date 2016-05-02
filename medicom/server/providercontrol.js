@@ -24,11 +24,10 @@ export function ProviderControl() {
         this.add_patient = function(identity, patient_id, err) {
                 if (!this.__has_provider_identity(identity)) {
                         err.log("Your identity is invalid");
-                        return false;
+                        return null;
                 }
-                var provider = this.__get_provider_from_identity(identity);
-                provider.add_patient(patient_id);
-                return true;
+                var provider_id = identity.get_account_record().get_account_id();
+                return G_DataModelContext.get_session_manager().create_session(provider_id, patient_id);
         }
 
         this.remove_patient = function(identity, patient_id, err) {
@@ -36,8 +35,16 @@ export function ProviderControl() {
                         err.log("Your identity is invalid");
                         return false;
                 }
-                var provider = this.__get_provider_from_identity(identity);
-                provider.remove_patient(patient_id);
+                var provider_id = identity.get_account_record().get_account_id();
+                var sessions = G_DataModelContext.get_session_manager().get_sessions_by_ids(
+                                        provider_id, patient_id, true);
+                if (sessions == null) {
+                        err.log("Such session:(" + provider_id + "," + patient_id + ") does not exists");
+                        return false;
+                }
+                for (var i = 0; i < sessions.length; i ++) {
+                        sessions[i].deactivate();
+                }
                 return true;
         }
 
@@ -46,7 +53,16 @@ export function ProviderControl() {
                         err.log("Your identity is invalid");
                         return null;
                 }
-                var provider = this.__get_provider_from_identity(identity);
-                return provider.get_patient_ids();
+                var provider_id = identity.get_account_record().get_account_id();
+                var sessions = G_DataModelContext.get_session_manager().get_sessions_by_provider_id(
+                                        provider_id, true);
+                if (sessions == null) {
+                        return null;
+                }
+                var patient_ids = [];
+                for (var i = 0; i < sessions.length; i ++) {
+                        patient_ids[i] = sessions[i].get_patient_id();
+                }
+                return patient_ids;
         }
 }

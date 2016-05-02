@@ -2,10 +2,9 @@ import {Meteor} from 'meteor/meteor';
 import {Identity, Identity_create_from_POD} from '../api/identity.js'
 
 
-export function IdentityManager(mongo, account_mgr, session_out_intv) {
+export function IdentityManager(mongo, session_out_intv) {
         this.__minute2milli = function(min) { return min*60*1000; }
         this.__mongo = mongo;
-        this.__account_mgr = account_mgr;
         this.__session_out_intv = this.__minute2milli(session_out_intv);
         
         // handle the collection
@@ -55,6 +54,24 @@ export function IdentityManager(mongo, account_mgr, session_out_intv) {
                 } else {
                         return null;
                 }
+        }
+        
+        this.get_identities_by_account_id = function(account_id) {
+                var result = this.__identities.find({ "__record.__account_id": account_id });
+                if (result.count() > 0) {
+                        var identities = [];
+                        var result_set = result.fetch();
+                        for (var i = 0; i < result.count; i ++) {
+                                identities[i] = Identity_create_from_POD(result_set[i]);
+                        }
+                        return identities;
+                } else {
+                        return null;
+                }
+        }
+        
+        this.remove_identities_by_account_id = function(account_id) {
+                this.__identities.remove({ "__record.__account_id": account_id });
         }
         
         // Reset all the identity records.

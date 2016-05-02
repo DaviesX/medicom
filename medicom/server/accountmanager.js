@@ -6,12 +6,18 @@ import {ProviderManager} from "./providermanager.js";
 import * as M_AccountType from "../api/accounttype.js";
 
 
-export function AccountManager(mongo, admin_record_mgr, profile_mgr, provider_mgr, patient_mgr) {
+export function AccountManager(mongo, 
+                               admin_record_mgr, 
+                               profile_mgr, 
+                               provider_mgr, 
+                               patient_mgr,
+                               identity_mgr) {
         this.__mongo = mongo;
         this.__admin_record_mgr = admin_record_mgr;
         this.__profile_mgr = profile_mgr;
         this.__provider_mgr = provider_mgr;
         this.__patient_mgr = patient_mgr;
+        this.__identity_mgr = identity_mgr;
         
         // Public functions
         this.__make_account_derivatives = function(registered, profile) {
@@ -99,6 +105,7 @@ export function AccountManager(mongo, admin_record_mgr, profile_mgr, provider_mg
                 }
                 
                 this.__profile_mgr.remove_profile_by_id(account_id);
+                this.__identity_mgr.remove_identities_by_account_id(account_id);
                 this.__admin_record_mgr.remove_record_by_id(account_id);
                 return true;
         }
