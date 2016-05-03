@@ -8,6 +8,7 @@ export function ParticipatedSession(session_id, provider_id, patient_id) {
         this.__pending_id = -1;
         this.__start = new Date();
         this.__end = null;
+        this.__start_timestamp = Date.parse(this.__start);
         this.get_session_id = function() { return this.__session_id; }
         this.get_provider_id = function() { return this.__provider_id; }
         this.get_patient_id = function() { return this.__patient_id; }

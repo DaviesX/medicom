@@ -70,9 +70,10 @@
 </template>
 
 <template name="tmplprovidersession">
-        <button class="simp_classic">Start New Session</button>
-        <button class="simp_classic">End Current Session</button>
-        <button class="simp_classic">Recover Session</button>
+        <button id="btn-enter-session" class="simp_classic">Enter Session</button>
+        <button id="btn-start-new-session" class="simp_classic">Start New Session</button>
+        <button id="btn-end-session" class="simp_classic">End Session</button>
+        <button id="btn-recover-session" class="simp_classic">Recover Session</button>        
         <div style="width: 100%; 
                     font-family: 'Arial', Arial, Sans;    
                     text-align: center; 
@@ -85,6 +86,11 @@
 
 <template name="tmplproviderpresent">
 <div>
+        <div style="font-family: 'Arial', Arial, Sans; 
+                    text-align: center;
+                    opacity: 0.6;
+                    margin-top: 10px;
+                    margin-bottom: 10px;">Session: {{session_id}}</div>
         <div>
                 <form enctype="multipart/form-data" method="post">
                     <input class="simp_classic" id="ipt-file-select" type="file" name="file"/>

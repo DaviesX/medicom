@@ -14,12 +14,24 @@ const c_ValueBrowsingDefault = "browsingdefault";
 const c_ValueBrowsingSession = "browsingsession";
 const c_ValueBrowsingPresent = "browsingpresent";
 
+function session_on_click(event) {
+        var session_id = (event.target || event.srcElement).id;
+        G_Session.set_browsing_session_id(session_id);
+}
+
+function register_session_list_on_click() {
+        var elms = document.getElementsByName("session-list");
+        for (var i = 0; i < elms.length; i ++) {
+                elms[i].onclick = session_on_click;
+        }
+}
+
 function ui_make_session(session_id, session_date, is_active) {
         if (is_active) {
-                return '<button class="simp_classic-fill-width">' + 
+                return '<button class="simp_classic-fill-width" name="session-list" id="' + session_id + '">' + 
                         session_date + '. Session ID: ' + session_id + ', active</button>';
         } else {
-                return '<button class="simp_classic-fill-width">' + 
+                return '<button class="simp_classic-fill-width" name="session-list" id="' + session_id + '">' + 
                         session_date + '. Session ID: ' + session_id + ', non-active</button>';
         }
 }
@@ -39,6 +51,7 @@ function ui_refresh_session_list(holder, identity, account_id) {
                                                          session.is_active());
                                 holder.append(ui);
                         }
+                        register_session_list_on_click();
                 }
         });
 }
@@ -86,7 +99,7 @@ function register_patient_list_on_click() {
 }
 
 function ui_make_patient(patient_id, patient_name) {
-        return '<div><button class="simp_classic-fill-width" name = "patient-list" id="' + patient_id + '">' + 
+        return '<div><button class="simp_classic-fill-width" name="patient-list" id="' + patient_id + '">' + 
                 patient_id + '. ' + patient_name + '</button></div>';
 }
 
@@ -165,6 +178,12 @@ Template.tmplprovideraddpatient.events({"click #btn_confirm-add-patient"(event) 
         });        
 }});
 
+// Enter session button
+Template.tmplprovidersession.events({"click #btn-enter-session"(event) {
+        if (null != G_Session.get_browsing_session_id())
+                Session.set(G_KeyBrowsingMode, c_ValueBrowsingPresent);
+}});
+
 
 // handling browsing mode state
 Template.tmplprovider.helpers({ 
@@ -178,5 +197,11 @@ Template.tmplprovider.helpers({
         
         use_present() {
                 return Session.get(G_KeyBrowsingMode) == c_ValueBrowsingPresent;
+        }
+});
+
+Template.tmplproviderpresent.helpers({
+        session_id() {
+                return G_Session.get_browsing_session_id();
         }
 });

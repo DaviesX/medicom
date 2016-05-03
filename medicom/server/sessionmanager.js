@@ -69,32 +69,19 @@ export function ParticipatedSessionManager(mongodb, provider_mgr, patient_mgr) {
                 else
                         return this.__generate_results(this.__sessions.find({
                                                 __provider_id: provider_id,
-                                                __pending_id: 0}, {sort: {__provider_id: 1}}));
+                                                __pending_id: 0}, {sort: {__patient_id: -1}}));
         }
         
-        this.get_sessions_by_ids = function(provider_id, patient_id, is_active, is_one) {
+        this.get_sessions_by_ids = function(provider_id, patient_id, is_active) {
                 if (!is_active) {
-                        if (!is_one) {
-                                return this.__generate_results(this.__sessions.find({
-                                                        __provider_id: provider_id, 
-                                                        __patient_id: patient_id}));
-                        } else {
-                                return [this.__sessions.findOne({
-                                                        __provider_id: provider_id, 
-                                                        __patient_id: patient_id})];
-                        }
+                        return this.__generate_results(this.__sessions.find({
+                                        __provider_id: provider_id, 
+                                        __patient_id: patient_id}, {sort: {__pending_id: -1}}));
                 } else {
-                        if (!is_one) {
-                                return this.__generate_results(this.__sessions.find({
-                                                        __provider_id: provider_id, 
-                                                        __patient_id: patient_id,
-                                                        __pending_id: 0}));
-                        } else {
-                                return [this.__sessions.findOne({
-                                                        __provider_id: provider_id, 
-                                                        __patient_id: patient_id,
-                                                        __pending_id: 0})];
-                        }
+                        return this.__generate_results(this.__sessions.find({
+                                        __provider_id: provider_id, 
+                                        __patient_id: patient_id,
+                                        __pending_id: 0}, {sort: {__pending_id: -1}}));
                 }
         }
         
