@@ -18,12 +18,12 @@ export function ParticipatedSession(session_id, provider_id, patient_id) {
 
 export function ParticipatedSession_Create_From_POD(pod) {
         var obj = new ParticipatedSession(0);
-        this.__session_id = pod.__session_id;
-        this.__provider_id = pod.__provider_id;
-        this.__patient_id = pod.__patient_id;
-        this.__pending_id = pod.__pending_id;
-        this.__start = pod.__start;
-        this.__end = pod.__end;
+        obj.__session_id = pod.__session_id;
+        obj.__provider_id = pod.__provider_id;
+        obj.__patient_id = pod.__patient_id;
+        obj.__pending_id = pod.__pending_id;
+        obj.__start = pod.__start;
+        obj.__end = pod.__end;
         return obj;
 }
 

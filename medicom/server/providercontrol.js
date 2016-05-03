@@ -27,7 +27,15 @@ export function ProviderControl() {
                         return null;
                 }
                 var provider_id = identity.get_account_record().get_account_id();
-                return G_DataModelContext.get_session_manager().create_session(provider_id, patient_id);
+                var session = G_DataModelContext.get_session_manager().
+                                        create_session(provider_id, patient_id);
+                if (session == null) {
+                        err.log("Failed to create session. The ID provided: " + patient_id + " may be invalid");
+                        return null;
+                }
+                session.activate();
+                G_DataModelContext.get_session_manager().update_session(session);
+                return session;
         }
 
         this.remove_patient = function(identity, patient_id, err) {
@@ -44,11 +52,12 @@ export function ProviderControl() {
                 }
                 for (var i = 0; i < sessions.length; i ++) {
                         sessions[i].deactivate();
+                        G_DataModelContext.get_session_manager().update_session(sessions[i]);
                 }
                 return true;
         }
 
-        this.get_participated_patients = function(identity, err) {
+        this.get_participated_patient_ids = function(identity, err) {
                 if (!this.__has_provider_identity(identity)) {
                         err.log("Your identity is invalid");
                         return null;

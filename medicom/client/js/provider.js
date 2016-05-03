@@ -15,20 +15,19 @@ const c_ValueBrowsingPresent = "browsingpresent";
 
 function ui_make_patient(patient_id, patient_name) {
         return '<div><button class="simp_classic-fill-width" id="' + patient_id + '">' + 
-                patient_id + ' - ' + patient_name + '</button></div>';
+                patient_id + ', ' + patient_name + '</button></div>';
 }
 
 function ui_refresh_patient_list(holder, identity) {
-        Meteor.call("provider_get_patient_set", {identity: identity}, function(error, result) {
+        Meteor.call("provider_get_patient_ids", {identity: identity}, function(error, result) {
                 if (result.error != "") {
                         console.log(result.error);
                 } else {
                         holder.empty();
-                        for (var i = 0; i < result.patients.length; i ++) {
-                                var patient = Patient_Create_From_POD(result.patients[i]);
+                        for (var i = 0; i < result.patient_ids.length; i ++) {
+                                var patient_id = result.patient_ids[i];
                                 var account_info = AccountInfo_Create_From_POD(result.account_infos[i]);
-                                holder.append(ui_make_patient(patient.get_account_id(), 
-                                                              account_info.get_name()));
+                                holder.append(ui_make_patient(patient_id, account_info.get_name()));
                         }
                 }
         });
@@ -59,7 +58,7 @@ Template.tmplprovider.onRendered(function () {
                 ui_refresh_patient_list($("#div-patient-holder"), identity);
         }
         // Data browser.
-        Session.set(G_KeyBrowsingMode, c_ValueBrowsingDefault);
+        Session.set(G_KeyBrowsingMode, c_ValueBrowsingSession);
 });
 
 // Add patient button
@@ -72,14 +71,19 @@ Template.tmplprovider.events({"click #btn-add-patient"(event) {
 Template.tmplprovideraddpatient.events({"click #btn_confirm-add-patient"(event) {
         $("#div-add-patient-dlg").dialog("close");
         var identity = G_Session.get_identity_info();
-        var account_id = $("#txb-id-email").value;
-        Meteor.call("provider_add_patient_by_id",
-                    {identity: identity, id: account_id}, function(error, result) {
+        var account_id = parseInt($("#txb-id-email").val(), 10);
+        var form_content = {
+                identity: identity,
+                id: account_id,
+                email: $("#txb-id-email").val()
+        };
+        console.log(form_content);
+        Meteor.call("provider_add_patient_by_id", form_content, function(error, result) {
                 if (result.error != "") {
-                        console.alert("Failed to add patient: " + result.error);             
+                        alert("Failed to add patient: " + result.error);             
                 } else {
                         ui_refresh_patient_list($("#div-patient-holder"), identity);
-                        console.alert("Patient has been added");
+                        alert("Patient has been added");
                 }
         });        
 }});

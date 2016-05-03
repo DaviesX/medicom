@@ -100,6 +100,10 @@ export function AccountControl() {
                                 // Trying to obtain others information:
                                 var record = G_DataModelContext.get_account_manager().
                                                         get_account_record_by_id(account_ids[i]);
+                                if (record == null) {
+                                        err.log("Account ID: " + account_ids[i] + " is invalid");
+                                        continue;
+                                }
                                 if (c_Account_Privilege[self_record.get_account_type()] <= 
                                     c_Account_Privilege[record.get_account_type()]) {
                                         err.log("You don't have the privilege to obtain such account");

@@ -20,7 +20,9 @@ export function DataModelContext() {
                                                 this.__provider_mgr,
                                                 this.__patient_mgr,
                                                 this.__account_mgr);
-        this.__session_mgr = new ParticipatedSessionManager(this.__mongodb);
+        this.__session_mgr = new ParticipatedSessionManager(this.__mongodb,
+                                                this.__provider_mgr,
+                                                this.__patient_mgr);
         
         this.get_mongodb = function() { return this.__mongodb; }
         this.get_account_manager = function() { return this.__account_mgr; }

@@ -27,6 +27,10 @@ export function PatientManager(mongodb) {
                 }
         }
         
+        this.has_patient = function(account_id) {
+                return this.__patients.find({__account_id : account_id}).count() > 0;
+        }
+        
         this.update_patient = function(patient) {
                 this.__patients({__account_id: patient.get_account_id()}, patient);
         }

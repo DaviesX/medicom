@@ -1,9 +1,11 @@
 import {Meteor} from "meteor/meteor";
-import {ParticipatedSession} from "../api/participatedsession.js"
+import {ParticipatedSession, ParticipatedSession_Create_From_POD} from "../api/participatedsession.js"
 
 
-export function ParticipatedSessionManager(mongodb) {
+export function ParticipatedSessionManager(mongodb, provider_mgr, patient_mgr) {
         this.__mongodb = mongodb;
+        this.__provider_mgr = provider_mgr;
+        this.__patient_mgr = patient_mgr;
         this.c_Participated_Session_Coll_Name = "ParticipatedSessionCollection";
         this.__sessions = new Mongo.Collection(this.c_Participated_Session_Coll_Name);
         
@@ -13,7 +15,11 @@ export function ParticipatedSessionManager(mongodb) {
         }
         
         this.create_session = function(provider_id, patient_id) {
-                var uuid = this.__mongo.get_string_uuid();
+                if (!this.__patient_mgr.has_patient(patient_id) ||
+                    !this.__provider_mgr.has_provider(provider_id)) {
+                        return null;
+                }
+                var uuid = this.__mongodb.get_string_uuid();
                 var session = new ParticipatedSession(uuid, provider_id, patient_id);
                 this.__sessions.insert(session);
                 return session;
@@ -26,6 +32,7 @@ export function ParticipatedSessionManager(mongodb) {
                         for (var i = 0; i < result.count(); i ++) {
                                 sessions[i] = ParticipatedSession_Create_From_POD(result_set[i]);
                         }
+                        return sessions;
                 } else {
                         return null;
                 }
@@ -33,7 +40,7 @@ export function ParticipatedSessionManager(mongodb) {
         
         this.__generate_result = function(result) {
                 if (result.count() > 0) {
-                        return result.fetch()[0];
+                        return ParticipatedSession_Create_From_POD(result.fetch()[0]);
                 } else {
                         return null;
                 }

@@ -64,47 +64,49 @@ function user_register_and_activate(account_type, email, name, phone, password) 
 
 function provider_add_patient_by_id(identity, patient_id) {
         var err = new ErrorMessageQueue();
+        identity = Identity_create_from_POD(identity);
         patients = g_provider_ctrl.add_patient(identity, patient_id, err);
         return { patients: patients, error: err.fetch_all() };
 }
 
 function provider_remove_patient_by_id(identity, patient_id) {
         var err = new ErrorMessageQueue();
+        identity = Identity_create_from_POD(identity);
         patients = g_provider_ctrl.remove_patient(identity, patient_id, err);
         return { patients: patients, error: err.fetch_all() };
 }
 
-function provider_get_patient_set(identity) {
+function provider_get_patient_ids(identity) {
         var err = new ErrorMessageQueue();
         if (identity == null) {
                 err.log("identity is required, but it's absent");
                 return { patients: null, account_infos: null, error: err.fetch_all() };
         }
         identity = Identity_create_from_POD(identity);        
-        var patients = g_provider_ctrl.get_participated_patients(identity, err);
+        var patient_ids = g_provider_ctrl.get_participated_patient_ids(identity, err);
         var account_infos = null;
-        if (patients != null) {
-                var account_ids = [];
-                for (var i = 0; i < patients.length; i ++) {
-                        account_ids[i] = patients[i].get_account_id();
-                }
-                account_infos = g_account_ctrl.get_account_infos_by_ids(identity, account_ids, err);
+        if (patient_ids != null) {
+                account_infos = g_account_ctrl.get_account_infos_by_ids(identity, patient_ids, err);
         } else {
                 err.log("failed to find patients");
         }
-        return { patients: patients, account_infos: account_infos, error: err.fetch_all() };
+        return { patient_ids: patient_ids, account_infos: account_infos, error: err.fetch_all() };
 }
 
 function user_get_patient_bp_graph(identity, patient_id, start_date, end_date, interval, method) {
+        identity = Identity_create_from_POD(identity);
 }
 
 function user_get_patient_symptoms(identity, patient_id, start_date, end_date, interval, method) {
+        identity = Identity_create_from_POD(identity);
 }
 
 function patient_super_update_bp_from_file(identity, patient_id, format, blob) {
+        identity = Identity_create_from_POD(identity);
 }
 
 function super_update_symptom(identity, patient_id, date, json) {
+        identity = Identity_create_from_POD(identity);
 }
 
 export var c_Meteor_Methods = {
@@ -217,12 +219,12 @@ provider_remove_patient: function(arg) {
                 },
 
 /**
- * Get provider's patients.
+ * Get provider's patients' ids.
  * @param {Identity} Identity of the provider.
- * @return {Patient[], String} return a {Patient[], ""} object if sucessful, or otherwise, {null, "..."}.
+ * @return {Integer[], String} return a {Integer[], ""} object if sucessful, or otherwise, {null, "..."}.
  */
-provider_get_patient_set: function(arg) {
-                        return provider_get_patient_set(arg.identity);
+provider_get_patient_ids: function(arg) {
+                        return provider_get_patient_ids(arg.identity);
                 },
 
 /**

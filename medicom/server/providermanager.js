@@ -27,6 +27,10 @@ export function ProviderManager(mongodb) {
                 }
         }
         
+        this.has_provider = function(account_id) {
+                return this.__providers.find({__account_id : account_id}).count() > 0;
+        }
+        
         this.update_provider = function(provider) {
                 this.__providers.update({__account_id: provider.get_account_id()}, provider);
         }
