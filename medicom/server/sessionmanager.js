@@ -14,6 +14,13 @@ export function ParticipatedSessionManager(mongodb, provider_mgr, patient_mgr) {
                 return result.count() > 0;
         }
         
+        this.has_session_strict = function(provider_id, patient_id, begin_time) {
+                var result = this.__sessions.find({__provider_id: provider_id, 
+                                                   __patient_id: patient_id,
+                                                   __start: begin_time});
+                return result.count() > 0;
+        }
+        
         this.create_session = function(provider_id, patient_id) {
                 if (!this.__patient_mgr.has_patient(patient_id) ||
                     !this.__provider_mgr.has_provider(provider_id)) {
