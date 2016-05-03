@@ -34,4 +34,8 @@ export function ProviderManager(mongodb) {
         this.update_provider = function(provider) {
                 this.__providers.update({__account_id: provider.get_account_id()}, provider);
         }
+        
+        this.reset = function() {
+                this.__providers.remove({});
+        }
 }

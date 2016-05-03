@@ -15,21 +15,22 @@
         <div class="simp_two-sided">
 
             <div class="simp_forum-board simp_left">
-                <div class="simp_content-board" style="min-height: 500px;">
+                <div class="simp_content-board">
                     <div><input id="txt-search" type="search" value="Search"/></div>
                     <div style="margin-top: 10px; margin-bottom: 10px">
                         <button id="btn-add-patient" class='simp_classic-fill-width'>Add Patient</button>
                     </div>
-                    <div id="div-patient-holder" style="margin-top: 20px; margin-bottom: 20px; overflow-y: scroll;">
-                        <div><button class="simp_classic-fill-width" id='btn-01'>5104, Wilfred Goings</button></div>
-                        <div><button class="simp_classic-fill-width" id='btn-02'>5105, Young Babbitt</button></div>
-                        <div><button class="simp_classic-fill-width" id='btn-03'>5318, Ana Chou</button></div>
+                    <div id="div-patient-holder" 
+                         style="margin-top: 20px; 
+                                margin-bottom: 20px;
+                                height: 400px;
+                                overflow-y: scroll;">
                     </div>
                 </div>
             </div>
 
             <div class="simp_reminder-list simp_right">
-                <div class="simp_content-board" style="min-height: 500px; overflow-y: scroll;">
+                <div class="simp_content-board" style="height: 520px;">
                         {{#if use_default}}
                                 {{> tmplproviderdefault}}
                         {{else}}
@@ -76,11 +77,10 @@
                     font-family: 'Arial', Arial, Sans;    
                     text-align: center; 
                     margin-top: 5px; 
-                    margin-bottom: 10px;">Available Sessions for Ana<div id="div-patient-name"></div></div>
-        <button class="simp_classic-fill-width">2016-05-01, 23:52. Session ID: 463421</button>
-        <button class="simp_classic-fill-width">2016-05-01, 20:31. Session ID: 543131</button>
-        <button class="simp_classic-fill-width">2016-05-01, 18:12. Session ID: 926501</button>
-<!--        <button class="simp_classic-fill-width">2016-05-01, 23:52</button>-->
+                    margin-bottom: 10px;"
+             id="div-patient-name"></div>
+        <div id="div-session-holder" style="height: 430px; overflow-y: scroll;">
+        </div>
 </template>
 
 <template name="tmplproviderpresent">

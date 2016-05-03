@@ -49,7 +49,7 @@ export function AccountControl() {
                         var record = G_DataModelContext.get_account_manager().create_account(
                                                         account_type, password, profile);
                         if (!record) {
-                                err.log("Cannot register, account existed");
+                                err.log("Cannot register, account " + email + " existed");
                                 return null;
                         }
                         var account_info = new AccountInfo(record,

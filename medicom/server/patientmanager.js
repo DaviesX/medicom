@@ -34,4 +34,8 @@ export function PatientManager(mongodb) {
         this.update_patient = function(patient) {
                 this.__patients({__account_id: patient.get_account_id()}, patient);
         }
+        
+        this.reset = function() {
+                this.__patients.remove({});
+        }
 }

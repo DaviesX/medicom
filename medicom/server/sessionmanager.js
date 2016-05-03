@@ -73,11 +73,11 @@ export function ParticipatedSessionManager(mongodb, provider_mgr, patient_mgr) {
         
         this.get_sessions_by_ids = function(provider_id, patient_id, is_active) {
                 if (!is_active)
-                        return this.__generate_result(this.__sessions.find({
+                        return this.__generate_results(this.__sessions.find({
                                                 __provider_id: provider_id, 
                                                 __patient_id: patient_id}));
                 else
-                        return this.__generate_result(this.__sessions.find({
+                        return this.__generate_results(this.__sessions.find({
                                                 __provider_id: provider_id, 
                                                 __patient_id: patient_id,
                                                 __pending_id: 0}));
@@ -89,5 +89,9 @@ export function ParticipatedSessionManager(mongodb, provider_mgr, patient_mgr) {
         
         this.update_session = function(session) {
                 this.__sessions.update({__session_id : session.get_session_id()}, session);
+        }
+        
+        this.reset = function() {
+                return this.__sessions.remove({});
         }
 }

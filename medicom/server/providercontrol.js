@@ -42,31 +42,43 @@ export function ProviderControl() {
                 return session;
         }
         
-        this.start_session_with = function(identity, patient_id, err) {
+        this.start_new_session_with = function(identity, patient_id, err) {
                 if (!this.__has_provider_identity(identity)) {
                         err.log("Your identity is invalid");
                         return null;
                 }
                 var provider_id = identity.get_account_record().get_account_id();
+                if (!G_DataModelContext.get_session_manager().has_session(provider_id, patient_id)) {
+                        err.log("The patient isn't in your list, please add the patient first.");
+                        return null;
+                }
                 var session = G_DataModelContext.get_session_manager().
                                         create_session(provider_id, patient_id);
                 if (session == null) {
                         err.log("Failed to create session. The ID provided: " + patient_id + " may be invalid");
                         return null;
                 }
+                // Deactivate old sessions.
+                var old_sessions = G_DataModelContext.get_session_manager().
+                                        get_sessions_by_ids(provider_id, patient_id, true);
+                if (old_sessions != null) {
+                        for (var i = 0; i < old_sessions.length; i ++) {
+                                old_sessions[i].deactivate();
+                                G_DataModelContext.get_session_manager().update_session(old_sessions[i]);
+                        }
+                }
+                // Update new session.
                 session.activate();
                 G_DataModelContext.get_session_manager().update_session(session);
                 return session;
         }
         
-        this.end_session_with = function(identity, patient_id, err) {
+        this.end_session = function(identity, session_id, err) {
                 if (!this.__has_provider_identity(identity)) {
                         err.log("Your identity is invalid");
                         return null;
                 }
-                var provider_id = identity.get_account_record().get_account_id();
-                var session = G_DataModelContext.get_session_manager().
-                                        get_sessions_by_ids(provider_id, patient_id);
+                var session = G_DataModelContext.get_session_manager().get_session_by_id(session_id);
                 if (session == null) {
                         err.log("Failed to end session. The ID provided: " + patient_id + " may be invalid");
                         return null;
@@ -76,17 +88,25 @@ export function ProviderControl() {
                 return session;
         }
         
-        this.recover_session_with = function(identity, patient_id, err) {
+        this.recover_session = function(identity, session_id, err) {
                 if (!this.__has_provider_identity(identity)) {
                         err.log("Your identity is invalid");
                         return null;
                 }
                 var provider_id = identity.get_account_record().get_account_id();
-                var session = G_DataModelContext.get_session_manager().
-                                        get_sessions_by_ids(provider_id, patient_id);
+                var session = G_DataModelContext.get_session_manager().get_session_by_id(session_id);
                 if (session == null) {
                         err.log("Failed to recover session. The ID provided: " + patient_id + " may be invalid");
                         return null;
+                }
+                // Deactivate old sessions.
+                var old_sessions = G_DataModelContext.get_session_manager().
+                                        get_sessions_by_ids(provider_id, session.get_patient_id());
+                if (old_sessions != null) {
+                        for (var i = 0; i < old_sessions.length; i ++) {
+                                old_sessions[i].deactivate();
+                                G_DataModelContext.get_session_manager().update_session(old_sessions[i]);
+                        }
                 }
                 session.activate();
                 G_DataModelContext.get_session_manager().update_session(session);
@@ -119,7 +139,7 @@ export function ProviderControl() {
                 }
                 var provider_id = identity.get_account_record().get_account_id();
                 var sessions = G_DataModelContext.get_session_manager().get_sessions_by_provider_id(
-                                        provider_id, true);
+                                        provider_id, false);
                 if (sessions == null) {
                         return null;
                 }
@@ -128,5 +148,16 @@ export function ProviderControl() {
                         patient_ids[i] = sessions[i].get_patient_id();
                 }
                 return patient_ids;
+        }
+        
+        this.get_sessions_by_patient_id = function(identity, patient_id, err) {
+                if (!this.__has_provider_identity(identity)) {
+                        err.log("Your identity is invalid");
+                        return null;
+                }
+                var provider_id = identity.get_account_record().get_account_id();
+                var sessions = G_DataModelContext.get_session_manager().get_sessions_by_ids(
+                                        provider_id, patient_id, false);
+                return sessions;
         }
 }

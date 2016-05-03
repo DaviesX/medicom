@@ -76,6 +76,27 @@ function provider_remove_patient_by_id(identity, patient_id) {
         return { patients: patients, error: err.fetch_all() };
 }
 
+function provider_start_new_session_with(identity, patient_id) {
+        var err = new ErrorMessageQueue();
+        identity = Identity_create_from_POD(identity);
+        var session = g_provider_ctrl.start_new_session_with(identity, patient_id, err);
+        return { session: session, error: err.fetch_all() };
+}
+
+function provider_end_session(identity, session_id) {
+        var err = new ErrorMessageQueue();
+        identity = Identity_create_from_POD(identity);
+        var session = g_provider_ctrl.end_session(identity, session_id, err);
+        return { session: session, error: err.fetch_all() };
+}
+
+function provider_recover_session(identity, session_id) {
+        var err = new ErrorMessageQueue();
+        identity = Identity_create_from_POD(identity);
+        var session = g_provider_ctrl.recover_session(identity, session_id, err);
+        return { session: session, error: err.fetch_all() };
+}
+
 function provider_get_patient_ids(identity) {
         var err = new ErrorMessageQueue();
         if (identity == null) {
@@ -91,6 +112,16 @@ function provider_get_patient_ids(identity) {
                 err.log("failed to find patients");
         }
         return { patient_ids: patient_ids, account_infos: account_infos, error: err.fetch_all() };
+}
+
+function provider_get_sessions_by_patient_id(identity, patient_id) {
+        var err = new ErrorMessageQueue();
+        identity = Identity_create_from_POD(identity); 
+        var sessions = g_provider_ctrl.get_sessions_by_patient_id(identity, patient_id, err);
+        if (sessions == null) {
+                err.log("failed to find sessions");
+        }
+        return { sessions: sessions, error: err.fetch_all() };
 }
 
 function user_get_patient_bp_graph(identity, patient_id, start_date, end_date, interval, method) {
@@ -226,7 +257,47 @@ provider_remove_patient: function(arg) {
 provider_get_patient_ids: function(arg) {
                         return provider_get_patient_ids(arg.identity);
                 },
+        
+/**
+ * Get sessions between the provider and patient.
+ * @param {Identity} Identity of the provider.
+ * @param {Integer} Account ID of the patient.
+ * @return {Integer[], String} return a {Integer[], ""} object if sucessful, or otherwise, {null, "..."}.
+ */
+provider_get_sessions_by_patient_id: function(arg) {
+                        return provider_get_sessions_by_patient_id(arg.identity, arg.id);
+                },
+                
+/**
+ * Start a new session with a patient.
+ * @param {Identity} Identity of the provider.
+ * @param {Integer} Account ID of the patient.
+ * @return {Session, String} return a {Session, ""} object if sucessful, or otherwise, {null, "..."}.
+ */
+provider_start_new_session_with: function(arg) {
+                        return provider_start_new_session_with(arg.identity, arg.id);
+                },
 
+/**
+ * End a session with a patient.
+ * @param {Identity} Identity of the provider.
+ * @param {Integer} Session ID to be ended.
+ * @return {Session, String} return a {Session, ""} object if sucessful, or otherwise, {null, "..."}.
+ */
+provider_end_session: function(arg) {
+                        return provider_end_session(arg.identity, arg.session_id);
+                },
+
+/**
+ * Recover a session with a patient.
+ * @param {Identity} Identity of the provider.
+ * @param {Integer} Session ID to be ended.
+ * @return {Session, String} return a {Session, ""} object if sucessful, or otherwise, {null, "..."}.
+ */
+provider_recover_session: function(arg) {
+                        return provider_recover_session(arg.identity, arg.session_id);
+                },
+                
 /**
  * Get a patient's blood pressure graph data.
  * @param {Identity} Identity of the provider/patient.

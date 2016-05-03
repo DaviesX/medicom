@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 body.simp_nature {
     background-image: 	        url("/img/hilltop2.png");
-    background-size:            cover;
+    background-size:            repeat;
     background-position:        right;
     overflow-x:                 hidden;
     height:                     100%;

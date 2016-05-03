@@ -38,7 +38,16 @@ export function SessionManager() {
                         return null;
                 }
         }
+        
         this.set_identity_info = function(identity_info) {
                 return Session.setPersistent("identityinfo", identity_info);
+        }
+        
+        this.set_browsing_account_id = function(account_id) {
+                return Session.setPersistent("browsingid", account_id);
+        }
+        
+        this.get_browsing_account_id = function() {
+                return parseInt(Session.get("browsingid"), 10);
         }
 }

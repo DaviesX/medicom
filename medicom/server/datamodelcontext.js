@@ -32,6 +32,15 @@ export function DataModelContext() {
         this.get_provider_manager = function() { return this.__provider_mgr; }
         this.get_patient_manager = function() { return this.__patient_mgr; }
         this.get_session_manager = function() { return this.__session_mgr; }
+        this.reset_all = function() {
+                this.__profile_mgr.reset();
+                this.__provider_mgr.reset();
+                this.__patient_mgr.reset();
+                this.__admin_record_mgr.reset();
+                this.__identity_mgr.reset();
+                this.__account_mgr.reset();
+                this.__session_mgr.reset();
+        }
 }
 
 // singletons

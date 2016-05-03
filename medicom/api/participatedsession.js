@@ -13,7 +13,9 @@ export function ParticipatedSession(session_id, provider_id, patient_id) {
         this.get_patient_id = function() { return this.__patient_id; }
         this.activate = function() { this.__pending_id = 0; }
         this.deactivate = function() { this.__pending_id = -1; }
+        this.is_active = function() { return this.__pending_id == 0; }
         this.set_pending = function(pending_id) { this.__pending_id = pending_id; }
+        this.get_start_date = function() { return this.__start };
 }
 
 export function ParticipatedSession_Create_From_POD(pod) {
