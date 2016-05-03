@@ -143,10 +143,12 @@ export function ProviderControl() {
                 if (sessions == null) {
                         return null;
                 }
+                sessions = _.uniq(sessions, false, function(obj) {return obj.get_patient_id()});
                 var patient_ids = [];
                 for (var i = 0; i < sessions.length; i ++) {
                         patient_ids[i] = sessions[i].get_patient_id();
                 }
+                
                 return patient_ids;
         }
         
