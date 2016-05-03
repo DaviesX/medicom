@@ -184,6 +184,50 @@ Template.tmplprovidersession.events({"click #btn-enter-session"(event) {
                 Session.set(G_KeyBrowsingMode, c_ValueBrowsingPresent);
 }});
 
+Template.tmplprovidersession.events({"click #btn-start-new-session"(event) {
+        var identity = G_Session.get_identity_info();
+        var account_id = G_Session.get_browsing_account_id();
+        Meteor.call("provider_start_new_session_with",
+                    {identity: identity, id: account_id}, function(error, result) {
+                if (result.error != "") {
+                        alert(result.error);
+                } else {
+                        // List of sessions.
+                        ui_refresh_session_list($("#div-session-holder"), identity, account_id);
+                }
+        });
+}});
+
+Template.tmplprovidersession.events({"click #btn-end-session"(event) {
+        var identity = G_Session.get_identity_info();
+        var account_id = G_Session.get_browsing_account_id();
+        var session_id = G_Session.get_browsing_session_id();
+        Meteor.call("provider_end_session",
+                    {identity: identity, session_id: session_id}, function(error, result) {
+                if (result.error != "") {
+                        alert(result.error);
+                } else {
+                        // List of sessions.
+                        ui_refresh_session_list($("#div-session-holder"), identity, account_id);
+                }
+        });
+}});
+
+Template.tmplprovidersession.events({"click #btn-recover-session"(event) {
+        var identity = G_Session.get_identity_info();
+        var account_id = G_Session.get_browsing_account_id();
+        var session_id = G_Session.get_browsing_session_id();
+        Meteor.call("provider_recover_session",
+                    {identity: identity, session_id: session_id}, function(error, result) {
+                if (result.error != "") {
+                        alert(result.error);
+                } else {
+                        // List of sessions.
+                        ui_refresh_session_list($("#div-session-holder"), identity, account_id);
+                }
+        });
+}});
+
 
 // handling browsing mode state
 Template.tmplprovider.helpers({ 
