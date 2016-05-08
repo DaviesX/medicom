@@ -7,7 +7,10 @@ export function UserBrowser() {
         this.__identity = null;
         this.__on_update = null;
         this.__on_select = null;
+        this.__on_add_user = null;
         this.__user_list_holder = null;
+        this.__add_user_button = null;
+        this.__add_user_dialog = null;
         
         this.__users = [];
         this.__selected_user_id = -1;
@@ -33,6 +36,10 @@ export function UserBrowser() {
                 this.__on_update = {call: call, params: params};
         }
         
+        this.register_on_add_user = function(call, params) {
+                this.__on_add_user = {call: call, params: params};
+        }
+        
         this.set_browser_on_select = function(callback) {
                 this.__on_select = callback;
         }
@@ -43,6 +50,52 @@ export function UserBrowser() {
         
         this.set_user_list_holder = function(holder) {
                 this.__user_list_holder = holder;
+        }
+        
+        this.set_add_user_button = function(holder) {
+                this.__add_user_button = holder;
+        }
+        
+        this.set_add_user_dialog = function(holder) {
+                this.__add_user_dialog = holder;
+                var submit_btn = this.__add_user_dialog.find("button[name='submit']");
+                var input_field = this.__add_user_dialog.find("input[name='input-field']");
+                if (submit_btn == null) throw "The dialog doesn't contain a submit button";
+                if (input_field == null) throw "The dialog doesn't contain an input field";
+                
+                var clazz = this;
+                submit_btn.click(function() {
+                        clazz.__add_user_dialog.dialog("close");
+                        var account_id = parseInt(input_field.val(), 10);
+                        var email = input_field.val();
+                        
+                        clazz.__on_add_user.params.identity = clazz.__identity;
+                        clazz.__on_add_user.params.id = account_id;
+                        clazz.__on_add_user.params.email = email;
+
+                        Meteor.call(clazz.__on_add_user.call, clazz.__on_add_user.params, function(error, result) {
+                                if (result.error != "") {
+                                        alert("Failed to add user: " + result.error);             
+                                } else {
+                                        clazz.update_user_list();
+                                        alert("User has been added");
+                                }
+                        }); 
+                });
+        }
+        
+        this.enable_add_user = function(to_enable, prompt) {
+                if (!to_enable) {
+                        this.__add_user_button.css("display", "none");
+                } else {
+                        var clazz = this;
+                        this.__add_user_button.css("display", "inline");
+                        this.__add_user_button.html(prompt);
+                        this.__add_user_button.click(function () {
+                                clazz.__add_user_dialog.dialog();
+                                clazz.__add_user_dialog.css("display", "inline");
+                        });
+                }
         }
 
         this.update_user_list = function() {
@@ -75,36 +128,11 @@ export function UserBrowser() {
 export var G_UserBrowser = new UserBrowser();
 
 
-// Add user button
-Template.tmpluserbrowser.events({"click #btn-add-user"(event) {
-        $("#div-add-user-dlg").dialog();
-        $("#div-add-user-dlg").css("visibility", "visible");
-}});
-
-// Add user form
-Template.tmpladduser2browser.events({"click #btn_confirm-add-user"(event) {
-        $("#div-add-patient-dlg").dialog("close");
-        var identity = G_Session.get_identity_info();
-        var account_id = parseInt($("#txb-id-email").val(), 10);
-        var form_content = {
-                identity: identity,
-                id: account_id,
-                email: $("#txb-id-email").val()
-        };
-        console.log(form_content);
-        Meteor.call("provider_add_patient_by_id", form_content, function(error, result) {
-                if (result.error != "") {
-                        alert("Failed to add patient: " + result.error);             
-                } else {
-                        ui_refresh_patient_list($("#div-user-holder"), identity);
-                        alert("User has been added");
-                }
-        });        
-}});
-
 // Main
 Template.tmpluserbrowser.onRendered(function () {
         console.log("user browser template rendered");
         
         G_UserBrowser.set_user_list_holder($("#div-user-holder"));
+        G_UserBrowser.set_add_user_button($("#btn-add-user"));
+        G_UserBrowser.set_add_user_dialog($("#div-add-user-dlg"));
 });

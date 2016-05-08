@@ -10,7 +10,9 @@ export function ParticipatedSessionManager(mongodb, provider_mgr, patient_mgr) {
         this.__sessions = new Mongo.Collection(this.c_Participated_Session_Coll_Name);
         
         this.has_session = function(provider_id, patient_id) {
-                var result = this.__sessions.find({__provider_id: provider_id, __patient_id: patient_id});
+                var result = this.__sessions.find({__provider_id: provider_id, 
+                                                   __patient_id: patient_id,
+                                                   __pending_id: 0});
                 return result.count() > 0;
         }
         

@@ -40,7 +40,9 @@ Template.tmplprovider.onRendered(function () {
                 G_ActivityCenter.set_identity(identity);
                 G_ActivityCenter.update_welcome_text();
                 // Set up user browser.
+                G_UserBrowser.enable_add_user(true, "Add Patient");
                 G_UserBrowser.register_on_update("provider_get_patient_ids", {});
+                G_UserBrowser.register_on_add_user("provider_add_patient_by_id", {});
                 G_UserBrowser.set_browser_on_select(user_browser_on_select);
                 G_UserBrowser.set_identity(identity);
                 G_UserBrowser.update_user_list();

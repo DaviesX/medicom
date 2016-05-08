@@ -44,22 +44,6 @@ export function SessionManager() {
                 Session.setPersistent("identityinfo", identity_info);
         }
         
-        this.set_browsing_account_id = function(account_id) {
-                Session.set("browsingid", account_id);
-        }
-        
-        this.get_browsing_account_id = function() {
-                return parseInt(Session.get("browsingid"), 10);
-        }
-        
-        this.set_browsing_session_id = function(session_id) {
-                Session.set("browsingsessionid", session_id);
-        }
-        
-        this.get_browsing_session_id = function(session_id) {
-                return Session.get("browsingsessionid", session_id);
-        }
-        
         this.set_browsing_mode = function(browsing_mode) {
                 return Session.set("browsingmode", browsing_mode);
         }
