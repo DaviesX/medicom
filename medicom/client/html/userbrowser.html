@@ -1,0 +1,28 @@
+<template name="tmpluserbrowser">
+        <div>
+                <input id="txt-search" type="search" value="Search"/>
+        </div>
+        <div style="margin-top: 10px; margin-bottom: 10px">
+                <button id="btn-add-user" class='simp_classic-fill-width'>Add Patient</button>
+        </div>
+        <div id="div-user-holder" 
+             style="margin-top: 20px; 
+                    margin-bottom: 20px;
+                    height: 400px;
+                    overflow-y: scroll;">
+        </div>
+        
+        <div class="simp_overlay">
+                <div id="div-add-user-dlg" title="Add User" style="visibility: hidden;">
+                        {{> tmpladduser2browser}}
+                </div>
+        </div>
+</template>
+
+
+<template name="tmpladduser2browser">
+        <div class="emo_central-text">User ID/Email</div>
+        <input id="txb-id-email" class="emo_central-input" type="text"/>
+        <button id="btn_confirm-add-user" class="emo_central-button">Add</button>
+</template>
+

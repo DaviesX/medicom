@@ -1,6 +1,7 @@
 import {ErrorMessageQueue_Create_From_POD} from "../../api/common.js";
 import {AccountInfo_Create_From_POD} from "../../api/accountinfo.js";
 import {Identity_create_from_POD} from "../../api/identity.js";
+import {SessionBrowser, SessionBrowser_Create_From_POD} from "./sessionbrowser.js";
 
 export function SessionManager() {
 
@@ -58,4 +59,14 @@ export function SessionManager() {
         this.get_browsing_session_id = function(session_id) {
                 return Session.get("browsingsessionid", session_id);
         }
+        
+        this.set_browsing_mode = function(browsing_mode) {
+                return Session.set("browsingmode", browsing_mode);
+        }
+        
+        this.get_browsing_mode = function() {
+                return Session.get("browsingmode");
+        }
 }
+
+export var G_Session = new SessionManager();

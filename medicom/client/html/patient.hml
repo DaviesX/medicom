@@ -1,6 +1,6 @@
-<template name="tmplprovider">
+<template name="tmplpatient">
 <script>
-        document.title = "Medicom - Provider";
+        document.title = "Medicom - Patient";
 </script>
 
 <body>

@@ -1,0 +1,42 @@
+<template name="tmplactivitycenter">
+
+<script>
+        document.body.className = "simp_nature";
+</script>
+
+<body>
+        <div class="tran_login-link">
+                <a id="a-welcome-holder" class="tran_login-link">
+                </a>
+        </div>
+        
+        <h1 id="txt-logo" class="simp_heading">
+                <a class="simp_no-decoration" href="home">MediCom</a>
+        </h1>
+        
+        <div class="simp_two-sided">
+
+            <div class="simp_forum-board simp_left">
+                <div class="simp_content-board">
+                        {{> tmpluserbrowser}}
+                </div>
+            </div>
+
+            <div class="simp_reminder-list simp_right">
+                <div class="simp_content-board" style="min-height: 520px;">
+                        {{#if use_default}}
+                                {{> tmplbrowserdefault}}
+                        {{else}}
+                                {{#if use_session_browser}}
+                                        {{> tmplsessionbrowser}}
+                                {{else}}
+                                        {{#if use_data_browser}}
+                                                {{> tmpldatabrowser}}
+                                        {{/if}}
+                                {{/if}}
+                        {{/if}}
+                </div>
+            </div>
+        </div>
+</body>
+</template>

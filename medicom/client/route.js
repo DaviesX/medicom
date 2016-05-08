@@ -21,6 +21,14 @@ Router.route("/provider", function () {
         this.render("tmplprovider");
 });
 
+Router.route("/patient", function () {
+        this.render("tmplpatient");
+});
+
+Router.route("/profile", function () {
+        this.render("tmplprofile");
+});
+
 Router.route("/autherror", function () {
         this.render("tmplautherror");
 });

@@ -2,8 +2,6 @@ import { Template } from "meteor/templating";
 import {SessionManager} from "./session.js";
 import {ErrorMessageQueue} from "../../api/common.js";
 import {AccountInfo_Create_From_POD} from "../../api/accountinfo.js";
-import "../html/reg.html";
-import "../html/regresult.html";
 
 var G_Session = new SessionManager();
 

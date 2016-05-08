@@ -139,7 +139,7 @@ export function ProviderControl() {
                 }
                 var provider_id = identity.get_account_record().get_account_id();
                 var sessions = G_DataModelContext.get_session_manager().get_sessions_by_provider_id(
-                                        provider_id, false);
+                                        provider_id, true);
                 if (sessions == null) {
                         return null;
                 }

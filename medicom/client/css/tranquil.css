@@ -37,9 +37,8 @@ a.tran_login-link, button.tran_login-link {
 }
 
 a.tran_login-link:hover, button.tran_login-link:hover {
-    background:         radial-gradient(70px, rgba(200, 200, 200, 0.4) 40%, rgba(30, 30, 30, 0.8));
     color:              lightcyan;
-    transition:		1s;
+    transition:		0.5s;
 }
 
 div.tran_login-link {

@@ -26,7 +26,7 @@ export function ParticipatedSessionManager(mongodb, provider_mgr, patient_mgr) {
                     !this.__provider_mgr.has_provider(provider_id)) {
                         return null;
                 }
-                var uuid = this.__mongodb.get_string_uuid();
+                var uuid = this.__mongodb.get_uuid();
                 var session = new ParticipatedSession(uuid, provider_id, patient_id);
                 this.__sessions.insert(session);
                 return session;

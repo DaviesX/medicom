@@ -3,7 +3,6 @@ import {SessionManager} from "./session.js";
 import {ErrorMessageQueue} from "../../api/common.js";
 import {Identity_create_from_POD} from "../../api/identity.js";
 import {AccountType} from "../../api/accounttype.js";
-import "../html/login.html";
 
 
 var G_Session = new SessionManager();

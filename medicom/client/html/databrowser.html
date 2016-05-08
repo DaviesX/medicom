@@ -1,0 +1,25 @@
+<template name="tmpldatabrowser">
+<div>
+        <div style="font-family: 'Arial', Arial, Sans; 
+                    text-align: center;
+                    opacity: 0.6;
+                    margin-top: 10px;
+                    margin-bottom: 12px;">Session: {{session_id}}</div>
+        <div>
+                <form enctype="multipart/form-data" method="post">
+                    <input class="simp_classic" id="ipt-file-select" type="file" name="file"/>
+                    <button class="simp_classic" id="btn-upload" type="button">Upload Data From File</button>
+                </form>
+        </div>
+        <div>Issues and Notes: </div>
+        <div><textarea style="width: 100%;" rows="4" cols="50" >High blood pressure...</textarea></div>
+        <div>
+                <select class="simp_select">
+                    <option selected>Chart Selection</option>
+                </select>
+        </div>
+        <div id="charting-area" style="width: 100%; min-height: 300px;"></div>
+        <div>Comments</div>
+        <div><textarea style="width: 100%;" rows="4" cols="50" >Doctor's Comments</textarea></div>
+</div>
+</template>
