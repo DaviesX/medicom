@@ -6,19 +6,25 @@
                     margin-top: 10px;
                     margin-bottom: 12px;">Session: {{session_id}}</div>
         <div>
-                <form enctype="multipart/form-data" method="post">
-                    <input class="simp_classic" id="ipt-file-select" type="file" name="file"/>
-                    <button class="simp_classic" id="btn-upload" type="button">Upload Data From File</button>
-                </form>
+
+        <input id="ipt-file-select" class="simp_classic"  type="file" name="file"/>
+        <button id="btn-disconnect-file" 
+                class="simp_classic" 
+                style="float: right;
+                       margin-right: 10px;">Disconnect</button>
+        <button id="btn-connect-file" 
+                class="simp_classic" 
+                style="float: right;
+                       margin-right: 10px;">Connect to This File</button>
         </div>
-        <div>Issues and Notes: </div>
-        <div><textarea style="width: 100%;" rows="4" cols="50" >High blood pressure...</textarea></div>
+        <div style="margin-top: 15px;">Issues and Notes: </div>
+        <div><textarea style="width: 100%;" rows="4" cols="50" placeholder="High blood pressure..."></textarea></div>
         <div>
                 <select id="sel-chart-types" class="simp_select">
                 </select>
         </div>
         <div id="charting-area" style="width: 100%; min-height: 300px;"></div>
         <div>Comments</div>
-        <div><textarea style="width: 100%;" rows="4" cols="50" >Doctor's Comments</textarea></div>
+        <div><textarea style="width: 100%;" rows="4" cols="50" placeholder="Doctor's Comments"></textarea></div>
 </div>
 </template>
