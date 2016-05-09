@@ -41,6 +41,17 @@ function user_login_by_id(id, password) {
         return { identity: identity, error: err.fetch_all() };
 }
 
+function user_logout(identity) {
+        var err = new ErrorMessageQueue();
+        if (identity == null) {
+                err.log("identity is required, but it's absent");
+                return { patients: null, account_infos: null, error: err.fetch_all() };
+        }
+        identity = Identity_create_from_POD(identity);
+        g_account_ctrl.logout(identity, err);
+        return { error: err.fetch_all() };
+}
+
 function user_register(account_type, email, name, phone, password) {
         var err = new ErrorMessageQueue();
         var info = g_account_ctrl.register(account_type, email, name, phone, password, err);
@@ -185,7 +196,14 @@ user_login_by_email: function(arg) {
 user_login_by_id: function(arg) {
                         return user_login_by_id(arg.id, arg.password);
                 },
-
+/**
+ * Logout a user.
+ * @param {Identity} Identity of the user.
+ * @return {String} return a {""} object if sucessful, or otherwise, {"..."}.
+ */
+user_logout: function(arg) {
+                        return user_logout(arg.identity);
+                },
 /**
  * Register a new account which will require activation later on.
  * @param {String} Account type in string, "admin", "provider", "patient", "super intendant".

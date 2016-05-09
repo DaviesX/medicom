@@ -5,10 +5,27 @@ import {AccountInfo_Create_From_POD} from "../../api/accountinfo.js";
 export function ActivityCenter() {
         this.__identity = null;
         this.__welcome_holder = null;
+        this.__logout_holder = null;
         this.__redir_path = null;
         
         this.set_welcome_text_holder = function(holder) {
                 this.__welcome_holder = holder;
+        }
+        
+        this.set_logout_text_holder = function(holder) {
+                this.__logout_holder = holder;
+                var clazz = this;
+                
+                holder.click(function (event) {
+                        Meteor.call("user_logout", {identity: clazz.__identity}, 
+                                    function(error, result) {
+                                if (result.error != "") {
+                                        alert(result.error);
+                                }
+                                clazz.__welcome_holder.attr("href", "");
+                                document.location.reload(true);
+                        });
+                });
         }
         
         this.set_identity = function(identity) {
@@ -17,7 +34,6 @@ export function ActivityCenter() {
         
         this.set_redirection_path = function(path) {
                 this.__redir_path = path;
-                this.__welcome_holder.attr("href", path);
         }
         
         this.update_welcome_text = function() {
@@ -36,6 +52,8 @@ export function ActivityCenter() {
                         } else {
                                 var account_info = AccountInfo_Create_From_POD(result.account_info);
                                 clazz.__welcome_holder.html("Welcome, " + account_info.get_name());
+                                clazz.__welcome_holder.attr("href", clazz.__redir_path);
+                                clazz.__logout_holder.css("display", "inline");
                         }
                 });
         }
@@ -51,6 +69,7 @@ export var G_ActivityCenter = new ActivityCenter();
 Template.tmplactivitycenter.onRendered(function () {
         console.log("activity center template rendered");
         G_ActivityCenter.set_welcome_text_holder($("#a-welcome-holder"));
+        G_ActivityCenter.set_logout_text_holder($("#a-logout"));
 });
 
 Template.tmplactivitycenter.helpers({ 

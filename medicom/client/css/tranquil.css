@@ -32,7 +32,10 @@ a.tran_login-link, button.tran_login-link {
     border: 		none;
     min-width:          60px;
     height: 		50px;
-    line-height:	50px; 
+    line-height:	50px;
+    margin-left:        5px;
+    margin-right:       5px;
+    text-decoration:    underline;
     color: 		darkslategray;
 }
 
@@ -43,6 +46,7 @@ a.tran_login-link:hover, button.tran_login-link:hover {
 
 div.tran_login-link {
     position:           absolute;
+    display:            inline;
     float:              right;
     top:                3px;
     right:              60px;

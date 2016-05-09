@@ -150,7 +150,7 @@ export function AccountControl() {
         }
         
         this.logout = function(identity, err) {
-                if (!G_DataModelContext.get_account_manager().verify_identity(identity))
+                if (!G_DataModelContext.get_identity_manager().verify_identity(identity))
                         err.log("The identity is invalid");
                 G_DataModelContext.get_identity_manager().logout(identity);
         }
