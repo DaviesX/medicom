@@ -38,7 +38,7 @@ export function DataBrowser() {
 
 export var G_DataBrowser = new DataBrowser();
 
-Template.tmpldatabrowser.onRendered(function () {
+Template.tmpldatabrowser.onRendered(function () {        
         G_DataBrowser.set_display_type_holder($("#sel-chart-types"));
 
         var chart = c3.generate({
