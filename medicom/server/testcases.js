@@ -7,6 +7,7 @@ import {AccountInfo, AccountControl} from "./accountcontrol.js";
 import * as M_AccountControl from "./accountcontrol.js";
 import {DataModelContext, G_DataModelContext} from "./datamodelcontext.js";
 import {c_Meteor_Methods} from "./protocols/methods.js";
+import {BPTable} from "../api/bptable.js";
 
 
 // test cases
@@ -156,4 +157,40 @@ export function TestPrepareSampleData(to_reset) {
                 }
         } 
         console.log("TestPrepareSampleData - ends");
+}
+
+const csv_stream = 
+" 2015-11-11 22:05:00,95  \n" +    
+" 2015-11-12 23:08:00,108 \n" +    
+" 2015-11-13 22:57:00,91  \n" +    
+" 2015-11-15 22:15:00,109 \n" +    
+" 2015-11-16 22:17:00,92  \n" +    
+" 2015-11-17 22:11:00,90  \n" +    
+" 2015-11-18 21:22:00,108 \n" +    
+" 2015-11-19 21:34:00,99  \n" +    
+" 2015-11-20 22:50:00,97  \n" +    
+" 2015-11-22 23:47:00,107 \n" +    
+" 2015-11-23 22:10:00,90  \n" +    
+" 2015-11-24 21:31:00,83  \n" +    
+" 2015-11-24 21:32:00,85  \n" +    
+" 2015-11-25 23:12:00,91  \n" +    
+" 2015-11-28 23:49:00,108 \n" +    
+" 2015-11-29 23:18:00,96  \n" +    
+" 2015-11-30 11:16:00,97  \n" +    
+" 2015-12-04 21:46:00,97  \n" +    
+" 2015-12-06 21:43:00,104 \n" +    
+" 2015-12-07 23:32:00,99  \n" +    
+" 2015-12-08 22:58:00,90  \n" +    
+" 2015-12-09 23:21:00,100";
+
+export function TestBPTable() {
+        var bptable = new BPTable();
+        bptable.construct_from_csv_stream(csv_stream);
+
+        var values = bptable.get_bp_values();
+        var dates = bptable.get_dates();
+
+        for (var i = 0; i < values.length; i ++) {
+                console.log("date: " + dates[i].toString() + "value: " + values[i]);
+        }
 }

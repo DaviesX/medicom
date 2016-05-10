@@ -12,4 +12,5 @@ Meteor.startup(() => {
         // testcases.TestAccountControl();
         // testcases.TestHttpSession();
         testcases.TestPrepareSampleData(false);
+        // testcases.TestBPTable();
 });

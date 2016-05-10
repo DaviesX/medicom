@@ -145,6 +145,8 @@ function user_get_patient_symptoms(identity, patient_id, start_date, end_date, i
 
 function patient_super_update_bp_from_file(identity, patient_id, format, blob) {
         identity = Identity_create_from_POD(identity);
+        var bptable = new BPTable();
+        bptable.construct_from_stream(format, blob);
 }
 
 function super_update_symptom(identity, patient_id, date, json) {
