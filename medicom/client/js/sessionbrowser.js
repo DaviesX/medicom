@@ -9,6 +9,7 @@ export var G_SessionBrowser = new SessionBrowser();
 export function SessionBrowser() {
         this.__identity = null;
         this.__account_id = null;
+        this.__acount_info = null;
         this.__sessions = [];
         this.__selected_session_id = -1;
         this.__session_holder = null;
@@ -71,6 +72,14 @@ export function SessionBrowser() {
                 this.__account_id = account_id;
         }
         
+        this.get_browsing_account_id = function(account_id) {
+                return this.__account_id;
+        }
+        
+        this.get_browsing_account_info = function(account_id) {
+                return this.__account_info;
+        }
+
         this.set_browser_on_quit = function(callback) {
                 this.__on_quit_callback = callback;
         }
@@ -106,7 +115,7 @@ export function SessionBrowser() {
                 });
         }
         
-        this.update_user_name = function() {
+        this.update_user = function() {
                 var clazz = this;
                 
                 Meteor.call("user_account_info_by_id", 
@@ -116,6 +125,7 @@ export function SessionBrowser() {
                         } else {
                                 clazz.__username_holder.empty();
                                 var account_info = AccountInfo_Create_From_POD(result.account_info);
+                                clazz.__account_info = account_info;
                                 clazz.__username_holder.html("Available Sessions for " + account_info.get_name());
                         }
                 });

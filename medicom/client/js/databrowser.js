@@ -1,15 +1,32 @@
 import {Template} from "meteor/templating";
+import {BPTable} from "../../api/bptable.js";
 
 
 function LocalBloodPressureDisplay() {
         this.__bptable = new BPTable();
+        this.__file = null;
 
-        this.__set_bp_file_stream = function(file) {
-                var suffix = file.name.split(".");
-                this.__bptable.construct_from_stream(suffix, file);
+        this.__update_data_from_file_stream = function() {
+                var fr = new FileReader();
+                var clazz = this;
+
+                fr.onload = function (e) {
+                        var parts = clazz.__file.name.split(".");
+                        var suffix = parts[parts.length - 1];
+                        var stream = e.target.result;
+
+                        console.log("file content: " + stream.toString());
+                        clazz.__bptable.construct_from_stream(suffix, stream);
+                }
+                fr.readAsText(this.__file);
+        }
+        
+        this.set_data_from_bp_file_stream = function(file) {
+                this.__file = file;
+                this.__update_data_from_file_stream();
         }
 
-        this.__update = function(start_date, end_date, target) {
+        this.update = function(start_date, end_date, target) {
                 var x = ['x'];
                 var y = ['blood pressure'];
 
@@ -37,10 +54,9 @@ function LocalBloodPressureDisplay() {
                         }
                 });
         
-        this.autorun(function (tracker) {
-                chart.load();
-        });
-                c3.
+//                this.autorun(function (tracker) {
+//                        chart.load();
+//                });
         }
 }
 
@@ -57,6 +73,7 @@ function SymptomsDisplay() {
 }
 
 export function DataBrowser() {
+        this.__browsing_user = null;
         this.__session = null;
         this.__display_types = ["Smart Display Mode",
                                 "Blood Pressure Data", 
@@ -65,8 +82,11 @@ export function DataBrowser() {
                                 "Fitbit Data", 
                                 "Blood Pressure[Local Data]"];
 
+        this.__curr_display_mode = this.__display_types[0];
         this.__display_type_holder = null;
-        this.__curr_display = null;
+        this.__file_select_holder = null;
+        this.__charting_area = null;
+
         this.__start_date = null;
         this.__end_date = null;
         
@@ -74,12 +94,30 @@ export function DataBrowser() {
         this.__remote_bp_display = new RemoteBloodPressureDisplay();
         this.__symp_display = new SymptomsDisplay();
 
-        this.set_target_session = function(session) {
+        this.set_target_session = function(session, user_info) {
                 this.__session = session;
+                this.__browsing_user = user_info;
         }
         
         this.get_target_session = function() {
                 return this.__session;
+        }
+
+        this.get_browsing_user = function() {
+                return this.__browsing_user;
+        }
+
+        this.set_file_select_holder = function(holder) {
+                this.__file_select_holder = holder;
+                var clazz = this;
+
+                holder.on("change", function (event) {
+                        var file = clazz.connect_to_bp_file();
+                        if (file == null) 
+                                return;
+                        clazz.__local_bp_display.set_data_from_bp_file_stream(file);
+                        clazz.update_display();
+                });
         }
         
         this.set_display_type_holder = function(holder) {
@@ -91,41 +129,54 @@ export function DataBrowser() {
                 for (var i = 0; i < types.length; i ++) {
                         holder.append('<option value="' + types[i] + '">' + types[i] + '</option>');
                 }
-                holder.click(function () {
-                        clazz.set_display_mode(holder.val());
-                });
         } 
-        
-        this.set_display_mode = function(mode) {
-                this.__curr_display = mode;
+
+        this.set_charting_area = function(holder) {
+                this.__charting_area = holder;
         }
         
+        this.set_display_mode = function(display_mode) {
+                this.__curr_display_mode = display_mode;
+        }
+
+        this.get_current_display_mode = function() {
+                return this.__curr_display_mode;
+        }
+
         this.get_data_displays = function() {
                 return this.__display_types;
         }
 
-        this.update_display = function() {
-                switch (this.__curr_display) {
+        this.connect_to_bp_file = function() {
+                var files = this.__file_select_holder.prop("files");
+                if (files == null || files.length == 0) 
+                        return null;
+                else
+                        return files[0];
+        }
+
+        this.update_display = function(display_mode) {
+                if (display_mode == null) display_mode = this.get_current_display_mode();
+                else this.set_display_mode(display_mode);
+
+                switch (display_mode) {
                 case "Smart Display Mode":
                         break;
                 case "Blood Pressure Data": 
-                        this.__remote_bp_display.update(
-                                        this.__start_date, this.__end_date);
+                        this.__remote_bp_display.update(this.__start_date, this.__end_date, this.__charting_area);
                         break;
                 case "Symptoms Data": 
-                        this.__symp_display.update(
-                                        this.__start_date, this.__end_date);
+                        this.__symp_display.update(this.__start_date, this.__end_date, this.__charting_area);
                         break;
                 case "Pill Bottle Cap": 
                         break;
                 case "Fitbit Data": 
                         break;
                 case "Blood Pressure[Local Data]":
-                        this.__local_bp_display.update(
-                                        this.__start_date, this.__end_date);
+                        this.__local_bp_display.update(this.__start_date, this.__end_date, this.__charting_area);
                         break;
                 default:
-                        throw "unkown display type: " + this.__curr_display;
+                        throw "unkown display mode: " + display_mode;
                 }
         }
 }
@@ -134,34 +185,18 @@ export var G_DataBrowser = new DataBrowser();
 
 Template.tmpldatabrowser.onRendered(function () {        
         G_DataBrowser.set_display_type_holder($("#sel-chart-types"));
-
-        var chart = c3.generate({
-                bindto: this.find("#charting-area"),
-                data: {
-                        x: 'x',
-                        columns: [
-                                ['x', "2014-10-13", "2014-10-14", "2014-10-15", "2014-10-16", "2014-10-17", "2014-10-18", "2014-10-19"],
-                                ['blood pressure', 120, 100, 98, 100, 130, 100]
-                        ]
-                },
-                axis: {
-                        x: {
-                                type: 'timeseries',
-                                tick: {
-                                        format: '%Y-%m-%d'
-                                }
-                        }
-                }
-        });
-        
-        this.autorun(function (tracker) {
-                chart.load();
-        });
+        G_DataBrowser.set_charting_area(this.find("#charting-area"));
+        G_DataBrowser.set_file_select_holder($("#ipt-file-select"));
 });
 
 Template.tmpldatabrowser.helpers({
         session_id() {
                 var selected = G_DataBrowser.get_target_session();
-                return selected.get_start_date() + " - " + selected.get_session_id();
+                var user = G_DataBrowser.get_browsing_user();
+                return user.get_name() + ", " + user.get_account_id() + " - " + selected.get_start_date() + " - " + selected.get_session_id();
         }
 });
+
+Template.tmpldatabrowser.events({"click #sel-chart-types"(event) {
+        G_DataBrowser.update_display($(event.target).val());
+}});

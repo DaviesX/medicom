@@ -6,16 +6,15 @@
                     margin-top: 10px;
                     margin-bottom: 12px;">Session: {{session_id}}</div>
         <div>
+                <!-- <input style="font-family: 'Arial', Arial, Sans;
+                              font-size: 10pt;
+                              opacity: 0.8;" 
+                       id="ipt-file-select" class="simp_classic" type="file"/> -->
 
-        <input id="ipt-file-select" class="simp_classic"  type="file" name="file"/>
-        <button id="btn-disconnect-file" 
-                class="simp_classic" 
-                style="float: right;
-                       margin-right: 10px;">Disconnect</button>
-        <button id="btn-connect-file" 
-                class="simp_classic" 
-                style="float: right;
-                       margin-right: 10px;">Connect to This File</button>
+                <label for="ipt-file-select" class="simp_classic">
+                        Connect to...
+                </label>
+                <input style="display: none;" id="ipt-file-select" type="file" />
         </div>
         <div style="margin-top: 15px;">Issues and Notes: </div>
         <div><textarea style="width: 100%;" rows="4" cols="50" placeholder="High blood pressure..."></textarea></div>

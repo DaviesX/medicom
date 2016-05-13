@@ -16,13 +16,13 @@ var G_AccountType = new AccountType();
 function user_browser_on_select(obj) {
         var account_id = obj.get_selected_user().get_account_id();
         G_SessionBrowser.set_browsing_account_id(account_id);
-        G_SessionBrowser.update_user_name();
+        G_SessionBrowser.update_user();
         G_SessionBrowser.update_session_list();
         G_Session.set_browsing_mode("session browser");
 }
 
 function session_browser_on_quit(obj) {
-        G_DataBrowser.set_target_session(obj.get_selected_session());
+        G_DataBrowser.set_target_session(obj.get_selected_session(), obj.get_browsing_account_info());
         G_Session.set_browsing_mode("data browser");
 }
 
