@@ -53,10 +53,6 @@ function LocalBloodPressureDisplay() {
                                 }
                         }
                 });
-        
-//                this.autorun(function (tracker) {
-//                        chart.load();
-//                });
         }
 }
 
