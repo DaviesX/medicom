@@ -13,14 +13,19 @@ export function Measure(type) {
         this.__measure_id = "-1";
         this.__session_id = -1;
         this.__type = type;
-        this.__date = new Date();
+        this.__date = new Date().getTime();
         
         this.set_session_id = function(session_id) { this.__session_id = session_id; }
         this.set_measure_id = function(measure_id) { this.__measure_id = measure_id; }
+        this.get_date = function() {
+                var date = new Date();
+                date.setTime(this.__date);
+                return date;
+        }
 }
 
 export function Measure_Parent_Create_From_POD(pod) {
-        var obj = new Measure("");
+        var obj = new Measure("", -1);
         this.__measure_id = pod.__measure_id;
         this.__session_id = pod.__session_id;
         this.__type = pod.__type;

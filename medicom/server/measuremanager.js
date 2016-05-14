@@ -16,17 +16,14 @@ export function MeasureManager(mongodb) {
                 return measure;
         }
         
-        this.get_measure_by_id = function(measure_id) {
-                var result = this.__measures.find({__measure_id : measure_id});
+        this.__generate_result = function(result) {
                 if (result.count() > 0) {
                         return Measure_Create_From_POD(result.fetch()[0]);
                 } else {
                         return null;
                 }
         }
-        
-        this.get_measures_by_session_and_type = function(session_id, type) {
-                var result = this.__measures.find({__session_id: session_id, __type: type});
+        this.__generate_results = function(result) {
                 if (result.count() > 0) {
                         var measures = [];
                         var blob = result.fetch();
@@ -37,5 +34,28 @@ export function MeasureManager(mongodb) {
                 } else {
                         return null;
                 }
+        }
+        
+        this.get_measure_by_id = function(measure_id) {
+                return this.__generate_result(
+                       this.__measures.find({"__parent.__measure_id" : measure_id}));
+        }
+        
+        this.get_measures_by_session_and_type = function(session_id, type) {
+                return this.__generate_results(
+                       this.__measures.find({"__parent.__session_id": session_id, 
+                                             "__parent.__type": type},
+                                             {sort: {"__parent.__date": -1}}));
+        }
+        
+        this.get_measures_by_date_session_and_type = function(start_date, end_date, session_id, type) {
+                start_date = start_date.getTime();
+                end_date = end_date.getTime();
+                return this.__generate_results(
+                       this.__measures.find({"__parent.__session_id": session_id, 
+                                             "__parent.__type": type,
+                                             "__parent.__date": {$gte: start_date},
+                                             "__parent.__date": {$lte: end_date}},
+                                             {sort: {"__parent.__date": -1}}));
         }
 }

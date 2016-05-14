@@ -6,9 +6,9 @@ export function ParticipatedSession(session_id, provider_id, patient_id) {
         this.__patient_id = patient_id;
         this.__provider_id = provider_id;
         this.__pending_id = -1;
-        this.__start = new Date();
+        this.__start = new Date().getTime();
         this.__end = null;
-        this.__start_timestamp = Date.parse(this.__start);
+        
         this.get_session_id = function() { return this.__session_id; }
         this.get_provider_id = function() { return this.__provider_id; }
         this.get_patient_id = function() { return this.__patient_id; }
@@ -16,7 +16,12 @@ export function ParticipatedSession(session_id, provider_id, patient_id) {
         this.deactivate = function() { this.__pending_id = -1; }
         this.is_active = function() { return this.__pending_id == 0; }
         this.set_pending = function(pending_id) { this.__pending_id = pending_id; }
-        this.get_start_date = function() { return this.__start };
+        
+        this.get_start_date = function() { 
+                var date = new Date();
+                date.setTime(this.__start);
+                return date; 
+        };
 }
 
 export function ParticipatedSession_Create_From_POD(pod) {
