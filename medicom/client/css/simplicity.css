@@ -67,7 +67,7 @@ button.simp_banner-menu:hover {
 .simp_classic:hover, button.simp_classic:hover {
     background:         rgba(230, 230, 230, 0.5);
     color:              lightcyan;
-    transition:		0.2s;
+    transition:		0.5s;
 }
 
 button.simp_classic-fill-width {

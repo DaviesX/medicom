@@ -36,6 +36,7 @@ a.tran_login-link, button.tran_login-link {
     margin-left:        5px;
     margin-right:       5px;
     text-decoration:    underline;
+    cursor:             pointer;
     color: 		darkslategray;
 }
 

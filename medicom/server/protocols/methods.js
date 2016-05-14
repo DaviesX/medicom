@@ -135,18 +135,22 @@ function provider_get_sessions_by_patient_id(identity, patient_id) {
         return { sessions: sessions, error: err.fetch_all() };
 }
 
-function user_get_patient_bp_graph(identity, patient_id, start_date, end_date, interval, method) {
+function user_get_patient_bp_table(identity, patient_id, start_date, end_date, num_samples, method) {
         identity = Identity_create_from_POD(identity);
 }
 
-function user_get_patient_symptoms(identity, patient_id, start_date, end_date, interval, method) {
+function user_get_patient_symptoms(identity, patient_id, start_date, end_date, num_samples, method) {
+        identity = Identity_create_from_POD(identity);
+}
+
+function patient_super_update_bp_from_table(identity, patient_id, table) {
         identity = Identity_create_from_POD(identity);
 }
 
 function patient_super_update_bp_from_file(identity, patient_id, format, blob) {
-        identity = Identity_create_from_POD(identity);
         var bptable = new BPTable();
         bptable.construct_from_stream(format, blob);
+        patient_super_update_bp_from_table(identity, patient_id, bptable);
 }
 
 function super_update_symptom(identity, patient_id, date, json) {
@@ -324,16 +328,16 @@ provider_recover_session: function(arg) {
  * @param {Integer} Account ID of the patient.
  * @param {Date} start date.
  * @param {Date} end date.
- * @param {Interval} sampling interval.
- * @param {String} sampling method, including, "uniform average", "uniform max", "uniform min." 
+ * @param {Integer} number of samples.
+ * @param {String} sampling method, including, "plain" "uniform average", "uniform max", "uniform min." 
  * @return {BPTable, String} return a {BPTable, ""} object if sucessful, or otherwise, {null, "..."}.
  */
-user_get_patient_bp_graph: function(arg) {
-                        return user_get_patient_bp_graph(arg.identity, 
+user_get_patient_bp_table: function(arg) {
+                        return user_get_patient_bp_table(arg.identity, 
                                                          arg.id,
                                                          arg.start_date, 
                                                          arg.end_date,
-                                                         arg.interval,
+                                                         arg.num_samples,
                                                          arg.method);
                 },
 
@@ -343,7 +347,7 @@ user_get_patient_bp_graph: function(arg) {
  * @param {Integer} Account ID of the patient.
  * @param {Date} start date.
  * @param {Date} end date.
- * @param {Interval} sampling interval.
+ * @param {Integer} number of samples.
  * @param {String} method(Unused).
  * @return {SymptomsTable, String} return a {SymptomsTable, ""} object if sucessful, or otherwise, {null, "..."}.
  */
@@ -352,7 +356,7 @@ user_get_patient_symptoms: function(arg) {
                                                          arg.id,
                                                          arg.start_date, 
                                                          arg.end_date,
-                                                         arg.interval,
+                                                         arg.num_samples,
                                                          arg.method);
                 },
 
@@ -371,6 +375,19 @@ patient_super_update_bp_from_file: function(arg) {
                                                                  arg.blob);
                 },
                 
+/**
+ * Update blood pressure data from bptable.
+ * @param {Identity} Identity of the provider/patient/super intendant.
+ * @param {Integer} Account ID of the patient.
+ * @param {BPTable} bptable to be updated.
+ * @return {Boolean, String} return a {True, ""} object if sucessful, or otherwise, {False, "..."}.
+ */
+patient_super_update_bp_from_table: function(arg) {
+                        return patient_super_update_bp_from_table(arg.identity, 
+                                                                  arg.id, 
+                                                                  arg.bptable);
+                },
+
 /**
  * Update symptom of a patient.
  * @param {Identity} Identity of the provider/patient/super intendant.

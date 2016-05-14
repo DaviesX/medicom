@@ -1,6 +1,68 @@
 import {Template} from "meteor/templating";
-import {BPTable} from "../../api/bptable.js";
+import {BPTable, BPTable_create_from_POD} from "../../api/bptable.js";
 
+
+function chart_clear(target) {
+        var x = ["x"];
+        var y = [""];
+
+        var chart = c3.generate({
+                bindto: target,
+                data: {
+                        x: "x",
+                        columns: [x, y]
+                },
+                axis: {
+                        x: {
+                                type: "timeseries",
+                                tick: {
+                                        format: "%Y-%m-%d"
+                                }
+                        }
+                }
+        });
+}
+
+function chart_update_blood_pressure(bptable, start_date, end_date, num_samples, methods, target) {
+        var x = ["x"];
+        var y = ["blood pressure"];
+
+        var dates = bptable.get_dates();
+        var values = bptable.get_bp_values();
+
+        var s = start_date == null ? Number.MIN_VALUE : start_date.getTime();
+        var e = end_date == null ? Number.MAX_VALUE : end_date.getTime();
+        
+        var valid_indices = [];
+        for (var i = 0, j = 0; j < values.length; j ++) {
+                var millidate = dates[j].getTime();
+                if (millidate < s || millidate > e)
+                        continue;
+                valid_indices[i ++] = j;
+        }
+
+        var interval = num_samples == null ? 1 : valid_indices.length/num_samples;
+        for (var i = 0, j = 1; i < valid_indices.length; i += interval, j ++) {
+                x[j] = dates[valid_indices[i]];
+                y[j] = values[valid_indices[i]];
+        }
+        
+        var chart = c3.generate({
+                bindto: target,
+                data: {
+                        x: "x",
+                        columns: [x, y]
+                },
+                axis: {
+                        x: {
+                                type: "timeseries",
+                                tick: {
+                                        format: "%Y-%m-%d"
+                                }
+                        }
+                }
+        });
+}
 
 function LocalBloodPressureDisplay() {
         this.__bptable = new BPTable();
@@ -26,49 +88,87 @@ function LocalBloodPressureDisplay() {
                 this.__update_data_from_file_stream();
         }
 
-        this.update = function(start_date, end_date, target) {
-                var x = ['x'];
-                var y = ['blood pressure'];
+        this.get_bptable = function() {
+                return this.__bptable;
+        }
 
-                var dates = this.__bptable.get_dates();
-                var values = this.__bptable.get_bp_values();
+        this.update_target = function(start_date, end_date, target) {
+                chart_update_blood_pressure(this.__bptable, start_date, end_date, null, "average", target);
+        }
 
-                for (var i = 1; i < values.length + 1; i ++) {
-                        x[i] = dates[i - 1];
-                        y[i] = values[i - 1];
-                }
-                
-                var chart = c3.generate({
-                        bindto: target,
-                        data: {
-                                x: 'x',
-                                columns: [x, y]
-                        },
-                        axis: {
-                                x: {
-                                        type: 'timeseries',
-                                        tick: {
-                                                format: '%Y-%m-%d'
-                                        }
-                                }
+        this.save_to_file_stream = function(file) {
+        }
+}
+
+function RemoteBloodPressureDisplay() {
+        this.__identity = null;
+        this.__browsing_user = null;
+        
+        this.set_access_info = function(identity, browsing_user) {
+                this.__identity = identity
+                this.__browsing_user = browsing_user;
+        }
+
+        this.update_target = function(start_date, end_date, target) {
+                var params = {
+                        identity: this.__identity, 
+                        id: this.__browsing_user.get_account_id(), 
+                        start_date: start_date,
+                        end_date: end_date,
+                        num_samples: 10,
+                        method: "average"
+                };
+                Meteor.call("user_get_patient_bp_table", params, function(error, result) {
+                        if (result.error != "") {
+                                console.log("failed to obtain bptable from patient: " + JSON.stringify(params));
+                        } else {
+                                var bptable = result.bptable;
+                                bptable = BPTable_create_from_POD(bptable)
+                                chart_update_blood_pressure(bptable, start_date, end_date, null, "average", target); 
+                        }
+                });
+        }
+
+        this.upload_to_remote_server = function(bptable) {
+                var params = {
+                        identity: this.__identity, 
+                        id: this.__browsing_user.get_account_id(), 
+                        bptable: bptable
+                };
+                Meteor.call("patient_super_update_bp_from_table", params, function(error, result) {
+                        if (result.error != "") {
+                                alert(result.error);
+                                console.log("failed to upload bp table: " + JSON.stringify(params));
+                        } else {
+                                console.log("remote blood pressure data has been updated");
                         }
                 });
         }
 }
 
-function RemoteBloodPressureDisplay() {
+function SymptomsDisplay() {
 
-        this.__update = function(start_date, end_date) {
+        this.update_target = function(start_date, end_date, target) {
         }
 }
 
-function SymptomsDisplay() {
+function SmartDisplay() {
 
-        this.update = function(start_date, end_date) {
+        this.__identity = null;
+        this.__browsing_user = null;
+        
+        this.set_access_info = function(identity, browsing_user) {
+                this.__identity = identity
+                this.__browsing_user = browsing_user;
+        }
+
+        this.update_target = function(start_date, end_date, target) {
+                chart_clear(target);
         }
 }
 
 export function DataBrowser() {
+        this.__identity = null;
         this.__browsing_user = null;
         this.__session = null;
         this.__display_types = ["Smart Display Mode",
@@ -86,13 +186,15 @@ export function DataBrowser() {
         this.__start_date = null;
         this.__end_date = null;
         
+        this.__smart_display = new SmartDisplay();
         this.__local_bp_display = new LocalBloodPressureDisplay();
         this.__remote_bp_display = new RemoteBloodPressureDisplay();
         this.__symp_display = new SymptomsDisplay();
 
-        this.set_target_session = function(session, user_info) {
+        this.set_target_session = function(session, user_info, identity) {
                 this.__session = session;
                 this.__browsing_user = user_info;
+                this.__identity = identity;
         }
         
         this.get_target_session = function() {
@@ -154,22 +256,28 @@ export function DataBrowser() {
         this.update_display = function(display_mode) {
                 if (display_mode == null) display_mode = this.get_current_display_mode();
                 else this.set_display_mode(display_mode);
-
+                
+                // Handle access info.
+                this.__remote_bp_display.set_access_info(this.__identity, this.__browsing_user);
+                this.__smart_display.set_access_info(this.__identity, this.__browsing_user);
+               
+                // Update charting area.
                 switch (display_mode) {
                 case "Smart Display Mode":
+                        this.__smart_display.update_target(this.__start_date, this.__end_date, this.__charting_area);
                         break;
                 case "Blood Pressure Data": 
-                        this.__remote_bp_display.update(this.__start_date, this.__end_date, this.__charting_area);
+                        this.__remote_bp_display.update_target(this.__start_date, this.__end_date, this.__charting_area);
                         break;
                 case "Symptoms Data": 
-                        this.__symp_display.update(this.__start_date, this.__end_date, this.__charting_area);
+                        this.__symp_display.update_target(this.__start_date, this.__end_date, this.__charting_area);
                         break;
                 case "Pill Bottle Cap": 
                         break;
                 case "Fitbit Data": 
                         break;
                 case "Blood Pressure[Local Data]":
-                        this.__local_bp_display.update(this.__start_date, this.__end_date, this.__charting_area);
+                        this.__local_bp_display.update_target(this.__start_date, this.__end_date, this.__charting_area);
                         break;
                 default:
                         throw "unkown display mode: " + display_mode;
@@ -183,6 +291,8 @@ Template.tmpldatabrowser.onRendered(function () {
         G_DataBrowser.set_display_type_holder($("#sel-chart-types"));
         G_DataBrowser.set_charting_area(this.find("#charting-area"));
         G_DataBrowser.set_file_select_holder($("#ipt-file-select"));
+
+        G_DataBrowser.update_display();
 });
 
 Template.tmpldatabrowser.helpers({

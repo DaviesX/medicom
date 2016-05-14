@@ -22,7 +22,7 @@ function user_browser_on_select(obj) {
 }
 
 function session_browser_on_quit(obj) {
-        G_DataBrowser.set_target_session(obj.get_selected_session(), obj.get_browsing_account_info());
+        G_DataBrowser.set_target_session(obj.get_selected_session(), obj.get_browsing_account_info(), G_Session.get_identity_info());
         G_Session.set_browsing_mode("data browser");
 }
 

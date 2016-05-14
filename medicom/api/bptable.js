@@ -67,3 +67,12 @@ export function BPTable() {
                 return this.__values;
         }
 }
+
+export function BPTable_create_from_POD(pod) {
+        var obj = new BPTable();
+        obj.__dates = pod.__dates;
+        obj.__values = pod.__values;
+        obj.__c_Delimiter = pod.__c_Delimiter; 
+        obj.__c_LineDelim = pod.__c_LineDelim;
+        return obj;
+}
