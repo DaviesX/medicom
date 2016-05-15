@@ -25,6 +25,7 @@ export function AdminRecord(account_type, password) {
         }
         
         this.__account_id = 0;
+        this.__privilege_ref = 0;
         this.__account_type = account_type;
         this.__internal_pass = this.__hash33(password);
         this.__activator = "";
