@@ -28,18 +28,17 @@ export function SuperIndendantControl() {
                         err.log("You don't have a valid identity");
                         return false;
                 }
-                var dates = bptable.get_dates();
-                var values = bptable.get_bp_values();
+                var pairs = bptable.get_pairs();
                 var measure = new MeasureBP();
-                for (var i = 0; i < dates.length; i ++) {
-                        measure.__parent.set_date(dates[i]);
-                        measure.set_bp_value(values[i]);
+                for (var i = 0; i < pairs.length; i ++) {
+                        measure.__parent.set_date(pairs[i].date);
+                        measure.set_bp_value(pairs[i].value);
                         this.__measure_mgr.update_measure(session_id, measure);
                 }
                 return true;
         }
         
-        this.get_bp_measures = function(identity, start_date, end_date, session_id, err) {
+        this.get_bp_measures = function(identity, start_date, end_date, sample_count, method, session_id, err) {
                 if (!this.__identity_mgr.verify_identity(identity)) {
                         err.log("You don't have a valid identity");
                         return null;
@@ -47,7 +46,14 @@ export function SuperIndendantControl() {
                 start_date = start_date == null ? new Date(0) : start_date;
                 end_date = end_date == null ? new Date(Math.pow(2, 52)) : end_date;
                 var measures = this.__measure_mgr.get_measures_by_date_session_and_type(
-                        start_date, end_date, session_id, M_Measure.c_Measure_Type_BP);
-                return measures;
+                        start_date, end_date, session_id, M_Measure.c_Measure_Type_BP, 1);
+                var sampled = [];
+                var sample_count = sample_count != null ? 
+                                        Math.min(measures.length, Math.max(1, sample_count)) : measures.length;
+                var interval = measures.length/sample_count;
+                for (var i = 0, j = 0; i < sample_count; i ++, j += interval) {
+                        sampled[i] = measures[Math.floor(j)];
+                }
+                return sampled;
         }
 }

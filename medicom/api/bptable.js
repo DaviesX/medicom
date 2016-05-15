@@ -15,8 +15,7 @@ import {Meteor} from 'meteor/meteor';
 
 
 export function BPTable() {
-        this.__dates = [];
-        this.__values = [];
+        this.__pairs = [];
         this.__c_Delimiter = ",";
         this.__c_LineDelim = "\r";
         
@@ -51,8 +50,8 @@ export function BPTable() {
                         var timestamp = parts[0];
                         var bpvalue = parts[1];
                         
-                        this.__dates[i] = this.__parse_csv_date(timestamp);
-                        this.__values[i] = parseFloat(bpvalue, 10);
+                        this.__pairs[i] = {date: this.__parse_csv_date(timestamp),
+                                           value: parseFloat(bpvalue, 10)};
                 }
         }
 
@@ -67,24 +66,32 @@ export function BPTable() {
         }
 
         this.add_row = function(date, value) {
-                var i = this.__dates.length;
-                this.__dates[i] = date;
-                this.__values[i] = value;
+                var i = this.__pairs.length;
+                this.__pairs[i] = {date: date, value: value};
         }
 
-        this.get_dates = function() {
-                return this.__dates;
+        this.get_pairs = function() {
+                return this.__pairs;
         }
-
-        this.get_bp_values = function() {
-                return this.__values;
+        
+        this.sort_data = function(desc) {
+                if (desc) {
+                        this.__pairs.sort(function (x, y) {
+                                return x.date.getTime() > y.date.getTime() ? -1 : 
+                                      (x.date.getTime() < y.date.getTime() ? 1 : 0);
+                        });
+                } else {
+                        this.__pairs.sort(function (x, y) {
+                                return x.date.getTime() < y.date.getTime() ? -1 : 
+                                      (x.date.getTime() > y.date.getTime() ? 1 : 0);
+                        });
+                }
         }
 }
 
 export function BPTable_create_from_POD(pod) {
         var obj = new BPTable();
-        obj.__dates = pod.__dates;
-        obj.__values = pod.__values;
+        obj.__pairs = pod.__pairs;
         obj.__c_Delimiter = pod.__c_Delimiter; 
         obj.__c_LineDelim = pod.__c_LineDelim;
         return obj;

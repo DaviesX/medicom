@@ -67,14 +67,16 @@ export function MeasureManager(mongodb) {
                        this.__measures.find({"__parent.__measure_id" : measure_id}));
         }
         
-        this.get_measures_by_session_and_type = function(session_id, type) {
+        this.get_measures_by_session_and_type = function(session_id, type, order) {
+                order = order == null ? -1 : order;
                 return this.__generate_results(
                        this.__measures.find({"__parent.__session_id": session_id, 
                                              "__parent.__type": type},
                                              {sort: {"__parent.__date": -1}}));
         }
         
-        this.get_measures_by_date_session_and_type = function(start_date, end_date, session_id, type) {
+        this.get_measures_by_date_session_and_type = function(start_date, end_date, session_id, type, order) {
+                order = order == null ? -1 : order;
                 start_date = start_date.getTime();
                 end_date = end_date.getTime();
                 return this.__generate_results(
@@ -82,7 +84,7 @@ export function MeasureManager(mongodb) {
                                              "__parent.__type": type,
                                              "__parent.__date": {$gte: start_date},
                                              "__parent.__date": {$lte: end_date}},
-                                             {sort: {"__parent.__date": -1}}));
+                                             {sort: {"__parent.__date": order}}));
         }
         
         this.reset = function() {

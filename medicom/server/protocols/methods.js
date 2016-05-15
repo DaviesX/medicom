@@ -156,11 +156,11 @@ function provider_get_sessions_by_patient_id(identity, patient_id) {
 function user_get_patient_bp_table(identity, session_id, start_date, end_date, num_samples, method) {
         identity = Identity_create_from_POD(identity);
         var err = new ErrorMessageQueue();
-        var measures = g_superinten_ctrl.get_bp_measures(identity, start_date, end_date, session_id, err);
+        var measures = g_superinten_ctrl.get_bp_measures(
+                identity, start_date, end_date, num_samples, method, session_id, err);
         var bptable = new BPTable();
         if (measures != null) {
-                var interval = Math.min(1, measures.length/num_samples);
-                for (var i = 0; i < measures.length; i += interval) {
+                for (var i = 0; i < measures.length; i ++) {
                         bptable.add_row(measures[i].__parent.get_date(), measures[i].get_bp_value());
                 }
         }

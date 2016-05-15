@@ -39,25 +39,27 @@ function chart_clear(target) {
 function chart_update_blood_pressure(bptable, start_date, end_date, num_samples, methods, target) {
         var x = ["x"];
         var y = ["blood pressure"];
-
-        var dates = bptable.get_dates();
-        var values = bptable.get_bp_values();
+        
+        bptable.sort_data(false);
+        var pairs = bptable.get_pairs();
 
         var s = start_date == null ? Number.MIN_VALUE : start_date.getTime();
         var e = end_date == null ? Number.MAX_VALUE : end_date.getTime();
         
         var valid_indices = [];
-        for (var i = 0, j = 0; j < values.length; j ++) {
-                var millidate = dates[j].getTime();
+        for (var i = 0, j = 0; j < pairs.length; j ++) {
+                var millidate = pairs[j].date.getTime();
                 if (millidate < s || millidate > e)
                         continue;
                 valid_indices[i ++] = j;
         }
 
-        var interval = num_samples == null ? 1 : Math.min(1, valid_indices.length/num_samples);
-        for (var i = 0, j = 1; i < valid_indices.length; i += interval, j ++) {
-                x[j] = dates[valid_indices[i]];
-                y[j] = values[valid_indices[i]];
+        num_samples = num_samples != null ? 
+                Math.min(valid_indices.length, Math.max(1, num_samples)) : valid_indices.length;   
+        var interval = valid_indices.length/num_samples;
+        for (var i = 0, j = 1; j - 1 < num_samples; i += interval, j ++) {
+                x[j] = pairs[valid_indices[Math.floor(i)]].date;
+                y[j] = pairs[valid_indices[Math.floor(i)]].value;
         }
         
         var chart = c3.generate({
@@ -130,7 +132,7 @@ function RemoteBloodPressureDisplay() {
                         session_id: this.__session.get_session_id(), 
                         start_date: start_date,
                         end_date: end_date,
-                        num_samples: 10,
+                        num_samples: null,
                         method: "average"
                 };
                 Meteor.call("user_get_patient_bp_table", params, function(error, result) {
@@ -139,7 +141,7 @@ function RemoteBloodPressureDisplay() {
                         } else {
                                 var bptable = result.bptable;
                                 bptable = BPTable_create_from_POD(bptable);
-                                chart_update_blood_pressure(bptable, start_date, end_date, null, "average", target); 
+                                chart_update_blood_pressure(bptable, start_date, end_date, null, "plain", target); 
                         }
                 });
         }
@@ -203,6 +205,7 @@ export function DataBrowser() {
 
         this.__start_date = null;
         this.__end_date = null;
+        this.__sample_count = 10;
         
         this.__smart_display = new SmartDisplay();
         this.__local_bp_display = new LocalBloodPressureDisplay();
@@ -232,6 +235,19 @@ export function DataBrowser() {
                         if (file == null) 
                                 return;
                         clazz.__local_bp_display.set_data_from_bp_file_stream(file);
+                        clazz.update_display();
+                });
+        }
+        
+        this.set_date_holder = function(start, end) {
+                var clazz = this;
+                
+                start.datepicker().on("change", function (e) {
+                        this.__start_date = new Date(e.target.value);
+                        clazz.update_display();
+                });
+                end.datepicker().on("change", function(e) {
+                        this.__end_date = new Date(e.target.value);
                         clazz.update_display();
                 });
         }
@@ -311,10 +327,11 @@ export function DataBrowser() {
 
 export var G_DataBrowser = new DataBrowser();
 
-Template.tmpldatabrowser.onRendered(function () {        
+Template.tmpldatabrowser.onRendered(function () {
         G_DataBrowser.set_display_type_holder($("#sel-chart-types"));
         G_DataBrowser.set_charting_area(this.find("#charting-area"));
         G_DataBrowser.set_file_select_holder($("#ipt-file-select"));
+        G_DataBrowser.set_date_holder($("#ipt-start-date"), $("#ipt-end-date"));
 
         G_DataBrowser.update_display();
 });
