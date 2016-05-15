@@ -187,6 +187,9 @@ function SmartDisplay() {
         }
 }
 
+function SessionNotesDisplay() {
+}
+
 export function DataBrowser() {
         this.__identity = null;
         this.__browsing_user = null;
@@ -211,6 +214,7 @@ export function DataBrowser() {
         this.__local_bp_display = new LocalBloodPressureDisplay();
         this.__remote_bp_display = new RemoteBloodPressureDisplay();
         this.__symp_display = new SymptomsDisplay();
+        this.__notes_display = new SessionNotesDisplay();
 
         this.set_target_session = function(session, user_info, identity) {
                 this.__session = session;
@@ -243,11 +247,11 @@ export function DataBrowser() {
                 var clazz = this;
                 
                 start.datepicker().on("change", function (e) {
-                        this.__start_date = new Date(e.target.value);
+                        clazz.__start_date = new Date(e.target.value);
                         clazz.update_display();
                 });
                 end.datepicker().on("change", function(e) {
-                        this.__end_date = new Date(e.target.value);
+                        clazz.__end_date = new Date(e.target.value);
                         clazz.update_display();
                 });
         }
