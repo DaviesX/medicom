@@ -74,6 +74,58 @@ export function BPTable() {
                 return this.__pairs;
         }
         
+        this.__min_pair = function(i, j) {
+                var m = this.__pairs[i];
+                for (var k = i + 1; k <= j; k ++) {
+                        if (this.__pairs[k].value < m.value)
+                                m = this.__pairs[k];
+                }
+                return m;
+        }
+        
+        this.__max_pair = function(i, j) {
+                var m = this.__pairs[i];
+                for (var k = i + 1; k <= j; k ++) {
+                        if (this.__pairs[k].value > m.value)
+                                m = this.__pairs[k];
+                }
+                return m;
+        }
+        
+        this.__avg_pair = function(i, j) {
+                var sum = this.__pairs[i].value;
+                for (var k = i + 1; k <= j; k ++) {
+                        sum += this.__pairs[k].value;
+                }
+                return {date: this.__pairs[i].date, value: sum/(j - i + 1)};
+        }
+        
+        this.merge_adjacent_data = function(method, f_Time_Eval) {
+                if (this.__pairs.length == 0 || method == "plain") return;
+                
+                var last = 0;
+                var new_pairs = [];
+                for (var i = 0; i < this.__pairs.length; i ++) {
+                        if (i + 1 == this.__pairs.length || 
+                            !f_Time_Eval(this.__pairs[i].date, this.__pairs[i + 1].date)) {
+                                switch (method) {
+                                case "uniform min":
+                                        new_pairs[new_pairs.length] = this.__min_pair(last, i);
+                                        break;
+                                case "uniform max":
+                                        new_pairs[new_pairs.length] = this.__max_pair(last, i);
+                                        break;
+                                case "uniform average":
+                                        new_pairs[new_pairs.length] = this.__avg_pair(last, i);
+                                        break;
+                                }
+                                last = i + 1;
+                        }
+                }
+                
+                this.__pairs = new_pairs;
+        }
+        
         this.sort_data = function(desc) {
                 if (desc) {
                         this.__pairs.sort(function (x, y) {

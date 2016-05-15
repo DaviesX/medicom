@@ -31,6 +31,7 @@ export function Measure(type) {
         this.set_session_id = function(session_id) { this.__session_id = session_id; }
         this.set_measure_id = function(measure_id) { this.__measure_id = measure_id; }
         this.get_session_id = function() { return this.__session_id; }
+        this.get_measure_id = function() { return this.__measure_id; }
         this.set_date = function(date) { this.__date = date.getTime(); }
         this.get_date = function() {
                 var date = new Date();

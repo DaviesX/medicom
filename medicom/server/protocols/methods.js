@@ -153,11 +153,11 @@ function provider_get_sessions_by_patient_id(identity, patient_id) {
         return { sessions: sessions, error: err.fetch_all() };
 }
 
-function user_get_patient_bp_table(identity, session_id, start_date, end_date, num_samples, method) {
+function user_get_patient_bp_table(identity, session_id, start_date, end_date, num_samples) {
         identity = Identity_create_from_POD(identity);
         var err = new ErrorMessageQueue();
         var measures = g_superinten_ctrl.get_bp_measures(
-                identity, start_date, end_date, num_samples, method, session_id, err);
+                identity, start_date, end_date, num_samples, session_id, err);
         var bptable = new BPTable();
         if (measures != null) {
                 for (var i = 0; i < measures.length; i ++) {
@@ -372,7 +372,6 @@ provider_recover_session: function(arg) {
  * @param {Date} start date.
  * @param {Date} end date.
  * @param {Integer} number of samples.
- * @param {String} sampling method, including, "plain" "uniform average", "uniform max", "uniform min." 
  * @return {BPTable, String} return a {BPTable, ""} object if sucessful, or otherwise, {null, "..."}.
  */
 user_get_patient_bp_table: function(arg) {
@@ -380,8 +379,7 @@ user_get_patient_bp_table: function(arg) {
                                                          arg.session_id,
                                                          arg.start_date, 
                                                          arg.end_date,
-                                                         arg.num_samples,
-                                                         arg.method);
+                                                         arg.num_samples);
                 },
 
 /**
@@ -391,7 +389,6 @@ user_get_patient_bp_table: function(arg) {
  * @param {Date} start date.
  * @param {Date} end date.
  * @param {Integer} number of samples.
- * @param {String} method(Unused).
  * @return {SymptomsTable, String} return a {SymptomsTable, ""} object if sucessful, or otherwise, {null, "..."}.
  */
 user_get_patient_symptoms: function(arg) {
@@ -399,8 +396,7 @@ user_get_patient_symptoms: function(arg) {
                                                          arg.session_id,
                                                          arg.start_date, 
                                                          arg.end_date,
-                                                         arg.num_samples,
-                                                         arg.method);
+                                                         arg.num_samples);
                 },
 
 /**

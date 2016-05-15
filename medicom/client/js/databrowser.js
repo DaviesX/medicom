@@ -41,6 +41,10 @@ function chart_update_blood_pressure(bptable, start_date, end_date, num_samples,
         var y = ["blood pressure"];
         
         bptable.sort_data(false);
+        // merge the data from the same day.
+        bptable.merge_adjacent_data(methods, function (a, b) {
+                return a.getYear() == b.getYear() && a.getMonth() == b.getMonth() && a.getDay() == b.getDay();
+        });
         var pairs = bptable.get_pairs();
 
         var s = start_date == null ? Number.MIN_VALUE : start_date.getTime();
@@ -59,7 +63,7 @@ function chart_update_blood_pressure(bptable, start_date, end_date, num_samples,
         var interval = valid_indices.length/num_samples;
         for (var i = 0, j = 1; j - 1 < num_samples; i += interval, j ++) {
                 x[j] = pairs[valid_indices[Math.floor(i)]].date;
-                y[j] = pairs[valid_indices[Math.floor(i)]].value;
+                y[j] = pairs[valid_indices[Math.floor(i)]].value.toFixed(1);
         }
         
         var chart = c3.generate({
@@ -107,8 +111,8 @@ function LocalBloodPressureDisplay() {
                 return this.__bptable;
         }
 
-        this.update_target = function(start_date, end_date, target) {
-                chart_update_blood_pressure(this.__bptable, start_date, end_date, null, "average", target);
+        this.update_target = function(start_date, end_date, filter, num_samples, target) {
+                chart_update_blood_pressure(this.__bptable, start_date, end_date, num_samples, filter, target);
         }
 
         this.save_to_file_stream = function(file) {
@@ -126,14 +130,13 @@ function RemoteBloodPressureDisplay() {
                 this.__session = session;
         }
 
-        this.update_target = function(start_date, end_date, target) {
+        this.update_target = function(start_date, end_date, filter, num_samples, target) {
                 var params = {
                         identity: this.__identity, 
                         session_id: this.__session.get_session_id(), 
                         start_date: start_date,
                         end_date: end_date,
-                        num_samples: null,
-                        method: "average"
+                        num_samples: null
                 };
                 Meteor.call("user_get_patient_bp_table", params, function(error, result) {
                         if (result.error != "") {
@@ -141,7 +144,8 @@ function RemoteBloodPressureDisplay() {
                         } else {
                                 var bptable = result.bptable;
                                 bptable = BPTable_create_from_POD(bptable);
-                                chart_update_blood_pressure(bptable, start_date, end_date, null, "plain", target); 
+                                chart_update_blood_pressure(
+                                        bptable, start_date, end_date, num_samples, filter, target); 
                         }
                 });
         }
@@ -194,6 +198,7 @@ export function DataBrowser() {
         this.__identity = null;
         this.__browsing_user = null;
         this.__session = null;
+        
         this.__display_types = ["Smart Display Mode",
                                 "Blood Pressure Data", 
                                 "Symptoms Data", 
@@ -202,20 +207,23 @@ export function DataBrowser() {
                                 "Blood Pressure[Local Data]"];
 
         this.__curr_display_mode = this.__display_types[0];
+        
         this.__display_type_holder = null;
         this.__file_select_holder = null;
         this.__charting_area = null;
 
         this.__start_date = null;
         this.__end_date = null;
-        this.__sample_count = 10;
+        this.__sample_count = null;
+        this.__filtering = "plain";
         
         this.__smart_display = new SmartDisplay();
         this.__local_bp_display = new LocalBloodPressureDisplay();
         this.__remote_bp_display = new RemoteBloodPressureDisplay();
         this.__symp_display = new SymptomsDisplay();
         this.__notes_display = new SessionNotesDisplay();
-
+        
+        // Access infos.
         this.set_target_session = function(session, user_info, identity) {
                 this.__session = session;
                 this.__browsing_user = user_info;
@@ -229,7 +237,8 @@ export function DataBrowser() {
         this.get_browsing_user = function() {
                 return this.__browsing_user;
         }
-
+        
+        // Holders.
         this.set_file_select_holder = function(holder) {
                 this.__file_select_holder = holder;
                 var clazz = this;
@@ -271,6 +280,25 @@ export function DataBrowser() {
                 this.__charting_area = holder;
         }
         
+        this.set_filter_holder = function(holder) {
+                var clazz = this;
+                
+                holder.on("change", function(e) {
+                        clazz.__filtering = e.target.value;
+                        clazz.update_display();
+                });
+        }
+        
+        this.set_sample_count_holder = function(holder) {
+                var clazz = this;
+                
+                holder.on("change", function(e) {
+                        clazz.__sample_count = e.target.value == "" ? null : parseInt(e.target.value);
+                        clazz.update_display();
+                });
+        }
+        
+        // Browser states.
         this.set_display_mode = function(display_mode) {
                 this.__curr_display_mode = display_mode;
         }
@@ -283,6 +311,7 @@ export function DataBrowser() {
                 return this.__display_types;
         }
 
+        // Functional operations.
         this.connect_to_bp_file = function() {
                 var files = this.__file_select_holder.prop("files");
                 if (files == null || files.length == 0) 
@@ -302,10 +331,16 @@ export function DataBrowser() {
                 // Update charting area.
                 switch (display_mode) {
                 case "Smart Display Mode":
-                        this.__smart_display.update_target(this.__start_date, this.__end_date, this.__charting_area);
+                        this.__smart_display.update_target(this.__start_date, this.__end_date,
+                                                           this.__filtering,
+                                                           this.__sample_count,
+                                                           this.__charting_area);
                         break;
                 case "Blood Pressure Data": 
-                        this.__remote_bp_display.update_target(this.__start_date, this.__end_date, this.__charting_area);
+                        this.__remote_bp_display.update_target(this.__start_date, this.__end_date, 
+                                                               this.__filtering,
+                                                               this.__sample_count,
+                                                               this.__charting_area);
                         break;
                 case "Symptoms Data": 
                         this.__symp_display.update_target(this.__start_date, this.__end_date, this.__charting_area);
@@ -315,7 +350,10 @@ export function DataBrowser() {
                 case "Fitbit Data": 
                         break;
                 case "Blood Pressure[Local Data]":
-                        this.__local_bp_display.update_target(this.__start_date, this.__end_date, this.__charting_area);
+                        this.__local_bp_display.update_target(this.__start_date, this.__end_date, 
+                                                              this.__filtering,
+                                                              this.__sample_count,
+                                                              this.__charting_area);
                         break;
                 default:
                         throw "unkown display mode: " + display_mode;
@@ -336,6 +374,8 @@ Template.tmpldatabrowser.onRendered(function () {
         G_DataBrowser.set_charting_area(this.find("#charting-area"));
         G_DataBrowser.set_file_select_holder($("#ipt-file-select"));
         G_DataBrowser.set_date_holder($("#ipt-start-date"), $("#ipt-end-date"));
+        G_DataBrowser.set_filter_holder($("#sel-filter-method"));
+        G_DataBrowser.set_sample_count_holder($("#ipt-num-samples"));
 
         G_DataBrowser.update_display();
 });

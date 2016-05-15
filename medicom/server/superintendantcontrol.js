@@ -38,7 +38,7 @@ export function SuperIndendantControl() {
                 return true;
         }
         
-        this.get_bp_measures = function(identity, start_date, end_date, sample_count, method, session_id, err) {
+        this.get_bp_measures = function(identity, start_date, end_date, sample_count, session_id, err) {
                 if (!this.__identity_mgr.verify_identity(identity)) {
                         err.log("You don't have a valid identity");
                         return null;
