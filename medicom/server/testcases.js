@@ -20,7 +20,7 @@ import {AccountInfo, AccountControl} from "./accountcontrol.js";
 import * as M_AccountControl from "./accountcontrol.js";
 import {DataModelContext, G_DataModelContext} from "./datamodelcontext.js";
 import {c_Meteor_Methods} from "./protocols/methods.js";
-import {BPTable} from "../api/bptable.js";
+import {ValueTable} from "../api/valuetable.js";
 
 
 // test cases
@@ -197,13 +197,12 @@ const csv_stream =
 " 2015-12-09 23:21:00,100";
 
 export function TestBPTable() {
-        var bptable = new BPTable();
+        var bptable = new ValueTable();
         bptable.construct_from_csv_stream(csv_stream);
 
-        var values = bptable.get_bp_values();
-        var dates = bptable.get_dates();
+        var pairs = bptable.get_pairs();
 
-        for (var i = 0; i < values.length; i ++) {
-                console.log("date: " + dates[i].toString() + "value: " + values[i]);
+        for (var i = 0; i < pairs.length; i ++) {
+                console.log("date: " + pairs[i].date + "value: " + pairs[i].value);
         }
 }

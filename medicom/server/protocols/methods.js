@@ -14,7 +14,7 @@
 // Web APIs go here
 import {Meteor} from 'meteor/meteor';
 import {Profile} from "../../api/profile.js";
-import {BPTable, BPTable_create_from_POD} from "../../api/bptable.js";
+import {ValueTable, ValueTable_create_from_POD} from "../../api/valuetable.js";
 import {ErrorMessageQueue} from "../../api/common.js";
 import {Identity_create_from_POD} from "../../api/identity.js";
 import {AccountControl} from "../accountcontrol.js";
@@ -158,7 +158,7 @@ function user_get_patient_bp_table(identity, session_id, start_date, end_date, n
         var err = new ErrorMessageQueue();
         var measures = g_superinten_ctrl.get_bp_measures(
                 identity, start_date, end_date, num_samples, session_id, err);
-        var bptable = new BPTable();
+        var bptable = new ValueTable();
         if (measures != null) {
                 for (var i = 0; i < measures.length; i ++) {
                         bptable.add_row(measures[i].__parent.get_date(), measures[i].get_bp_value());
@@ -177,7 +177,7 @@ function patient_super_update_bp_from_table(identity, session_id, table) {
                 err.log("invalid blood pressure table");
                 return {error: err.fetch_all()};
         }
-        table = BPTable_create_from_POD(table);
+        table = ValueTable_create_from_POD(table);
         identity = Identity_create_from_POD(identity);
         if (!g_superinten_ctrl.update_bp_measures(identity, session_id, table, err)) {
                 err.log("failed to update bp data");
@@ -191,7 +191,7 @@ function patient_super_update_bp_from_file(identity, session_id, format, blob) {
                 err.log("invalid format or data blob");
                 return {error: err.fetch_all()};
         }
-        var bptable = new BPTable();
+        var bptable = new ValueTable();
         bptable.construct_from_stream(format, blob);
         return patient_super_update_bp_from_table(identity, session_id, bptable);
 }
@@ -372,7 +372,7 @@ provider_recover_session: function(arg) {
  * @param {Date} start date.
  * @param {Date} end date.
  * @param {Integer} number of samples.
- * @return {BPTable, String} return a {BPTable, ""} object if sucessful, or otherwise, {null, "..."}.
+ * @return {ValueTable, String} return a {ValueTable, ""} object if sucessful, or otherwise, {null, "..."}.
  */
 user_get_patient_bp_table: function(arg) {
                         return user_get_patient_bp_table(arg.identity, 
@@ -418,7 +418,7 @@ patient_super_update_bp_from_file: function(arg) {
  * Update blood pressure data from bptable.
  * @param {Identity} Identity of the provider/patient/super intendant.
  * @param {Integer} Target Session ID.
- * @param {BPTable} bptable to be updated.
+ * @param {ValueTable} bptable to be updated.
  * @return {Boolean, String} return a {True, ""} object if sucessful, or otherwise, {False, "..."}.
  */
 patient_super_update_bp_from_table: function(arg) {

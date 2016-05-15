@@ -14,7 +14,7 @@
 import {Meteor} from 'meteor/meteor';
 
 
-export function BPTable() {
+export function ValueTable() {
         this.__pairs = [];
         this.__c_Delimiter = ",";
         this.__c_LineDelim = "\r";
@@ -141,8 +141,8 @@ export function BPTable() {
         }
 }
 
-export function BPTable_create_from_POD(pod) {
-        var obj = new BPTable();
+export function ValueTable_create_from_POD(pod) {
+        var obj = new ValueTable();
         obj.__pairs = pod.__pairs;
         obj.__c_Delimiter = pod.__c_Delimiter; 
         obj.__c_LineDelim = pod.__c_LineDelim;

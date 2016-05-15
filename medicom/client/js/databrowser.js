@@ -12,7 +12,7 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 import {Template} from "meteor/templating";
-import {BPTable, BPTable_create_from_POD} from "../../api/bptable.js";
+import {ValueTable, ValueTable_create_from_POD} from "../../api/valuetable.js";
 
 
 function chart_clear(target) {
@@ -84,7 +84,7 @@ function chart_update_blood_pressure(bptable, start_date, end_date, num_samples,
 }
 
 function LocalBloodPressureDisplay() {
-        this.__bptable = new BPTable();
+        this.__bptable = new ValueTable();
         this.__file = null;
 
         this.__update_data_from_file_stream = function() {
@@ -143,7 +143,7 @@ function RemoteBloodPressureDisplay() {
                                 console.log("failed to obtain bptable from patient: " + JSON.stringify(params));
                         } else {
                                 var bptable = result.bptable;
-                                bptable = BPTable_create_from_POD(bptable);
+                                bptable = ValueTable_create_from_POD(bptable);
                                 chart_update_blood_pressure(
                                         bptable, start_date, end_date, num_samples, filter, target); 
                         }
