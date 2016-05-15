@@ -14,7 +14,7 @@
 import {Meteor} from "meteor/meteor";
 import {Measure, Measure_Parent_Create_From_POD, c_Measure_Type_BP} from "./measure.js";
 
-function MeasureBP() {
+export function MeasureBP() {
         this.__parent = new Measure(c_Measure_Type_BP);
         this.__value = 0;
         
@@ -24,8 +24,8 @@ function MeasureBP() {
         this.get_bp_value = function() { return this.__value; }
 }
 
-function MeasureBP_Create_From_POD(pod) {
-        var obj = new MeasureBP(0);
+export function MeasureBP_Create_From_POD(pod) {
+        var obj = new MeasureBP();
         obj.__parent = Measure_Parent_Create_From_POD(pod.__parent);
         obj.__date = pod.__date;
         obj.__value = pod.__value;

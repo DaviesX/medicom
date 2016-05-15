@@ -14,13 +14,18 @@
 // Web APIs go here
 import {Meteor} from 'meteor/meteor';
 import {Profile} from "../../api/profile.js";
+import {BPTable, BPTable_create_from_POD} from "../../api/bptable.js";
 import {ErrorMessageQueue} from "../../api/common.js";
 import {Identity_create_from_POD} from "../../api/identity.js";
 import {AccountControl} from "../accountcontrol.js";
 import {ProviderControl} from "../providercontrol.js";
+import {PatientControl} from "../patientcontrol.js";
+import {SuperIndendantControl} from "../superintendantcontrol.js";
 
 var g_account_ctrl = new AccountControl();
 var g_provider_ctrl = new ProviderControl();
+var g_patient_ctrl = new PatientControl();
+var g_superinten_ctrl = new SuperIndendantControl();
 
 
 function server_print(arg) {
@@ -148,22 +153,47 @@ function provider_get_sessions_by_patient_id(identity, patient_id) {
         return { sessions: sessions, error: err.fetch_all() };
 }
 
-function user_get_patient_bp_table(identity, patient_id, start_date, end_date, num_samples, method) {
+function user_get_patient_bp_table(identity, session_id, start_date, end_date, num_samples, method) {
+        identity = Identity_create_from_POD(identity);
+        var err = new ErrorMessageQueue();
+        var measures = g_superinten_ctrl.get_bp_measures(identity, start_date, end_date, session_id, err);
+        var bptable = new BPTable();
+        if (measures != null) {
+                var interval = Math.min(1, measures.length/num_samples);
+                for (var i = 0; i < measures.length; i += interval) {
+                        bptable.add_row(measures[i].__parent.get_date(), measures[i].get_bp_value());
+                }
+        }
+        return {bptable: bptable, error: err.fetch_all()};
+}
+
+function user_get_patient_symptoms(identity, session_id, start_date, end_date, num_samples, method) {
         identity = Identity_create_from_POD(identity);
 }
 
-function user_get_patient_symptoms(identity, patient_id, start_date, end_date, num_samples, method) {
+function patient_super_update_bp_from_table(identity, session_id, table) {
+        var err = new ErrorMessageQueue();
+        if (table == null) {
+                err.log("invalid blood pressure table");
+                return {error: err.fetch_all()};
+        }
+        table = BPTable_create_from_POD(table);
         identity = Identity_create_from_POD(identity);
+        if (!g_superinten_ctrl.update_bp_measures(identity, session_id, table, err)) {
+                err.log("failed to update bp data");
+        }
+        return {error: err.fetch_all()};
 }
 
-function patient_super_update_bp_from_table(identity, patient_id, table) {
-        identity = Identity_create_from_POD(identity);
-}
-
-function patient_super_update_bp_from_file(identity, patient_id, format, blob) {
+function patient_super_update_bp_from_file(identity, session_id, format, blob) {
+        var err = new ErrorMessageQueue();
+        if (format == null || blob == null) {
+                err.log("invalid format or data blob");
+                return {error: err.fetch_all()};
+        }
         var bptable = new BPTable();
         bptable.construct_from_stream(format, blob);
-        patient_super_update_bp_from_table(identity, patient_id, bptable);
+        return patient_super_update_bp_from_table(identity, session_id, bptable);
 }
 
 function super_update_symptom(identity, patient_id, date, json) {
@@ -338,7 +368,7 @@ provider_recover_session: function(arg) {
 /**
  * Get a patient's blood pressure graph data.
  * @param {Identity} Identity of the provider/patient.
- * @param {Integer} Account ID of the patient.
+ * @param {Integer} Target Session ID.
  * @param {Date} start date.
  * @param {Date} end date.
  * @param {Integer} number of samples.
@@ -347,7 +377,7 @@ provider_recover_session: function(arg) {
  */
 user_get_patient_bp_table: function(arg) {
                         return user_get_patient_bp_table(arg.identity, 
-                                                         arg.id,
+                                                         arg.session_id,
                                                          arg.start_date, 
                                                          arg.end_date,
                                                          arg.num_samples,
@@ -357,7 +387,7 @@ user_get_patient_bp_table: function(arg) {
 /**
  * Get a patient's symptom data.
  * @param {Identity} Identity of the provider/patient.
- * @param {Integer} Account ID of the patient.
+ * @param {Integer} Target Session ID.
  * @param {Date} start date.
  * @param {Date} end date.
  * @param {Integer} number of samples.
@@ -366,7 +396,7 @@ user_get_patient_bp_table: function(arg) {
  */
 user_get_patient_symptoms: function(arg) {
                         return user_get_patient_symptoms(arg.identity, 
-                                                         arg.id,
+                                                         arg.session_id,
                                                          arg.start_date, 
                                                          arg.end_date,
                                                          arg.num_samples,
@@ -376,14 +406,14 @@ user_get_patient_symptoms: function(arg) {
 /**
  * Update blood pressure data from file.
  * @param {Identity} Identity of the provider/patient/super intendant.
- * @param {Integer} Account ID of the patient.
+ * @param {Integer} Target Session ID.
  * @param {String} Format of the file blob.
  * @param {String} Text blob of the file.
  * @return {Boolean, String} return a {True, ""} object if sucessful, or otherwise, {False, "..."}.
  */
 patient_super_update_bp_from_file: function(arg) {
                         return patient_super_update_bp_from_file(arg.identity, 
-                                                                 arg.id, 
+                                                                 arg.session_id, 
                                                                  arg.format,
                                                                  arg.blob);
                 },
@@ -391,13 +421,13 @@ patient_super_update_bp_from_file: function(arg) {
 /**
  * Update blood pressure data from bptable.
  * @param {Identity} Identity of the provider/patient/super intendant.
- * @param {Integer} Account ID of the patient.
+ * @param {Integer} Target Session ID.
  * @param {BPTable} bptable to be updated.
  * @return {Boolean, String} return a {True, ""} object if sucessful, or otherwise, {False, "..."}.
  */
 patient_super_update_bp_from_table: function(arg) {
                         return patient_super_update_bp_from_table(arg.identity, 
-                                                                  arg.id, 
+                                                                  arg.session_id, 
                                                                   arg.bptable);
                 },
 

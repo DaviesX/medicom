@@ -19,6 +19,7 @@ import {IdentityManager} from "./identitymanager.js";
 import {ProviderManager} from "./providermanager.js";
 import {PatientManager} from "./patientmanager.js";
 import {ParticipatedSessionManager} from "./sessionmanager.js";
+import {MeasureManager} from "./measuremanager.js";
 
 export function DataModelContext() {
         this.__mongodb = new MongoDB();
@@ -36,6 +37,7 @@ export function DataModelContext() {
         this.__session_mgr = new ParticipatedSessionManager(this.__mongodb,
                                                 this.__provider_mgr,
                                                 this.__patient_mgr);
+        this.__measure_mgr = new MeasureManager(this.__mongodb);
         
         this.get_mongodb = function() { return this.__mongodb; }
         this.get_account_manager = function() { return this.__account_mgr; }
@@ -45,6 +47,7 @@ export function DataModelContext() {
         this.get_provider_manager = function() { return this.__provider_mgr; }
         this.get_patient_manager = function() { return this.__patient_mgr; }
         this.get_session_manager = function() { return this.__session_mgr; }
+        this.get_measure_manager = function() { return this.__measure_mgr; }
         this.reset_all = function() {
                 this.__profile_mgr.reset();
                 this.__provider_mgr.reset();
@@ -53,6 +56,7 @@ export function DataModelContext() {
                 this.__identity_mgr.reset();
                 this.__account_mgr.reset();
                 this.__session_mgr.reset();
+                this.__measure_mgr.reset();
         }
 }
 

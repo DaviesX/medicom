@@ -21,11 +21,24 @@ export function MeasureManager(mongodb) {
         
         this.__measures = new Mongo.Collection(this.c_Measure_Coll_Name);
         
-        this.create_measure = function(session_id, measure) {
-                var measure_id = __mongodb.get_string_uuid();
-                measure.__parent.set_session_id(session_id);
-                measure.__parent.set_measure_id(measure_id);
-                this.__measures.insert(measure);
+        this.__retain_measure = function(session_id, measure) {
+                var result = this.__measures.find({"__parent.__session_id": session_id,
+                                                   "__parent.__date": measure.__parent.get_internal_date()});
+                return result.count() > 0 ? Measure_Create_From_POD(result.fetch()[0]) : null;
+        }
+        
+        this.update_measure = function(session_id, measure) {
+                var old_measure = this.__retain_measure(session_id, measure);
+                if (old_measure != null) {
+                        measure.__parent.set_session_id(old_measure.__parent.get_session_id());
+                        measure.__parent.set_measure_id(old_measure.__parent.get_measure_id());
+                        this.__measures.update({"__parent.__session_id": session_id,
+                                                "__parent.__date": measure.__parent.get_internal_date()}, measure);
+                } else {
+                        measure.__parent.set_session_id(session_id);
+                        measure.__parent.set_measure_id(this.__mongodb.get_string_uuid());
+                        this.__measures.insert(measure);
+                }
                 return measure;
         }
         
@@ -70,5 +83,9 @@ export function MeasureManager(mongodb) {
                                              "__parent.__date": {$gte: start_date},
                                              "__parent.__date": {$lte: end_date}},
                                              {sort: {"__parent.__date": -1}}));
+        }
+        
+        this.reset = function() {
+                this.__measures.remove({});
         }
 }

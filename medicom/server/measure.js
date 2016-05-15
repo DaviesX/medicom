@@ -17,10 +17,10 @@ import {MeasureSymptoms} from "./measuresymptoms.js";
 import {MeasureFitbit} from "./measurefitbit.js";
 import {MeasurePillBottleCap} from "./measurepillbottlecap.js";
 
-var c_Measure_Type_BP = "MeasureBP";
-var c_Measure_Type_Symptoms = "MeasureSymptoms";
-var c_Measure_Type_Fitbit = "MeasureFitbit";
-var c_Measure_Type_PillBottleCap = "MeasurePillBottleCap";
+export var c_Measure_Type_BP = "MeasureBP";
+export var c_Measure_Type_Symptoms = "MeasureSymptoms";
+export var c_Measure_Type_Fitbit = "MeasureFitbit";
+export var c_Measure_Type_PillBottleCap = "MeasurePillBottleCap";
 
 export function Measure(type) {
         this.__measure_id = "-1";
@@ -30,25 +30,30 @@ export function Measure(type) {
         
         this.set_session_id = function(session_id) { this.__session_id = session_id; }
         this.set_measure_id = function(measure_id) { this.__measure_id = measure_id; }
+        this.get_session_id = function() { return this.__session_id; }
+        this.set_date = function(date) { this.__date = date.getTime(); }
         this.get_date = function() {
                 var date = new Date();
                 date.setTime(this.__date);
                 return date;
         }
+        this.get_internal_date = function() { return this.__date; }
 }
 
 export function Measure_Parent_Create_From_POD(pod) {
         var obj = new Measure("", -1);
-        this.__measure_id = pod.__measure_id;
-        this.__session_id = pod.__session_id;
-        this.__type = pod.__type;
-        this.__date = pod.__date;
+        obj.__measure_id = pod.__measure_id;
+        obj.__session_id = pod.__session_id;
+        obj.__type = pod.__type;
+        obj.__date = pod.__date;
         return obj;
 }
 
 export function Measure_Create_From_POD(pod) {
-        switch (pod.__type) {
+        switch (pod.__parent.__type) {
         case c_Measure_Type_BP:
                 return MeasureBP_Create_From_POD(pod);
+        default:
+                throw "Unknown measure type";
         }
 }

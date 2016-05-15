@@ -54,7 +54,7 @@ function chart_update_blood_pressure(bptable, start_date, end_date, num_samples,
                 valid_indices[i ++] = j;
         }
 
-        var interval = num_samples == null ? 1 : valid_indices.length/num_samples;
+        var interval = num_samples == null ? 1 : Math.min(1, valid_indices.length/num_samples);
         for (var i = 0, j = 1; i < valid_indices.length; i += interval, j ++) {
                 x[j] = dates[valid_indices[i]];
                 y[j] = values[valid_indices[i]];
@@ -116,16 +116,18 @@ function LocalBloodPressureDisplay() {
 function RemoteBloodPressureDisplay() {
         this.__identity = null;
         this.__browsing_user = null;
+        this.__session = null;
         
-        this.set_access_info = function(identity, browsing_user) {
+        this.set_access_info = function(identity, browsing_user, session) {
                 this.__identity = identity
                 this.__browsing_user = browsing_user;
+                this.__session = session;
         }
 
         this.update_target = function(start_date, end_date, target) {
                 var params = {
                         identity: this.__identity, 
-                        id: this.__browsing_user.get_account_id(), 
+                        session_id: this.__session.get_session_id(), 
                         start_date: start_date,
                         end_date: end_date,
                         num_samples: 10,
@@ -136,16 +138,17 @@ function RemoteBloodPressureDisplay() {
                                 console.log("failed to obtain bptable from patient: " + JSON.stringify(params));
                         } else {
                                 var bptable = result.bptable;
-                                bptable = BPTable_create_from_POD(bptable)
+                                bptable = BPTable_create_from_POD(bptable);
                                 chart_update_blood_pressure(bptable, start_date, end_date, null, "average", target); 
                         }
                 });
         }
 
         this.upload_to_remote_server = function(bptable) {
+                if (bptable == null) return;
                 var params = {
                         identity: this.__identity, 
-                        id: this.__browsing_user.get_account_id(), 
+                        session_id: this.__session.get_session_id(), 
                         bptable: bptable
                 };
                 Meteor.call("patient_super_update_bp_from_table", params, function(error, result) {
@@ -169,10 +172,12 @@ function SmartDisplay() {
 
         this.__identity = null;
         this.__browsing_user = null;
+        this.__session = null;
         
-        this.set_access_info = function(identity, browsing_user) {
+        this.set_access_info = function(identity, browsing_user, session) {
                 this.__identity = identity
                 this.__browsing_user = browsing_user;
+                this.__session = session;
         }
 
         this.update_target = function(start_date, end_date, target) {
@@ -271,8 +276,8 @@ export function DataBrowser() {
                 else this.set_display_mode(display_mode);
                 
                 // Handle access info.
-                this.__remote_bp_display.set_access_info(this.__identity, this.__browsing_user);
-                this.__smart_display.set_access_info(this.__identity, this.__browsing_user);
+                this.__remote_bp_display.set_access_info(this.__identity, this.__browsing_user, this.__session);
+                this.__smart_display.set_access_info(this.__identity, this.__browsing_user, this.__session);
                
                 // Update charting area.
                 switch (display_mode) {
@@ -296,6 +301,12 @@ export function DataBrowser() {
                         throw "unkown display mode: " + display_mode;
                 }
         }
+        
+        this.save_changes = function() {
+                this.__remote_bp_display.upload_to_remote_server(this.__local_bp_display.get_bptable());
+                this.update_display();
+                alert("Everything has been saved");
+        }
 }
 
 export var G_DataBrowser = new DataBrowser();
@@ -318,4 +329,8 @@ Template.tmpldatabrowser.helpers({
 
 Template.tmpldatabrowser.events({"click #sel-chart-types"(event) {
         G_DataBrowser.update_display($(event.target).val());
+}});
+
+Template.tmpldatabrowser.events({"click #btn-save-change"(event) {
+        G_DataBrowser.save_changes();
 }});

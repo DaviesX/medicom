@@ -36,29 +36,30 @@ export function PatientControl() {
                 return identity.get_account_record().get_account_id();
         }
         
-        this.add_provider = function(identity, provider_id, err) {
-                var patient_id = this.__get_patient_id_from_identity(identity, err);
-                if (patient_id == null) return null;
-                else                    return this.__session_utils.add_relation(provider_id, patient_id, err);
-        }
-        
-        this.start_new_session_with = function(identity, provider_id, err) {
-                var patient_id = this.__get_patient_id_from_identity(identity, err);
-                if (patient_id == null) return null;
-                else                    return this.__session_utils.start_new_session_with(provider_id, patient_id, err);
-        }
-        
-        this.end_session = function(identity, session_id, err) {
-                var patient_id = this.__get_patient_id_from_identity(identity, err);
-                if (patient_id == null) return null;
-                else                    return this.__session_utils.end_session(session_id, err);
-        }
-        
-        this.recover_session = function(identity, session_id, err) {
-                var patient_id = this.__get_patient_id_from_identity(identity, err);
-                if (patient_id == null) return null;
-                else                    return this.__session_utils.recover_session(session_id, err);
-        }
+        // Patients don't need these operations
+//        this.add_provider = function(identity, provider_id, err) {
+//                var patient_id = this.__get_patient_id_from_identity(identity, err);
+//                if (patient_id == null) return null;
+//                else                    return this.__session_utils.add_relation(provider_id, patient_id, err);
+//        }
+//        
+//        this.start_new_session_with = function(identity, provider_id, err) {
+//                var patient_id = this.__get_patient_id_from_identity(identity, err);
+//                if (patient_id == null) return null;
+//                else                    return this.__session_utils.start_new_session_with(provider_id, patient_id, err);
+//        }
+//        
+//        this.end_session = function(identity, session_id, err) {
+//                var patient_id = this.__get_patient_id_from_identity(identity, err);
+//                if (patient_id == null) return null;
+//                else                    return this.__session_utils.end_session(session_id, err);
+//        }
+//        
+//        this.recover_session = function(identity, session_id, err) {
+//                var patient_id = this.__get_patient_id_from_identity(identity, err);
+//                if (patient_id == null) return null;
+//                else                    return this.__session_utils.recover_session(session_id, err);
+//        }
         // removal may not be allowed.
 //        this.remove_provider = function(identity, provider_id, err) {
 //                var patient_id = this.__get_patient_id_from_identity(identity, err);
