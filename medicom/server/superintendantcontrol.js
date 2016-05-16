@@ -22,6 +22,7 @@ import * as M_Measure from "./measure.js";
 export function SuperIndendantControl() {
         this.__measure_mgr = G_DataModelContext.get_measure_manager();
         this.__identity_mgr = G_DataModelContext.get_identity_manager();
+        this.__session_mgr = G_DataModelContext.get_session_manager();
         
         this.update_bp_measures = function(identity, session_id, bptable, err) {
                 if (!this.__identity_mgr.verify_identity(identity)) {
@@ -55,5 +56,33 @@ export function SuperIndendantControl() {
                         sampled[i] = measures[Math.floor(j)];
                 }
                 return sampled;
+        }
+        
+        this.__get_session_by_id = function(identity, session_id, err) {
+                if (!this.__identity_mgr.verify_identity(identity)) {
+                        err.log("You don't have a valid identity");
+                        return null;
+                }
+                var session = this.__session_mgr.get_session_by_id(session_id);
+                if (session == null) {
+                        err.log("Session: " + session_id + " doesn't exists");
+                        return null;
+                }
+                var id = identity.get_account_record().get_account_id();
+                if (session.get_provider_id() != id && session.get_patient_id() != id) {
+                        err.log("Your are not in this session");
+                        return null;
+                }
+                return session;
+        }
+        
+        this.get_session_notes = function(identity, session_id, err) {
+                var session = this.__get_session_by_id(identity, session_id, err);
+                return session != null ? session.get_notes() : null;
+        }
+        
+        this.get_session_comments = function(identity, session_id, err) {
+                var session = this.__get_session_by_id(identity, session_id, err);
+                return session != null ? session.get_comments() : null;
         }
 }

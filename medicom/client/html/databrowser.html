@@ -30,7 +30,12 @@
                 <input style="display: none;" id="ipt-file-select" type="file" />
         </div>
         <div style="margin-top: 15px;">Issues and Notes: </div>
-        <div><textarea style="width: 100%;" rows="4" cols="50" placeholder="High blood pressure..."></textarea></div>
+        <div>
+                <textarea id="txt-notes" 
+                          style="width: 100%; resize: vertical;" 
+                          rows="8" cols="50" 
+                          placeholder="High blood pressure..."></textarea>
+        </div>
         <div>
                 <div style="margin-bottom: 5px;">
                         <input type="text" id="ipt-start-date" placeholder="start date" /> to 
@@ -51,7 +56,12 @@
         </div>
         <div id="charting-area" style="width: 100%; min-height: 300px;"></div>
         <div>Comments</div>
-        <div><textarea style="width: 100%;" rows="4" cols="50" placeholder="Doctor's Comments"></textarea></div>
+        <div>
+                <textarea id="txt-comments" 
+                          style="width: 100%; resize: vertical;" 
+                          rows="8" cols="50" 
+                          placeholder="Doctor's Comments"></textarea>
+        </div>
         <button id="btn-save-change" 
                 class="simp_classic"
                 style="margin-top: 10px; width: 100%;">Save All Changes</button>

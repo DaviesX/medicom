@@ -36,10 +36,8 @@ export function ParticipatedSession(session_id, provider_id, patient_id) {
         
         this.set_notes = function(notes) { this.__notes = notes; }
         this.get_notes = function() { return this.__notes; }
-        
         this.set_comments = function(comments) { this.__comments = comments; }
-        this.get_comments = function() { return this.__comments; }
-        
+        this.get_comments = function() { return this.__comments; }   
         this.get_start_date = function() { return new Date(this.__start); };
         this.get_end_date = function() { return new Date(this.__end); }
 }
@@ -50,8 +48,8 @@ export function ParticipatedSession_Create_From_POD(pod) {
         obj.__provider_id = pod.__provider_id;
         obj.__patient_id = pod.__patient_id;
         obj.__pending_id = pod.__pending_id;
-        obj.__notes = pod.notes;
-        obj.__comments = pod.comments;
+        obj.__notes = pod.__notes;
+        obj.__comments = pod.__comments;
         obj.__start = pod.__start;
         obj.__end = pod.__end;
         return obj;

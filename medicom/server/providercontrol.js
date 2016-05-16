@@ -20,15 +20,17 @@ import {c_Account_Type_Provider} from "../api/accounttype.js";
 
 export function ProviderControl() {
         this.__session_utils = new SessionUtils();
+        this.__identity_mgr = G_DataModelContext.get_identity_manager();
+        this.__session_mgr = G_DataModelContext.get_session_manager();
+        this.__provider_mgr = G_DataModelContext.get_provider_manager();
         
         this.__has_provider_identity = function(identity) {
-                return (G_DataModelContext.get_identity_manager().verify_identity(identity)) &&
+                return (this.__identity_mgr.verify_identity(identity)) &&
                        (identity.get_account_record().get_account_type() == c_Account_Type_Provider);
         }
         
         this.__get_provider_from_identity = function(identity) {
-                return G_DataModelContext.get_provider_manager().
-                                get_provider_by_id(identity.get_account_record().get_account_id);
+                return this.__provider_mgr.get_provider_by_id(identity.get_account_record().get_account_id);
         }
         
         this.__get_provider_id_from_identity = function(identity, err) {
@@ -83,5 +85,43 @@ export function ProviderControl() {
                 var provider_id = this.__get_provider_id_from_identity(identity, err);
                 if (provider_id == null) return null;
                 else                     return this.__session_utils.get_sessions(provider_id, patient_id, err);
+        }
+        
+        this.__get_session_by_id = function(provider_id, session_id, err) {
+                var session = this.__session_mgr.get_session_by_id(session_id);
+                if (session == null) {
+                        err.log("Session: " + session_id + " doesn't exists");
+                        return null;
+                }
+                if (session.get_provider_id() != provider_id) {
+                        err.log("Your are not in this session");
+                        return null;
+                }
+                return session;
+        }
+        
+        this.set_session_notes = function(identity, session_id, notes, err) {
+
+                var provider_id = this.__get_provider_id_from_identity(identity, err);
+                if (provider_id == null) return false;
+                else {
+                        var session = this.__get_session_by_id(provider_id, session_id, err);
+                        if (session == null) return false;
+                        session.set_notes(notes);
+                        this.__session_mgr.update_session(session);
+                }
+                return true;
+        }
+        
+        this.set_session_comments = function(identity, session_id, notes, err) {
+                var provider_id = this.__get_provider_id_from_identity(identity, err);
+                if (provider_id == null) return false;
+                else {
+                        var session = this.__get_session_by_id(provider_id, session_id, err);
+                        if (session == null) return false;
+                        session.set_comments(notes);
+                        this.__session_mgr.update_session(session);
+                }
+                return true;
         }
 }

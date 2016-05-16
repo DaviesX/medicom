@@ -200,6 +200,34 @@ function super_update_symptom(identity, patient_id, date, json) {
         identity = Identity_create_from_POD(identity);
 }
 
+function user_get_session_notes(identity, session_id) {
+        identity = Identity_create_from_POD(identity);
+        var err = new ErrorMessageQueue();
+        var notes = g_superinten_ctrl.get_session_notes(identity, session_id, err);
+        return {notes: notes, error: err.fetch_all()};
+}
+
+function user_get_session_comments(identity, session_id) {
+        identity = Identity_create_from_POD(identity);
+        var err = new ErrorMessageQueue();
+        var comments = g_superinten_ctrl.get_session_comments(identity, session_id, err);
+        return {comments: comments, error: err.fetch_all()};
+}
+
+function provider_set_session_notes(identity, session_id, notes) {
+        identity = Identity_create_from_POD(identity);
+        var err = new ErrorMessageQueue();
+        g_provider_ctrl.set_session_notes(identity, session_id, notes, err);
+        return {error: err.fetch_all()};
+}
+
+function provider_set_session_comments(identity, session_id, comments) {
+        identity = Identity_create_from_POD(identity);
+        var err = new ErrorMessageQueue();
+        g_provider_ctrl.set_session_comments(identity, session_id, comments, err);
+        return {error: err.fetch_all()};
+}
+
 export var c_Meteor_Methods = {
 /**
  * Print a message on server side.
@@ -438,5 +466,44 @@ patient_super_update_bp_from_table: function(arg) {
 super_update_symptom: function(arg) {
                         return super_update_symptom(arg.identity, arg.id, arg.date, arg.blob);
                 },
-// note: fitbit has development js library on its website.
+
+/**
+ * Get session notes.
+ * @param {Identity} Identity of the provider/patient/super intendant.
+ * @param {Integer} Session ID.
+ * @return {String, String} return a {notes, ""} object if sucessful, or otherwise, {null, "..."}.
+ */
+user_get_session_notes: function(arg) {
+                        return user_get_session_notes(arg.identity, arg.session_id);
+                },
+
+/**
+ * Get session comments.
+ * @param {Identity} Identity of the provider/patient/super intendant.
+ * @param {Integer} Session ID.
+ * @return {String, String} return a {comments, ""} object if sucessful, or otherwise, {null, "..."}.
+ */
+user_get_session_comments: function(arg) {
+                        return user_get_session_comments(arg.identity, arg.session_id);
+                },
+
+/**
+ * Update session notes.
+ * @param {Identity} Identity of the provider.
+ * @param {Integer} Session ID.
+ * @return {Boolean, String} return a {True, ""} object if sucessful, or otherwise, {False, "..."}.
+ */
+provider_set_session_notes: function(arg) {
+                        return provider_set_session_notes(arg.identity, arg.session_id, arg.notes);
+                },
+
+/**
+ * Update session comments.
+ * @param {Identity} Identity of the provider.
+ * @param {Integer} Session ID.
+ * @return {Boolean, String} return a {True, ""} object if sucessful, or otherwise, {False, "..."}.
+ */
+provider_set_session_comments: function(arg) {
+                        return provider_set_session_comments(arg.identity, arg.session_id, arg.comments);
+                },
 };
