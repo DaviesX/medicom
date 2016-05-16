@@ -86,12 +86,12 @@ function PrivilegeNode(node_ref, account_id, agent) {
                 return this.__has_action(this.__out_edges, action);
         }
         
-        this.remove_granted = function(src, dst, action) {
-                this.__in_edges = this.__remove_action(this.__in_edges, src, dst, action);
+        this.remove_grant_from = function(src, action) {
+                this.__in_edges = this.__remove_action(this.__in_edges, src, this.__node_ref, action);
         }
         
-        this.remove_granting = function(src, dst, action) {
-                this.__out_edges = this.__remove_action(this.__out_edges, src, dst, action);
+        this.remove_grant_to = function(dst, action) {
+                this.__out_edges = this.__remove_action(this.__out_edges, this.__node_ref, dst, action);
         }
         
         this.remove_granted_all = function(action) {
@@ -103,11 +103,11 @@ function PrivilegeNode(node_ref, account_id, agent) {
         }
         
         this.grant_from = function(src, action) {
-                this.__add_action(src, this.__node_ref, action);
+                this.__add_action(this.__in_edges, src, this.__node_ref, action);
         }
         
         this.grant_to = function(dst, action) {
-                this.__add_action(this.__node_ref, dst, action);
+                this.__add_action(this.__out_edges, this.__node_ref, dst, action);
         }
 }
 
@@ -148,18 +148,18 @@ export function PrivilegeNetwork() {
         }
         
         this.allocate = function(account_id, agent) {
-                var allocated = this.__nodes.length;
+                var allocated = this.nodes.length;
                 this.__nodes[allocated] = new PrivilegeNode(allocated, account_id, agent);
                 this.__store();
                 return allocated;
         }
         
-        this.__dfs_depended_nodes = function(node_ref, indi_set) {
+        this.__dfs_remove_depended_nodes = function(node_ref, indi_set) {
                 if (!indi_set.has(node_ref) && this.__nodes[node_ref] != null) {
                         indi_set.add(node_ref);
                         var node = this.__nodes[node_ref];
                         for (var i = 0; i < node.__out_edges.length; i ++) {
-                                this.__dfs_depended_nodes(node.__out_edges[i], indi_set);
+                                this.__dfs_remove_depended_nodes(node.__out_edges[i], indi_set);
                         }
                         this.__nodes[node_ref] = null;
                 }
@@ -167,24 +167,91 @@ export function PrivilegeNetwork() {
         
         this.free = function(node_ref) {
                 if (this.__nodes[node_ref] == null) return false;
-                var indi_set = new Set()
-                this.__dfs_depended_nodes(node_ref, indi_set);
+                
+                var indi_set = new Set();
+                this.__dfs_remove_depended_nodes(node_ref, indi_set);
+                
+                this.__store();
+                return true;
+        }
+        
+        this.__dfs_remove_action = function(node_ref, indi_set, action) {
+                if (!indi_set.has(node_ref) && this.__nodes[node_ref] != null) {
+                        indi_set.add(node_ref);
+                        var node = this.__nodes[node_ref];
+                        for (var i = 0; i < node.__out_edges.length; ) {
+                                if (node.__out_edges[i].__action == action) {
+                                        // Remove grant to child relations.
+                                        this.__dfs_remove_action(node.__out_edges[i], indi_set, action);
+                                        // Remove grant on current relation.
+                                        var src_ref = node_ref;
+                                        var dst_ref = node.__out_edges[i];
+                                        node.remove_grant_to(dst_ref, action);
+                                        this.__nodes[dst_ref].remove_grant_from(src_ref, action);
+                                } else i ++;
+                        }
+                }
+        }
+        
+        this.revoke_action_to = function(src_ref, dst_ref, action) {
+                if (this.__nodes[node_ref] == null) return false;
+                
+                var indi_set = new Set();
+                this.__dfs_remove_action(dst_ref, indi_set, action);
+                
+                this.__nodes[dst_ref].remove_grant_from(src_ref, action);
+                this.__nodes[src_ref].remove_grant_to(dst_ref, action);
+                
                 this.__store();
                 return true;
         }
         
         this.set_singleton_action = function(node_ref, action) {
                 if (this.__nodes[node_ref] == null) return false;
+                
                 this.__nodes[node_ref].grant_from(node_ref, action);
                 this.__nodes[node_ref].grant_to(node_ref, action);
+                
                 this.__store();
                 return true;
         }
         
+        this.__dfs_derive_action = function(node_ref, indi_set, action) {
+                if (!indi_set.has(node_ref) && this.__nodes[node_ref] != null) {
+                        indi_set.add(node_ref);
+                        var node = this.__nodes[node_ref];
+                        var old_len = nodes.__out_edges.length;
+                        for (var i = 0; i < old_len; i ++) {
+                                // Grant on current relation.
+                                var src_ref = node_ref;
+                                var dst_ref = node.__out_edges[i];
+                                node.grant_to(src_ref, dst_ref, action);
+                                this.__nodes[dst_ref].grant_from(src_ref, dst_ref, action);
+                                // Grant to child relations. 
+                                this.__dfs_derive_action(node.__out_edges[i], indi_set, action);
+                        }
+                }
+        }
+        
         this.derive_action_from = function(src_ref, dst_ref, action) {
                 if (this.__nodes[node_ref] == null) return false;
+                
                 this.__nodes[dst_ref].grant_from(src_ref, action);
                 this.__nodes[src_ref].grant_to(dst_ref, action);
+                
+                var indi_set = new Set();
+                this.__dfs_derive_action(dst_ref, indi_set, action);
+                this.__store();
+                
+                return true;
+        }
+        
+        this.derive_action_recursive_from = function(src_ref, dst_ref, action) {
+                if (this.__nodes[node_ref] == null) return false;
+                
+                this.__nodes[dst_ref].grant_from(src_ref, action);
+                this.__nodes[src_ref].grant_to(dst_ref, action);
+                
                 this.__store();
                 return true;
         }
