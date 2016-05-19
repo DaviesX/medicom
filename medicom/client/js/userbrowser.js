@@ -13,6 +13,7 @@
  */
 import {Template} from "meteor/templating";
 import {AccountInfo_Create_From_POD} from "../../api/accountinfo.js";
+import {SequentialEffect} from "./effects.js";
 import {G_Session} from "./session.js";
 
 
@@ -27,7 +28,7 @@ export function UserBrowser() {
         
         this.__users = [];
         this.__selected_user_id = -1;
-        
+
         this.__register_on_click = function() {
                 var elms = document.getElementsByName("user-list");
                 for (var i = 0; i < elms.length; i ++) {
@@ -38,6 +39,16 @@ export function UserBrowser() {
                                 clazz.__on_select(clazz);
                         }, false);
                 }
+        }
+
+        this.__animate_effect = function() {
+                var elms = document.getElementsByName("user-list");
+                var seq_effect = new SequentialEffect("fade");
+                for (var i = 0; i < elms.length; i ++) {
+                        seq_effect.add_elm($(elms[i]));
+                }
+                seq_effect.finalize();
+                seq_effect.animate();
         }
 
         this.__make_user_ui = function(user_id, user_name) {
@@ -129,6 +140,7 @@ export function UserBrowser() {
                                         clazz.__users[user_id] = account_info;
                                 }
                                 clazz.__register_on_click();
+                                clazz.__animate_effect();
                         }
                 });
         }

@@ -14,6 +14,7 @@
 import {Template} from "meteor/templating";
 import {ParticipatedSession_Create_From_POD} from "../../api/participatedsession.js";
 import {AccountInfo_Create_From_POD} from "../../api/accountinfo.js";
+import {SequentialEffect} from "./effects.js";
 import {G_Session} from "./session.js";
 
 
@@ -41,6 +42,16 @@ export function SessionBrowser() {
                                 clazz.__selected_session_id = parseInt((event.target || event.srcElement).id, 10);
                         }, false);
                 }
+        }
+
+        this.__animate_effect = function() {
+                var elms = document.getElementsByName("session-list");
+                var seq_effect = new SequentialEffect("fade");
+                for (var i = 0; i < elms.length; i ++) {
+                        seq_effect.add_elm($(elms[i]));
+                }
+                seq_effect.finalize();
+                seq_effect.animate();
         }
 
         this.__make_session_ui = function(session_id, session_date, is_active) {
@@ -124,6 +135,7 @@ export function SessionBrowser() {
                                         clazz.__session_holder.append(ui);
                                 }
                                 clazz.__register_on_click();
+                                clazz.__animate_effect();
                         }
                 });
         }
