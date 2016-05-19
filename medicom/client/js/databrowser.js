@@ -107,6 +107,10 @@ function LocalBloodPressureDisplay() {
                 this.__update_data_from_file_stream();
         }
 
+        this.clear_data = function() {
+                this.__bptable = new ValueTable();
+        }
+
         this.get_bptable = function() {
                 return this.__bptable;
         }
@@ -277,7 +281,9 @@ export function DataBrowser() {
         }
         
         // Holders.
-        this.set_file_select_holder = function(holder) {
+        this.set_file_select_holder = function(holder, disconnector, filepath_holder) {
+                filepath_holder.html("No file is connected");
+
                 this.__file_select_holder = holder;
                 var clazz = this;
 
@@ -285,7 +291,16 @@ export function DataBrowser() {
                         var file = clazz.connect_to_bp_file();
                         if (file == null) 
                                 return;
+                        filepath_holder.html(file.name);
                         clazz.__local_bp_display.set_data_from_bp_file_stream(file);
+                        clazz.update_display();
+                });
+
+                disconnector.on("click", function(event) {
+                        filepath_holder.html("No file is connected");
+                        holder.replaceWith(holder = holder.clone(true));
+                        this.__file_select_holder = holder;
+                        clazz.__local_bp_display.clear_data();
                         clazz.update_display();
                 });
         }
@@ -424,7 +439,7 @@ export var G_DataBrowser = new DataBrowser();
 Template.tmpldatabrowser.onRendered(function () {
         G_DataBrowser.set_display_type_holder($("#sel-chart-types"));
         G_DataBrowser.set_charting_area(this.find("#charting-area"));
-        G_DataBrowser.set_file_select_holder($("#ipt-file-select"));
+        G_DataBrowser.set_file_select_holder($("#ipt-file-select"), $("#lb-disconnect"), $("#div-filepath"));
         G_DataBrowser.set_date_holder($("#ipt-start-date"), $("#ipt-end-date"));
         G_DataBrowser.set_filter_holder($("#sel-filter-method"));
         G_DataBrowser.set_sample_count_holder($("#ipt-num-samples"));

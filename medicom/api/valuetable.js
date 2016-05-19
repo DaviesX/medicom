@@ -57,7 +57,7 @@ export function ValueTable() {
 
         this.construct_from_stream = function(format, stream) {
                 switch(format) {
-                case "csv":
+                case "bp":
                         this.construct_from_csv_stream(stream);
                         break;
                 default:
