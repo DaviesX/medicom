@@ -12,27 +12,29 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  -->
 <template name="tmpluserbrowser">
-        <div>
-                <input id="txt-search" type="search" placeholder="Search"/>
-        </div>
-        <button id="btn-add-user" 
-                class="simp_classic-fill-width" 
-                style="display: none;
-                       margin-top: 10px; 
-                       margin-bottom: 10px"></button>
+        <div id="user-panel">
+                <div>
+                        <input id="txt-search" type="search" placeholder="Search"/>
+                </div>
+                <button id="btn-add-user" 
+                        class="simp_classic-fill-width" 
+                        style="display: none;
+                               margin-top: 10px; 
+                               margin-bottom: 10px"></button>
 
-        <div id="div-user-holder" 
-             style="margin-top: 20px; 
-                    margin-bottom: 20px;
-                    height: 400px;
-                    overflow-y: scroll;">
-        </div>
-        
-        <div class="simp_overlay">
-                <div id="div-add-user-dlg" title="Add User" style="display: none;">
-                        <div class="emo_central-text">User ID/Email</div>
-                        <input name="input-field" class="emo_central-input" type="text"/>
-                        <button name="submit" class="emo_central-button">Add</button>
+                <div id="div-user-holder" 
+                     style="margin-top: 20px; 
+                            margin-bottom: 20px;
+                            height: 400px;
+                            overflow-y: scroll;">
+                </div>
+                
+                <div class="simp_overlay">
+                        <div id="div-add-user-dlg" title="Add User" style="display: none;">
+                                <div class="emo_central-text">User ID/Email</div>
+                                <input name="input-field" class="emo_central-input" type="text"/>
+                                <button name="submit" class="emo_central-button">Add</button>
+                        </div>
                 </div>
         </div>
 </template>

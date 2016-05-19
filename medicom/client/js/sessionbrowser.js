@@ -207,6 +207,8 @@ export function SessionBrowser_Create_From_POD(pod) {
 // Main
 Template.tmplsessionbrowser.onRendered(function () {
         console.log("session browser template rendered");
+        $("#session-panel").fadeOut(0);
+        $("#session-panel").fadeIn(800);
 
         G_SessionBrowser.set_session_holder($("#div-session-holder"));
         G_SessionBrowser.set_username_holder($("#div-patient-name"));        

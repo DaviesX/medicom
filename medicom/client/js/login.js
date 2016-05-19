@@ -22,6 +22,8 @@ var G_Session = new SessionManager();
 
 Template.tmpllogin.onRendered(function () {
         console.log("login template rendered");
+        $(".emo_central").fadeOut(0);
+        $(".emo_central").fadeIn(800);
 });
 
 function redirect_page_on(result) {
@@ -77,3 +79,4 @@ Template.tmpllogin.events({"submit"(event) {
                 }
         });
 }});
+

@@ -25,6 +25,9 @@ function option_make(value, text) {
 Template.tmplreg.onRendered(function () {
         console.log("reg template rendered");
         
+        $(".emo_central").fadeOut(0);
+        $(".emo_central").fadeIn(800);
+
         // inject acccount types.
         Meteor.call("user_account_types", null, function(error, result) {
                 for (var i = 0; i < result.length; i ++) {

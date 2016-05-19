@@ -437,6 +437,11 @@ export function DataBrowser() {
 export var G_DataBrowser = new DataBrowser();
 
 Template.tmpldatabrowser.onRendered(function () {
+        console.log("data browser rendered");
+
+        $("#data-panel").fadeOut(0);
+        $("#data-panel").fadeIn(800);
+
         G_DataBrowser.set_display_type_holder($("#sel-chart-types"));
         G_DataBrowser.set_charting_area(this.find("#charting-area"));
         G_DataBrowser.set_file_select_holder($("#ipt-file-select"), $("#lb-disconnect"), $("#div-filepath"));

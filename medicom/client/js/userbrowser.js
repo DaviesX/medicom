@@ -144,6 +144,9 @@ export var G_UserBrowser = new UserBrowser();
 // Main
 Template.tmpluserbrowser.onRendered(function () {
         console.log("user browser template rendered");
+
+        $("#user-panel").fadeOut(0);
+        $("#user-panel").fadeIn(800);
         
         G_UserBrowser.set_user_list_holder($("#div-user-holder"));
         G_UserBrowser.set_add_user_button($("#btn-add-user"));
