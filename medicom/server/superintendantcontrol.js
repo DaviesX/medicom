@@ -80,9 +80,4 @@ export function SuperIndendantControl() {
                 var session = this.__get_session_by_id(identity, session_id, err);
                 return session != null ? session.get_notes() : null;
         }
-        
-        this.get_session_comments = function(identity, session_id, err) {
-                var session = this.__get_session_by_id(identity, session_id, err);
-                return session != null ? session.get_comments() : null;
-        }
 }

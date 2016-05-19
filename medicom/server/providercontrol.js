@@ -112,16 +112,4 @@ export function ProviderControl() {
                 }
                 return true;
         }
-        
-        this.set_session_comments = function(identity, session_id, notes, err) {
-                var provider_id = this.__get_provider_id_from_identity(identity, err);
-                if (provider_id == null) return false;
-                else {
-                        var session = this.__get_session_by_id(provider_id, session_id, err);
-                        if (session == null) return false;
-                        session.set_comments(notes);
-                        this.__session_mgr.update_session(session);
-                }
-                return true;
-        }
 }

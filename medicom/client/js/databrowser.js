@@ -194,7 +194,6 @@ function SessionNotesDisplay() {
         this.__identity = null;
         this.__session = null;
         this.__notes_holder = null;
-        this.__comments_holder = null;
         
         this.set_access_info = function(identity, session) {
                 this.__identity = identity;
@@ -203,10 +202,6 @@ function SessionNotesDisplay() {
         
         this.set_notes_holder = function(holder) {
                 this.__notes_holder = holder;
-        }
-        
-        this.set_comments_holder = function(holder) {
-                this.__comments_holder = holder;
         }
         
         this.update_notes = function() {
@@ -223,25 +218,6 @@ function SessionNotesDisplay() {
                 });
         }
         
-        this.update_comments = function() {
-                var clazz = this;
-                
-                Meteor.call("user_get_session_comments", 
-                            {identity: this.__identity, 
-                             session_id: this.__session.get_session_id()}, function(error, result) {
-                        if (result.error != "") {
-                                console.log(result.error);
-                        } else {
-                                clazz.__comments_holder.html(result.comments);
-                        }
-                });
-        }
-        
-        this.update_notes_and_comments = function() {
-                this.update_notes();
-                this.update_comments();
-        }
-        
         this.save_notes = function() {
                 Meteor.call("provider_set_session_notes", 
                             {identity: this.__identity, 
@@ -253,24 +229,6 @@ function SessionNotesDisplay() {
                                 console.log("Notes are saved");
                         }
                 });
-        }
-        
-        this.save_comments = function() {
-                Meteor.call("provider_set_session_comments", 
-                            {identity: this.__identity, 
-                             session_id: this.__session.get_session_id(),
-                             comments: this.__comments_holder.val()}, function(error, result) {
-                        if (result.error != "") {
-                                console.log(result.error);
-                        } else {
-                                console.log("Comments are saved");
-                        }
-                });
-        }
-        
-        this.save_notes_and_comments = function() {
-                this.save_notes();
-                this.save_comments();
         }
 }
 
@@ -378,15 +336,6 @@ export function DataBrowser() {
                 });
         }
         
-        this.set_comments_holder = function(holder) {
-                this.__notes_display.set_comments_holder(holder);
-                
-                var clazz = this;
-                holder.on("change", function(e) {
-                        clazz.__notes_display.save_comments();
-                });
-        }
-        
         this.set_notes_holder = function(holder) {
                 this.__notes_display.set_notes_holder(holder);
                 
@@ -427,8 +376,8 @@ export function DataBrowser() {
                 this.__smart_display.set_access_info(this.__identity, this.__browsing_user, this.__session);
                 this.__notes_display.set_access_info(this.__identity, this.__session);
                 
-                // Update notes & comments.
-                this.__notes_display.update_notes_and_comments();
+                // Update notes
+                this.__notes_display.update_notes();
                
                 // Update charting area.
                 switch (display_mode) {
@@ -464,7 +413,7 @@ export function DataBrowser() {
         
         this.save_changes = function() {
                 this.__remote_bp_display.upload_to_remote_server(this.__local_bp_display.get_bptable());
-                this.__notes_display.save_notes_and_comments();
+                this.__notes_display.save_notes();
                 this.update_display();
                 alert("Everything has been saved");
         }
@@ -480,7 +429,6 @@ Template.tmpldatabrowser.onRendered(function () {
         G_DataBrowser.set_filter_holder($("#sel-filter-method"));
         G_DataBrowser.set_sample_count_holder($("#ipt-num-samples"));
         G_DataBrowser.set_notes_holder($("#txt-notes"));
-        G_DataBrowser.set_comments_holder($("#txt-comments"));
         
         G_DataBrowser.update_display();
 });
