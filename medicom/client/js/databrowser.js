@@ -202,6 +202,35 @@ function SymptomsDisplay() {
         }
 }
 
+function LocalPillBottleCapDisplay() {
+        this.__file = null;
+        this.__pbctable = new ValueTable();
+
+        this.__update_data_from_file_stream = function() {
+                var fr = new FileReader();
+                var clazz = this;
+
+                fr.onload = function (e) {
+                        var parts = clazz.__file.name.split(".");
+                        var suffix = parts[parts.length - 1];
+                        var stream = e.target.result;
+
+                        console.log("file content: " + stream.toString());
+                        clazz.__pbctable.construct_from_stream(suffix, stream);
+                }
+                fr.readAsText(this.__file);
+        }
+        
+        this.set_data_from_pbc_file_stream = function(file) {
+                this.__file = file;
+                this.__update_data_from_file_stream();
+        }
+
+        this.clear_data = function() {
+                this.__pbctable = new ValueTable();
+        }
+}
+
 function SmartDisplay() {
         this.__identity = null;
         this.__browsing_user = null;
@@ -288,6 +317,7 @@ export function DataBrowser() {
         this.__remote_bp_display = new RemoteBloodPressureDisplay();
         this.__symp_display = new SymptomsDisplay();
         this.__notes_display = new SessionNotesDisplay();
+        this.__pbc_display = new LocalPillBottleCapDisplay();
         
         // Access infos.
         this.set_target_session = function(session, user_info, identity) {
@@ -317,6 +347,7 @@ export function DataBrowser() {
                                 return;
                         filepath_holder.html(file.name);
                         clazz.__local_bp_display.set_data_from_bp_file_stream(file);
+                        clazz.__pbc_display.set_data_from_pbc_file_stream(file);
                         clazz.update_display();
                 });
 
@@ -325,6 +356,7 @@ export function DataBrowser() {
                         holder.replaceWith(holder = holder.clone(true));
                         this.__file_select_holder = holder;
                         clazz.__local_bp_display.clear_data();
+                        clazz.__pbc_display.clear_data();
                         clazz.update_display();
                 });
         }

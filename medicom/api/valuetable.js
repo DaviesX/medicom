@@ -118,7 +118,7 @@ export function ValueTable() {
                 var hour = parseInt(s_time.split(":")[0]);
                 var min = parseInt(s_time.split(":")[1]);
                 if (s_am == "PM") hour += 12;
-                return new Date(year, month, day, hour, min);
+                return new Date(year, month - 1, day, hour, min);
         }
 
         this.__parse_bp2csv_bpm = function(s) {
@@ -153,6 +153,16 @@ export function ValueTable() {
         }
         
         this.construct_from_pbccsv_stream = function(stream) {
+                stream = stream.toString();
+                var lines = stream.split(this.__c_LineDelim);
+                for (var i = 0, j = 0; i < lines.length; i ++) {
+                        var parts = lines[i].split(this.__c_Delimiter);
+                        var action = parts[3];
+                        var date = parts[4];
+                        if (action == "Cap off") {
+                                this.__pairs[j ++] = {date: new Date(date), action: true};
+                        }
+                }
         }
 
         this.construct_from_stream = function(format, stream) {
