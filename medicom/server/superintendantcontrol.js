@@ -48,6 +48,7 @@ export function SuperIndendantControl() {
                 end_date = end_date == null ? new Date(Math.pow(2, 52)) : end_date;
                 var measures = this.__measure_mgr.get_measures_by_date_session_and_type(
                         start_date, end_date, session_id, M_Measure.c_Measure_Type_BP, 1);
+                if (measures == null) return null; 
                 var sampled = [];
                 var sample_count = sample_count != null ? 
                                         Math.min(measures.length, Math.max(1, sample_count)) : measures.length;

@@ -90,7 +90,7 @@ function chart_update_blood_pressure(bptable, start_date, end_date, num_samples,
                 z[j] = obj.value.diastolic.toFixed(1);
         }
         
-        var chart = c3.generate({
+        return {
                 bindto: target,
                 data: {
                         x: "x",
@@ -104,7 +104,69 @@ function chart_update_blood_pressure(bptable, start_date, end_date, num_samples,
                                 }
                         }
                 }
-        });
+        };
+}
+
+function chart_update_pill_bottle_cap(pbctable, start_date, end_date, target) {
+        var x = ["x"];
+        var y = ["pill bottle cap"];
+        
+        pbctable.sort_data(false);
+        var pairs = pbctable.get_pairs();
+
+        var s = start_date == null ? Number.MIN_VALUE : start_date.getTime();
+        var e = end_date == null ? Number.MAX_VALUE : end_date.getTime();
+        
+        var valid_indices = [];
+        for (var i = 0, j = 0; j < pairs.length; j ++) {
+                var millidate = pairs[j].date.getTime();
+                if (millidate < s || millidate > e)
+                        continue;
+                valid_indices[i ++] = j;
+        }
+
+        this.find_pair_on = function(date) {
+                var doses = [];
+                for (var i = 0; i < valid_indices.length; i ++) {
+                        var curr_date = pairs[valid_indices[i]].date;
+                        if (date.getDate() == curr_date.getDate() && 
+                            date.getMonth() == curr_date.getMonth() && 
+                            date.getYear() == curr_date.getYear()) {
+                                doses[doses.length] = pairs[valid_indices[i]];
+                        }
+                }
+                return doses;
+        }
+
+        s = pairs[0].date.getTime();
+        e = pairs[valid_indices[valid_indices.length - 1]].date.getTime();
+
+        const a_day = 1000*60*60*24;
+
+        for (var d = s, i = 1; d <= e; d += a_day) {
+                var today = new Date(d);
+                var doses = this.find_pair_on(today, 2);
+
+                x[i] = doses.length > 0 ? doses[0].date : today;
+                y[i] = doses.length;
+                i ++;
+        }
+        
+        return {
+                bindto: target,
+                data: {
+                        x: "x",
+                        columns: [x, y]
+                },
+                axis: {
+                        x: {
+                                type: "timeseries",
+                                tick: {
+                                        format: "%Y-%m-%d"
+                                }
+                        }
+                }
+        };
 }
 
 function LocalBloodPressureDisplay() {
@@ -140,7 +202,8 @@ function LocalBloodPressureDisplay() {
         }
 
         this.update_target = function(start_date, end_date, filter, num_samples, target) {
-                chart_update_blood_pressure(this.__bptable, start_date, end_date, num_samples, filter, target);
+                var chart = chart_update_blood_pressure(this.__bptable, start_date, end_date, num_samples, filter, target);
+                c3.generate(chart);
         }
 
         this.save_to_file_stream = function(file) {
@@ -172,8 +235,9 @@ function RemoteBloodPressureDisplay() {
                         } else {
                                 var bptable = result.bptable;
                                 bptable = ValueTable_create_from_POD(bptable);
-                                chart_update_blood_pressure(
+                                var chart = chart_update_blood_pressure(
                                         bptable, start_date, end_date, num_samples, filter, target); 
+                                c3.generate(chart);
                         }
                 });
         }
@@ -228,6 +292,11 @@ function LocalPillBottleCapDisplay() {
 
         this.clear_data = function() {
                 this.__pbctable = new ValueTable();
+        }
+
+        this.update_target = function(start_date, end_date, target) {
+                var chart = chart_update_pill_bottle_cap(this.__pbctable, start_date, end_date, target);
+                c3.generate(chart);
         }
 }
 
@@ -468,6 +537,7 @@ export function DataBrowser() {
                         this.__symp_display.update_target(this.__start_date, this.__end_date, this.__charting_area);
                         break;
                 case "Pill Bottle Cap": 
+                        this.__pbc_display.update_target(this.__start_date, this.__end_date, this.__charting_area);
                         break;
                 case "Fitbit Data": 
                         break;

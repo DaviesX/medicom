@@ -160,7 +160,7 @@ export function ValueTable() {
                         var action = parts[3];
                         var date = parts[4];
                         if (action == "Cap off") {
-                                this.__pairs[j ++] = {date: new Date(date), action: true};
+                                this.__pairs[j ++] = {date: new Date(date), value: {action: true}};
                         }
                 }
         }
@@ -184,6 +184,16 @@ export function ValueTable() {
         this.add_row = function(date, value) {
                 var i = this.__pairs.length;
                 this.__pairs[i] = {date: date, value: value};
+        }
+
+        this.get_row = function(date) {
+                var target_time = date.getTime();
+                for (var i = 0; i < this.__pairs.length; i ++) {
+                        if (this.__pairs[i].date.getTime() == target_time) {
+                                return this.__pairs[i];
+                        }
+                }
+                return null;
         }
 
         this.get_pairs = function() {
