@@ -51,13 +51,105 @@ export function ValueTable() {
                         var bpvalue = parts[1];
                         
                         this.__pairs[i] = {date: this.__parse_bpcsv_date(timestamp),
-                                           value: {systolic: parseFloat(bpvalue, 10), diastolic: 0}};
+                                           value: {systolic: parseFloat(bpvalue, 10), diastolic: 0, bpm: 0}};
                 }
+        }
+
+        this.__parse_bp2csv_sys = function(s) {
+                var parts = s.split("/");
+                var systolic = parts[0].slice(1, -1);
+                return parseFloat(systolic);
+        }
+
+        this.__parse_bp2csv_dia = function(s) {
+                var parts = s.split("/");
+                var diastolic = parts[1].slice(1, -6);
+                return parseFloat(diastolic);
+        }
+
+        this.__parse_bp2csv_date = function(s) {
+                var parts = s.slice(1, -1).split(" ");
+                var s_month = parts[0];
+                var s_day = parts[1];
+                var s_year = parts[2];
+                var s_time = parts[4];
+                var s_am = parts[5];
+                var month;
+                switch(s_month.slice(1, s_month.length)) {
+                case "Jan":
+                        month = 1;
+                        break;
+                case "Feb":
+                        month = 2;
+                        break;
+                case "Mar":
+                        month = 3;
+                        break;
+                case "Apr":
+                        month = 4;
+                        break;
+                case "May":
+                        month = 5;
+                        break;
+                case "Jun":
+                        month = 6;
+                        break;
+                case "Jul":
+                        month = 7;
+                        break;
+                case "Aug":
+                        month = 8;
+                        break;
+                case "Sep":
+                        month = 9;
+                        break;
+                case "Oct":
+                        month = 10;
+                        break;
+                case "Nov":
+                        month = 11;
+                        break;
+                case "Dec":
+                        month = 12;
+                        break;
+                }
+                var day = parseInt(s_day);  
+                var year = parseInt(s_year);
+                var hour = parseInt(s_time.split(":")[0]);
+                var min = parseInt(s_time.split(":")[1]);
+                if (s_am == "PM") hour += 12;
+                return new Date(year, month, day, hour, min);
+        }
+
+        this.__parse_bp2csv_bpm = function(s) {
+                var bpm = s.slice(1, -5);
+                return parseInt(bpm);
         }
         
         this.construct_from_bp2csv_stream = function(stream) {
                 stream = stream.toString();
                 var lines = stream.split(this.__c_LineDelim);
+                var bps_values = [];
+                var bpm_values = [];
+                for (var i = 0, j = 0, k = 0; i < lines.length; i ++) {
+                        if (lines[i].startsWith("\nBlood Pressure")) {
+                                var parts = lines[i].split(this.__c_Delimiter);
+                                bps_values[j] = {timestamp: parts[1].concat(parts[2]),
+                                                 bp_values: parts[3]};
+                                j ++;
+                        } else if (lines[i].startsWith("\nPulse")) {
+                                var parts = lines[i].split(this.__c_Delimiter);
+                                bpm_values[k] = {timestamp: parts[1].concat(parts[2]),
+                                                 bpm: parts[3]};
+                                k ++;
+                        }
+                }
+                for (var i = 0; i < bps_values.length; i ++) {
+                        this.__pairs[i] = {date: this.__parse_bp2csv_date(bps_values[i].timestamp),
+                                           value: {systolic: this.__parse_bp2csv_sys(bps_values[i].bp_values), 
+                                                   diastolic:this.__parse_bp2csv_dia(bps_values[i].bp_values),
+                                                   bpm: this.__parse_bp2csv_bpm(bpm_values[i].bpm)}};
+                }
         }
         
         this.construct_from_pbccsv_stream = function(stream) {
@@ -69,7 +161,7 @@ export function ValueTable() {
                         this.construct_from_bpcsv_stream(stream);
                         break;
                 case "bp2":
-                        this.construct_from_bpcsv_stream(stream);
+                        this.construct_from_bp2csv_stream(stream);
                         break;
                 case "pbc":
                         this.construct_from_pbccsv_stream(stream);
