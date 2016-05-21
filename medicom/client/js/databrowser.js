@@ -156,7 +156,16 @@ function chart_update_pill_bottle_cap(pbctable, start_date, end_date, target) {
                 bindto: target,
                 data: {
                         x: "x",
-                        columns: [x, y]
+                        columns: [x, y],
+                        type: "bar",
+                        colors: {
+                                "pill bottle cap": "#00ff00"
+                        }
+                },
+                bar: {
+                        width: {
+                                ratio: 1.0
+                        }
                 },
                 axis: {
                         x: {
