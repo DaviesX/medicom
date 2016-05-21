@@ -16,18 +16,23 @@ import {Measure, Measure_Parent_Create_From_POD, c_Measure_Type_BP} from "./meas
 
 export function MeasureBP() {
         this.__parent = new Measure(c_Measure_Type_BP);
-        this.__value = 0;
+        this.__systolic = 0;
+        this.__diastolic = 0;
         
-        this.set_bp_value = function(bp) { this.__value = bp; }
+        this.set_bp_value = function(value) { 
+                this.__systolic = value.systolic; 
+                this.__diastolic = value.diastolic; 
+        }
         
         this.get_measure_id = function() { return this.__parent.get_measure_id(); }
-        this.get_bp_value = function() { return this.__value; }
+        this.get_bp_value = function() { return {systolic: this.__systolic, diastolic: this.__diastolic}; }
 }
 
 export function MeasureBP_Create_From_POD(pod) {
         var obj = new MeasureBP();
         obj.__parent = Measure_Parent_Create_From_POD(pod.__parent);
         obj.__date = pod.__date;
-        obj.__value = pod.__value;
+        obj.__systolic = pod.__systolic;
+        obj.__diastolic = pod.__diastolic;
         return obj;
 }

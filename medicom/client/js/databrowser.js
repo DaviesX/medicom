@@ -13,6 +13,7 @@
  */
 import {Template} from "meteor/templating";
 import {ValueTable, ValueTable_create_from_POD} from "../../api/valuetable.js";
+import {SequentialEffect, BatchedEffect} from "./effects.js";
 
 
 function chart_clear(target) {
@@ -36,13 +37,34 @@ function chart_clear(target) {
         });
 }
 
-function chart_update_blood_pressure(bptable, start_date, end_date, num_samples, methods, target) {
+function add_bp(r, s) {
+        return {systolic: r.systolic + s.systolic,
+                diastolic: r.diastolic + s.diastolic};
+}
+
+function scale_bp(k, v) {
+        return {systolic: k*v.systolic,
+                diastolic: k*v.diastolic};
+}
+
+function scalar_bp(v) {
+        return (v.systolic + v.diastolic)/2;
+}
+
+function chart_update_blood_pressure(bptable, start_date, end_date, num_samples, method_name, target) {
         var x = ["x"];
-        var y = ["blood pressure"];
+        var y = ["systolic blood pressure"];
+        var z = ["diastolic blood pressure"];
         
         bptable.sort_data(false);
         // merge the data from the same day.
-        bptable.merge_adjacent_data(methods, function (a, b) {
+        bptable.merge_adjacent_data({
+                        name: method_name, 
+                        scalar: scalar_bp,
+                        add: add_bp,
+                        scale: scale_bp
+                },
+        function (a, b) {
                 return a.getYear() == b.getYear() && a.getMonth() == b.getMonth() && a.getDay() == b.getDay();
         });
         var pairs = bptable.get_pairs();
@@ -62,15 +84,17 @@ function chart_update_blood_pressure(bptable, start_date, end_date, num_samples,
                 Math.min(valid_indices.length, Math.max(1, num_samples)) : valid_indices.length;   
         var interval = valid_indices.length/num_samples;
         for (var i = 0, j = 1; j - 1 < num_samples; i += interval, j ++) {
-                x[j] = pairs[valid_indices[Math.floor(i)]].date;
-                y[j] = pairs[valid_indices[Math.floor(i)]].value.toFixed(1);
+                var obj = pairs[valid_indices[Math.floor(i)]];
+                x[j] = obj.date;
+                y[j] = obj.value.systolic.toFixed(1);
+                z[j] = obj.value.diastolic.toFixed(1);
         }
         
         var chart = c3.generate({
                 bindto: target,
                 data: {
                         x: "x",
-                        columns: [x, y]
+                        columns: [x, y, z]
                 },
                 axis: {
                         x: {
@@ -439,8 +463,10 @@ export var G_DataBrowser = new DataBrowser();
 Template.tmpldatabrowser.onRendered(function () {
         console.log("data browser rendered");
 
-        $("#data-panel").fadeOut(0);
-        $("#data-panel").fadeIn(800);
+        var effect = new BatchedEffect("fade", 500);
+        effect.add_elm($("#data-panel"));
+        effect.finalize();
+        effect.animate();
 
         G_DataBrowser.set_display_type_holder($("#sel-chart-types"));
         G_DataBrowser.set_charting_area(this.find("#charting-area"));

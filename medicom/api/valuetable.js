@@ -19,7 +19,7 @@ export function ValueTable() {
         this.__c_Delimiter = ",";
         this.__c_LineDelim = "\r";
         
-        this.__parse_csv_date = function(date_str) {
+        this.__parse_bpcsv_date = function(date_str) {
                 var parts = date_str.split(" ");
                 var ymd = parts[1].toString(); 
                 var hms = parts[2].toString();
@@ -38,7 +38,7 @@ export function ValueTable() {
                 return date;
         }
 
-        this.construct_from_csv_stream = function(stream) {
+        this.construct_from_bpcsv_stream = function(stream) {
                 stream = stream.toString();
                 var lines = stream.split(this.__c_LineDelim);
 
@@ -50,15 +50,29 @@ export function ValueTable() {
                         var timestamp = parts[0];
                         var bpvalue = parts[1];
                         
-                        this.__pairs[i] = {date: this.__parse_csv_date(timestamp),
-                                           value: parseFloat(bpvalue, 10)};
+                        this.__pairs[i] = {date: this.__parse_bpcsv_date(timestamp),
+                                           value: {systolic: parseFloat(bpvalue, 10), diastolic: 0}};
                 }
+        }
+        
+        this.construct_from_bp2csv_stream = function(stream) {
+                stream = stream.toString();
+                var lines = stream.split(this.__c_LineDelim);
+        }
+        
+        this.construct_from_pbccsv_stream = function(stream) {
         }
 
         this.construct_from_stream = function(format, stream) {
-                switch(format) {
+                switch(format.toString().toLowerCase()) {
                 case "bp":
-                        this.construct_from_csv_stream(stream);
+                        this.construct_from_bpcsv_stream(stream);
+                        break;
+                case "bp2":
+                        this.construct_from_bpcsv_stream(stream);
+                        break;
+                case "pbc":
+                        this.construct_from_pbccsv_stream(stream);
                         break;
                 default:
                         throw "Unkown file format: " + format;
@@ -74,55 +88,54 @@ export function ValueTable() {
                 return this.__pairs;
         }
         
-        this.__min_pair = function(i, j) {
+        this.__min_pair = function(i, j, method) {
                 var m = this.__pairs[i];
                 for (var k = i + 1; k <= j; k ++) {
-                        if (this.__pairs[k].value < m.value)
+                        if (method.scalar(this.__pairs[k].value) < method.scalar(m.value))
                                 m = this.__pairs[k];
                 }
                 return m;
         }
         
-        this.__max_pair = function(i, j) {
+        this.__max_pair = function(i, j, method) {
                 var m = this.__pairs[i];
                 for (var k = i + 1; k <= j; k ++) {
-                        if (this.__pairs[k].value > m.value)
+                        if (method.scalar(this.__pairs[k].value) > method.scalar(m.value))
                                 m = this.__pairs[k];
                 }
                 return m;
         }
         
-        this.__avg_pair = function(i, j) {
+        this.__avg_pair = function(i, j, method) {
                 var sum = this.__pairs[i].value;
                 for (var k = i + 1; k <= j; k ++) {
-                        sum += this.__pairs[k].value;
+                        sum = method.add(sum, this.__pairs[k].value);
                 }
-                return {date: this.__pairs[i].date, value: sum/(j - i + 1)};
+                return {date: this.__pairs[i].date, value: method.scale(1/(j - i + 1), sum)};
         }
         
         this.merge_adjacent_data = function(method, f_Time_Eval) {
-                if (this.__pairs.length == 0 || method == "plain") return;
+                if (this.__pairs.length == 0 || method.name == "plain") return;
                 
                 var last = 0;
                 var new_pairs = [];
                 for (var i = 0; i < this.__pairs.length; i ++) {
                         if (i + 1 == this.__pairs.length || 
                             !f_Time_Eval(this.__pairs[i].date, this.__pairs[i + 1].date)) {
-                                switch (method) {
+                                switch (method.name) {
                                 case "uniform min":
-                                        new_pairs[new_pairs.length] = this.__min_pair(last, i);
+                                        new_pairs[new_pairs.length] = this.__min_pair(last, i, method);
                                         break;
                                 case "uniform max":
-                                        new_pairs[new_pairs.length] = this.__max_pair(last, i);
+                                        new_pairs[new_pairs.length] = this.__max_pair(last, i, method);
                                         break;
                                 case "uniform average":
-                                        new_pairs[new_pairs.length] = this.__avg_pair(last, i);
+                                        new_pairs[new_pairs.length] = this.__avg_pair(last, i, method);
                                         break;
                                 }
                                 last = i + 1;
                         }
                 }
-                
                 this.__pairs = new_pairs;
         }
         
