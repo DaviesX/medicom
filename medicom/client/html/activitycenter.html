@@ -18,26 +18,24 @@
 </script>
 
 <body>
-        <div class="tran_login-link">
-                <a id="a-welcome-holder" class="tran_login-link">
-                </a>
-                <a id="a-logout" class="tran_login-link" style="display: none;">Log out</a>
-        </div>
-        
-        <h1 id="txt-logo" class="simp_heading">
-                <a class="simp_no-decoration" href="home">MediCom</a>
-        </h1>
-        
-        <div class="simp_two-sided">
+        <div class="simp_two-sided"> 
 
-            <div class="simp_forum-board simp_left">
-                <div class="simp_content-board">
+            <div class="simp_left">
+                <div class="simp_user-board">
+                        <h2 id="txt-logo" class="simp_heading" style="margin-left: 30px; margin-top: 20px;" >
+                                <a class="simp_no-decoration" style="color: white;" href="home">MediCom</a>
+                        </h2>
                         {{> tmpluserbrowser}}
                 </div>
             </div>
 
-            <div class="simp_reminder-list simp_right">
-                <div class="simp_content-board" style="min-height: 520px;">
+            <div class="simp_right">
+                <div class="simp_browser-board">
+                        <div class="tran_login-link"> 
+                                <a id="a-welcome-holder" class="tran_login-link">
+                                </a>
+                                <a id="a-logout" class="tran_login-link" style="display: none;">Log out</a>
+                        </div>
                         {{#if use_default}}
                                 {{> tmplbrowserdefault}}
                         {{else}}

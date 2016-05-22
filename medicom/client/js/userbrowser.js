@@ -52,7 +52,7 @@ export function UserBrowser() {
         }
 
         this.__make_user_ui = function(user_id, user_name) {
-                return '<div><button class="simp_classic-fill-width" name="user-list" id="' + user_id + '">' + 
+                return '<div><button class="simp_classic-user-button" name="user-list" id="' + user_id + '">' + 
                         user_id + '. ' + user_name + '</button></div>';
         }
         
