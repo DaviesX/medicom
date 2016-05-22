@@ -159,7 +159,7 @@ function chart_update_pill_bottle_cap(pbctable, start_date, end_date, target) {
                         columns: [x, y],
                         type: "bar",
                         colors: {
-                                "pill bottle cap": "#00ff00"
+                                "pill bottle cap": "rgba(0, 255, 0, 0.2)"
                         }
                 },
                 bar: {
