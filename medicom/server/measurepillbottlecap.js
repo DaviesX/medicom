@@ -17,6 +17,9 @@ import {Measure, c_Measure_Type_PillBottleCap} from "./measure.js";
 
 export function MeasurePillBottleCap() {
         this.__parent = new Measure(c_Measure_Type_PillBottleCap);
+        this.__action = "";
         
+        this.set_action = function(action) { this.__action = action; }
         this.get_measure_id = function() { return this.__parent.get_measure_id(); }
+        this.get_action = function() { return this.__action; }
 }
