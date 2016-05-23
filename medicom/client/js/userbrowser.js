@@ -116,8 +116,24 @@ export function UserBrowser() {
                         this.__add_user_button.css("display", "inline");
                         this.__add_user_button.html(prompt);
                         this.__add_user_button.click(function () {
-                                clazz.__add_user_dialog.dialog();
-                                clazz.__add_user_dialog.css("display", "inline");
+                                clazz.__add_user_dialog.dialog({
+                                        autoOpen: true,
+                                        modal: true,
+                                        open: function() {
+                                                $(".ui-widget-overlay").addClass("simp_dialog_overlay");
+                                                $(".ui-dialog-titlebar").css("display", "none");
+                                        },
+                                        show: {
+                                                effect: "fade",
+                                                duration: 1000,
+                                        },
+                                        hide: {
+                                                effect: "fade",
+                                                duration: 1000,
+                                        }, 
+                                        close: function() {
+                                        },
+                                });
                         });
                 }
         }
