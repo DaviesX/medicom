@@ -11,19 +11,31 @@
  * You should have received a copy of the GNU General Public License along with this program; if not,
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  -->
- <template name="tmplsymptombrowser">
+ <template name="tmplpbcbrowser">
         <div>
+                <div id="div-filepath" style="display: inline;"></div>
+                <div style="display: inline; 
+                            margin-left: 15px; 
+                            margin-right: 10px; 
+                            float: right;">
+                        <label id="lb-disconnect" class="simp_classic-flat">
+                                Disconnect
+                        </label>
+                </div>
+                <div style="display: inline; 
+                            float: right;">
+                        <label for="ipt-file-select" class="simp_classic-flat">
+                                Connect to...
+                        </label>
+                </div>
+                <input style="display: none;" id="ipt-file-select" type="file" />
+                
                 <div style="margin-top: 25px; margin-bottom: 5px;">
                         <input type="text" id="ipt-start-date" placeholder="start date" /> to 
                         <input type="text" id="ipt-end-date" placeholder="end date" />
+                        sample count
+                        <input type="text" id="ipt-num-samples" value="30" />
                 </div>
         </div>
         <div id="charting-area" style="width: 100%; min-height: 300px;"></div>
-
-        results/page
-        <input type="text" id="ipt-num-items" style="width: 20px; margin-right: 5px;" value="10" />
-
-        <button id="btn-prev-page" class="simp_classic-flat">&lt;</button>
-        <div id="div-page-num-holder" style="display: inline;">1</div>
-        <button id="btn-next-page" class="simp_classic-flat">&gt;</button>
  </template>

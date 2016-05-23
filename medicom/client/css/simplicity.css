@@ -65,6 +65,28 @@ body.simp_nature {
         transition:		0.5s;
 }
 
+.simp_classic-flat {
+        box-shadow:             inset 0px 1px 0px 0px #ffffff;
+        background:             white;
+        border:                 1px solid rgba(200, 200, 200, 1);
+        border-radius:          9px;
+        display:                inline-block;
+        cursor:                 pointer;
+        color:                  black;
+        font-family:            Arial;
+        font-size:              11pt;
+        text-decoration:        none;
+        text-shadow:            0px 1px 0px #ffffff;
+        min-width:              80px;
+        padding:                2px 23px;
+        margin:                 0px;
+}
+
+.simp_classic-flat:hover {
+        color:                  lightcyan;
+        transition:		0.5s;
+}
+
 button.simp_classic-user-button {
         background-color:       rgba(50, 40, 70, 1);
         border:                 1px solid rgba(55, 45, 75, 1);
@@ -130,13 +152,13 @@ select.simp_select {
 
 div.simp_left {
     float: 		left;
-    width:              30%;
+    width:              25%;
     height:             100%;
 }
 
 div.simp_right {
     float:              left;
-    width:              70%;
+    width:              75%;
     height:             100%;
 }
 

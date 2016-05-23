@@ -12,13 +12,6 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-body.tran_vernal {
-    background-image: 	url("/img/Dewy-Grass-972-x-648.jpg");
-    background-color: 	#cccccc;
-    background-repeat: 	no-repeat;
-    background-size: 	cover;
-}
-
 a.tran_login-link, button.tran_login-link {
     background-color:	transparent;
     border: 		none;
@@ -42,8 +35,8 @@ div.tran_login-link {
     top:                3px;
     right:              60px;
     min-width: 		20%;
-    margin-top:         10px;
-    margin-bottom:      10px;
+    margin-top:         20px;
+    margin-bottom:      20px;
     /* background:         radial-gradient(80px, rgba(230,230,230,0.4) 40%, rgba(30,30,30,0.0)); */
     text-align: 	center;
 }

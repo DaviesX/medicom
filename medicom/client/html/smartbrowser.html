@@ -11,19 +11,21 @@
  * You should have received a copy of the GNU General Public License along with this program; if not,
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  -->
- <template name="tmplsymptombrowser">
+ <template name="tmplsmartbrowser">
         <div>
                 <div style="margin-top: 25px; margin-bottom: 5px;">
                         <input type="text" id="ipt-start-date" placeholder="start date" /> to 
                         <input type="text" id="ipt-end-date" placeholder="end date" />
+                        sample count
+                        <input type="text" id="ipt-num-samples" value="30" />
+                        filter
+                        <select id="sel-filter-method" class="simp_select" style="min-width: 0%; display: inline;">
+                                <option value="plain">no filter</option>
+                                <option value="uniform average">uniform average</option>
+                                <option value="uniform min">uniform min</option>
+                                <option value="uniform max">uniform max</option>
+                        </select>
                 </div>
         </div>
         <div id="charting-area" style="width: 100%; min-height: 300px;"></div>
-
-        results/page
-        <input type="text" id="ipt-num-items" style="width: 20px; margin-right: 5px;" value="10" />
-
-        <button id="btn-prev-page" class="simp_classic-flat">&lt;</button>
-        <div id="div-page-num-holder" style="display: inline;">1</div>
-        <button id="btn-next-page" class="simp_classic-flat">&gt;</button>
  </template>
