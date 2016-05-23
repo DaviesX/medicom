@@ -20,60 +20,64 @@ body.simp_nature {
     margin:                     0;
 }
 
-button.simp_login-link {
-    background-color:	transparent;
-    border: 		none;
-    min-width:          60px;
-    height: 		50px;
-    line-height:	50px; 
-    color: 		darkslategray;
+.simp_classic-list-item {
+        box-shadow:             inset 0px 1px 0px 0px #ffffff;
+        background:             linear-gradient(to bottom, rgba(250, 250, 250, 1) 5%, rgba(240, 240, 240, 1) 100%);
+        border:                 1px solid rgba(250, 250, 250, 1);
+        display:                inline-block;
+        cursor:                 pointer;
+        color:                  #777777;
+        font-family:            Arial;
+        text-decoration:        none;
+        text-shadow:            0px 1px 0px #ffffff;
+        min-width:              80px;
+        height: 		40px;
+        line-height:	        40px;
+        margin:                 0px;
+        width:                  100%;
 }
 
-button.simp_login-link:hover {
-    background:         radial-gradient(70px, rgba(200, 200, 200, 0.4) 40%, rgba(30, 30, 30, 0.8));
-    color:              lightcyan;
-    transition:		1s;
+.simp_classic-list-item:hover {
+        background:             linear-gradient(to bottom, rgba(240, 240, 240, 1) 5%, rgba(250, 250, 250, 1) 100%);
+        color:                  lightcyan;
+        transition:		0.5s;
 }
 
 .simp_classic {
-    background-color:	rgba(230, 230, 220, 0.7);
-    border: 		none;
-    min-width:          80px;
-    height: 		40px;
-    line-height:	40px;
+        box-shadow:             inset 0px 1px 0px 0px #ffffff;
+        background:             linear-gradient(to bottom, rgba(250, 250, 250, 1) 5%, rgba(240, 240, 240, 1) 100%);
+        border:                 1px solid rgba(250, 250, 250, 1);
+        display:                inline-block;
+        cursor:                 pointer;
+        color:                  #777777;
+        font-family:            Arial;
+        text-decoration:        none;
+        text-shadow:            0px 1px 0px #ffffff;
+        min-width:              80px;
+        height: 		40px;
+        line-height:	        40px;
+        margin:                 0px;
 }
 
 .simp_classic:hover {
-    background:         rgba(230, 230, 230, 0.5);
-    color:              lightcyan;
-    transition:		0.5s;
+        background:             linear-gradient(to bottom, rgba(240, 240, 240, 1) 5%, rgba(250, 250, 250, 1) 100%);
+        color:                  lightcyan;
+        transition:		0.5s;
 }
 
 button.simp_classic-user-button {
-        background-color:   rgba(50, 40, 70, 1);
-        border:             none;
-        height:             40px;
-        line-height:        40px;
-        color:              white;
-        width:              100%;
+        background-color:       rgba(50, 40, 70, 1);
+        border:                 1px solid rgba(55, 45, 75, 1);
+        height:                 40px;
+        line-height:            40px;
+        color:                  white;
+        width:                  100%;
 }
 
 button.simp_classic-user-button:hover{
     background:         rgba(230, 230, 230, 0.5);
     color:              rgba(170, 255, 255, 1);
     transition:		0.5s;
-}
-
-div.simp_login-link {
-    position:           relative;
-    float:              right;
-    top:                3px;
-    right:              60px;
-    height: 		50px;
-    line-height:	50px;
-    min-width: 		20%;
-    background:         radial-gradient(80px, rgba(230,230,230,0.4) 40%, rgba(30,30,30,0.0));
-    text-align: 	center;
 }
 
 .simp_dialog_overlay {
@@ -139,8 +143,6 @@ div.simp_right {
 div.simp_user-board {
     padding-top:	10px;
     padding-bottom:	10px;
-    /* padding-left:	10px;
-    padding-right:	10px; */
     height:             100%;
     background-color:	rgba(0, 0, 30, 1);
 }
@@ -158,4 +160,13 @@ div.simp_browser-board {
         position:       relative;
         margin-top:     20px;
         margin-bottom:  20px;
+}
+
+.simp_browser-title-holder {
+        width:          100%; 
+        font-family:    'Arial', Arial, Sans;    
+        text-align:     center; 
+        margin-top:     0px; 
+        margin-bottom:  13px;
+        opacity:        0.6;
 }

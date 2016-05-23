@@ -29,13 +29,16 @@
                 </div>
             </div>
 
-            <div class="simp_right">
-                <div class="simp_browser-board">
-                        <div class="tran_login-link"> 
+            <div class="simp_right" style="background-color: white; overflow-y: scroll">
+                        <div class="tran_login-link" 
+                             style="float: none; 
+                                    position: relative; 
+                                    left: 72%;"> 
                                 <a id="a-welcome-holder" class="tran_login-link">
                                 </a>
                                 <a id="a-logout" class="tran_login-link" style="display: none;">Log out</a>
                         </div>
+                <div class="simp_browser-board">
                         {{#if use_default}}
                                 {{> tmplbrowserdefault}}
                         {{else}}
