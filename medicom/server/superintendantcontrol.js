@@ -14,6 +14,8 @@
 import {Meteor} from "meteor/meteor";
 import {DataModelContext, G_DataModelContext} from "./datamodelcontext.js";
 import {MeasureBP} from "./measurebp.js";
+import {MeasurePillBottleCap} from "./measurepillbottlecap.js";
+import {MeasureSymptoms} from "./measuresymptoms.js";
 import {SessionUtils} from "./sessionutils.js";
 import {ErrorMessageQueue, MongoDB} from "../api/common.js";
 import * as M_AccountType from "../api/accounttype.js";
@@ -23,23 +25,20 @@ export function SuperIndendantControl() {
         this.__measure_mgr = G_DataModelContext.get_measure_manager();
         this.__identity_mgr = G_DataModelContext.get_identity_manager();
         this.__session_mgr = G_DataModelContext.get_session_manager();
-        
-        this.update_bp_measures = function(identity, session_id, bptable, err) {
+
+        this.__update_measures_from_table = function(identity, session_id, table, f_Construct_Measure, err) {
                 if (!this.__identity_mgr.verify_identity(identity)) {
                         err.log("You don't have a valid identity");
                         return false;
                 }
                 var pairs = bptable.get_pairs();
-                var measure = new MeasureBP();
                 for (var i = 0; i < pairs.length; i ++) {
-                        measure.__parent.set_date(pairs[i].date);
-                        measure.set_bp_value(pairs[i].value);
-                        this.__measure_mgr.update_measure(session_id, measure);
+                        this.__measure_mgr.update_measure(session_id, f_Construct_Measure(pairs[i]));
                 }
                 return true;
         }
-        
-        this.get_bp_measures = function(identity, start_date, end_date, sample_count, session_id, err) {
+
+        this.__get_measure_samples = function(identity, type, start_date, end_date, sample_count, session_id, err) {
                 if (!this.__identity_mgr.verify_identity(identity)) {
                         err.log("You don't have a valid identity");
                         return null;
@@ -47,7 +46,7 @@ export function SuperIndendantControl() {
                 start_date = start_date == null ? new Date(0) : start_date;
                 end_date = end_date == null ? new Date(Math.pow(2, 52)) : end_date;
                 var measures = this.__measure_mgr.get_measures_by_date_session_and_type(
-                        start_date, end_date, session_id, M_Measure.c_Measure_Type_BP, 1);
+                        start_date, end_date, session_id, type, 1);
                 if (measures == null) return null; 
                 var sampled = [];
                 var sample_count = sample_count != null ? 
@@ -59,6 +58,45 @@ export function SuperIndendantControl() {
                 return sampled;
         }
         
+        this.update_bp_measures = function(identity, session_id, bptable, err) {
+                var measure = new MeasureBP();
+                this.__update_measures_from_table(identity, session_id, bptable, function(pair) {
+                        measure.__parent.set_date(pair.date);
+                        measure.set_bp_value({systolic: pair.value.systolic, diastolic: pair.value.diastolic});
+                        return measure;
+                }, err);
+        }
+        
+        this.get_bp_measures = function(identity, start_date, end_date, sample_count, session_id, err) {
+                return this.__get_measure_samples(identity, M_Measure.c_Measure_Type_BP, start_date, end_date, sample_count, session_id, err);
+        }
+
+        this.update_pbc_measures = function(identity, session_id, pbctable, err) {
+                var measure = new MeasurePillBottleCap();
+                this.__update_measures_from_table(identity, session_id, pbctable, function(pair) {
+                        measure.__parent.set_date(pair.date);
+                        return measure;
+                }, err);
+        }
+
+        this.get_pbc_measures = function(identity, start_date, end_date, sample_count, session_id, err) {
+                return this.__get_measure_samples(identity, M_Measure.c_Measure_Type_PillBottleCap, start_date, end_date, sample_count, session_id, err);
+        }
+        
+        this.update_symptom_measures = function(identity, session_id, symptomtable, err) {
+                var measure = new MeasureSymptoms();
+                this.__update_measures_from_table(identity, session_id, symptomtable, function(pair) {
+                        measure.__parent.set_date(pair.date);
+                        measure.set_patients_feel(pair.value.patients_feel);
+                        measure.set_comment(pair.value.comment);
+                        return measure;
+                }, err);
+        }
+
+        this.get_symptom_measures = function(identity, start_date, end_date, session_id, err) {
+                return this.__get_measure_samples(identity, M_Measure.c_Measure_Type_Symptoms, start_date, end_date, null, session_id, err);
+        }
+
         this.__get_session_by_id = function(identity, session_id, err) {
                 if (!this.__identity_mgr.verify_identity(identity)) {
                         err.log("You don't have a valid identity");

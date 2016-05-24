@@ -14,6 +14,7 @@
 import {Template} from "meteor/templating";
 import {ValueTable, ValueTable_create_from_POD} from "../../api/valuetable.js";
 import {SequentialEffect, BatchedEffect} from "./effects.js";
+import {G_Session} from "./session.js";
 
 
 function chart_clear(target) {
@@ -376,8 +377,7 @@ export function DataBrowser() {
                                 "Blood Pressure Data", 
                                 "Symptoms Data", 
                                 "Pill Bottle Cap", 
-                                "Fitbit Data", 
-                                "Blood Pressure[Local Data]"];
+                                "Fitbit Data"];
 
         this.__curr_display_mode = this.__display_types[0];
         
@@ -571,6 +571,36 @@ export function DataBrowser() {
 
 export var G_DataBrowser = new DataBrowser();
 
+Template.tmplsmartbrowser.onRendered(function() {
+        console.log("smart browser rendered");
+        G_DataBrowser.set_charting_area(this.find("#charting-area"));
+        G_DataBrowser.update_display();
+});
+
+Template.tmplbpbrowser.onRendered(function() {
+        console.log("bp browser rendered");
+        G_DataBrowser.set_charting_area(this.find("#charting-area"));
+        G_DataBrowser.update_display();
+});
+
+Template.tmplpbcbrowser.onRendered(function() {
+        console.log("pbc browser rendered");
+        G_DataBrowser.set_charting_area(this.find("#charting-area"));
+        G_DataBrowser.update_display();
+});
+
+Template.tmplsymptombrowser.onRendered(function() {
+        console.log("symptom browser rendered");
+        G_DataBrowser.set_charting_area(this.find("#charting-area"));
+        G_DataBrowser.update_display();
+});
+
+Template.tmplfitbitbrowser.onRendered(function() {
+        console.log("fitbit browser rendered");
+        G_DataBrowser.set_charting_area(this.find("#charting-area"));
+        G_DataBrowser.update_display();
+});
+
 Template.tmpldatabrowser.onRendered(function () {
         console.log("data browser rendered");
 
@@ -587,7 +617,7 @@ Template.tmpldatabrowser.onRendered(function () {
         G_DataBrowser.set_sample_count_holder($("#ipt-num-samples"));
         G_DataBrowser.set_notes_holder($("#txt-notes"));
         
-        G_DataBrowser.update_display();
+        G_Session.set_data_display_mode(G_DataBrowser.get_current_display_mode());
 });
 
 Template.tmpldatabrowser.helpers({
@@ -595,11 +625,32 @@ Template.tmpldatabrowser.helpers({
                 var selected = G_DataBrowser.get_target_session();
                 var user = G_DataBrowser.get_browsing_user();
                 return user.get_name() + ", " + user.get_account_id() + " - " + selected.get_start_date() + " - " + selected.get_session_id();
-        }
+        },
+
+        use_smartbrowser() {
+                return G_Session.get_data_display_mode() == "Smart Display Mode";
+        },
+        
+        use_bpbrowser() {
+                return G_Session.get_data_display_mode() == "Blood Pressure Data";
+        },
+        
+        use_pbcbrowser() {
+                return G_Session.get_data_display_mode() == "Pill Bottle Cap";
+        },
+
+        use_symptombrowser() {
+                return G_Session.get_data_display_mode() == "Symptoms Data";
+        },
+        
+        use_fitbitbrowser() {
+                return G_Session.get_data_display_mode() == "Fitbit Data";
+        },
 });
 
 Template.tmpldatabrowser.events({"click #sel-chart-types"(event) {
         G_DataBrowser.update_display($(event.target).val());
+        G_Session.set_data_display_mode(G_DataBrowser.get_current_display_mode());
 }});
 
 Template.tmpldatabrowser.events({"click #btn-save-change"(event) {

@@ -19,5 +19,8 @@ export function MeasureSymptoms() {
         this.__parent = new Measure(c_Measure_Type_Symptoms);
         this.__patients_feel;
 	this.__comment;
+
+        this.set_patients_feel = function(feel) { this.__patients_feel = feel; }
+        this.set_comment = function(comment) { this.__comment = comment; }
         this.get_measure_id = function() { return this.__parent.get_measure_id(); }
 }

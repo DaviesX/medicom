@@ -64,6 +64,14 @@ export function SessionManager() {
         this.get_browsing_mode = function() {
                 return Session.get("browsingmode");
         }
+
+        this.set_data_display_mode = function(display_mode) {
+                Session.set("datadisplaymode", display_mode);
+        }
+
+        this.get_data_display_mode = function() {
+                return Session.get("datadisplaymode");
+        }
 }
 
 export var G_Session = new SessionManager();
