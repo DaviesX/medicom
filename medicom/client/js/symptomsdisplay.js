@@ -11,3 +11,16 @@
  * You should have received a copy of the GNU General Public License along with this program; if not,
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
+import {G_DataBrowser} from "./databrowser.js";
+
+export function SymptomsDisplay() {
+
+        this.update_target = function(start_date, end_date, target) {
+        }
+}
+
+Template.tmplsymptombrowser.onRendered(function() {
+        console.log("symptom browser rendered");
+        G_DataBrowser.set_charting_area(this.find("#charting-area"));
+        G_DataBrowser.update_display();
+});

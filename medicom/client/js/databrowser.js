@@ -14,359 +14,14 @@
 import {Template} from "meteor/templating";
 import {ValueTable, ValueTable_create_from_POD} from "../../api/valuetable.js";
 import {SequentialEffect, BatchedEffect} from "./effects.js";
+import {BloodPressureDisplay} from "./bpdisplay.js";
+import {PillBottleCapDisplay} from "./pbcdisplay.js";
+import {SymptomsDisplay} from "./symptomsdisplay.js";
+import {FitbitDisplay} from "./fitbitdisplay.js";
+import {SmartDisplay} from "./smartdisplay.js";
+import {SessionNotesDisplay} from "./notesdisplay.js";
 import {G_Session} from "./session.js";
 
-
-function chart_clear(target) {
-        var x = ["x"];
-        var y = [""];
-
-        var chart = c3.generate({
-                bindto: target,
-                data: {
-                        x: "x",
-                        columns: [x, y]
-                },
-                axis: {
-                        x: {
-                                type: "timeseries",
-                                tick: {
-                                        format: "%Y-%m-%d"
-                                }
-                        }
-                }
-        });
-}
-
-function add_bp(r, s) {
-        return {systolic: r.systolic + s.systolic,
-                diastolic: r.diastolic + s.diastolic};
-}
-
-function scale_bp(k, v) {
-        return {systolic: k*v.systolic,
-                diastolic: k*v.diastolic};
-}
-
-function scalar_bp(v) {
-        return (v.systolic + v.diastolic)/2;
-}
-
-function chart_update_blood_pressure(bptable, start_date, end_date, num_samples, method_name, target) {
-        var x = ["x"];
-        var y = ["systolic blood pressure"];
-        var z = ["diastolic blood pressure"];
-        
-        bptable.sort_data(false);
-        // merge the data from the same day.
-        bptable.merge_adjacent_data({
-                        name: method_name, 
-                        scalar: scalar_bp,
-                        add: add_bp,
-                        scale: scale_bp
-                },
-        function (a, b) {
-                return a.getYear() == b.getYear() && a.getMonth() == b.getMonth() && a.getDay() == b.getDay();
-        });
-        var pairs = bptable.get_pairs();
-
-        var s = start_date == null ? Number.MIN_VALUE : start_date.getTime();
-        var e = end_date == null ? Number.MAX_VALUE : end_date.getTime();
-        
-        var valid_indices = [];
-        for (var i = 0, j = 0; j < pairs.length; j ++) {
-                var millidate = pairs[j].date.getTime();
-                if (millidate < s || millidate > e)
-                        continue;
-                valid_indices[i ++] = j;
-        }
-
-        num_samples = num_samples != null ? 
-                Math.min(valid_indices.length, Math.max(1, num_samples)) : valid_indices.length;   
-        var interval = valid_indices.length/num_samples;
-        for (var i = 0, j = 1; j - 1 < num_samples; i += interval, j ++) {
-                var obj = pairs[valid_indices[Math.floor(i)]];
-                x[j] = obj.date;
-                y[j] = obj.value.systolic.toFixed(1);
-                z[j] = obj.value.diastolic.toFixed(1);
-        }
-        
-        return {
-                bindto: target,
-                data: {
-                        x: "x",
-                        columns: [x, y, z]
-                },
-                axis: {
-                        x: {
-                                type: "timeseries",
-                                tick: {
-                                        format: "%Y-%m-%d"
-                                }
-                        }
-                }
-        };
-}
-
-function chart_update_pill_bottle_cap(pbctable, start_date, end_date, target) {
-        var x = ["x"];
-        var y = ["pill bottle cap"];
-        
-        pbctable.sort_data(false);
-        var pairs = pbctable.get_pairs();
-
-        var s = start_date == null ? Number.MIN_VALUE : start_date.getTime();
-        var e = end_date == null ? Number.MAX_VALUE : end_date.getTime();
-        
-        var valid_indices = [];
-        for (var i = 0, j = 0; j < pairs.length; j ++) {
-                var millidate = pairs[j].date.getTime();
-                if (millidate < s || millidate > e)
-                        continue;
-                valid_indices[i ++] = j;
-        }
-
-        this.find_pair_on = function(date) {
-                var doses = [];
-                for (var i = 0; i < valid_indices.length; i ++) {
-                        var curr_date = pairs[valid_indices[i]].date;
-                        if (date.getDate() == curr_date.getDate() && 
-                            date.getMonth() == curr_date.getMonth() && 
-                            date.getYear() == curr_date.getYear()) {
-                                doses[doses.length] = pairs[valid_indices[i]];
-                        }
-                }
-                return doses;
-        }
-
-        s = pairs[0].date.getTime();
-        e = pairs[valid_indices[valid_indices.length - 1]].date.getTime();
-
-        const a_day = 1000*60*60*24;
-
-        for (var d = s, i = 1; d <= e; d += a_day) {
-                var today = new Date(d);
-                var doses = this.find_pair_on(today, 2);
-
-                x[i] = doses.length > 0 ? doses[0].date : today;
-                y[i] = doses.length;
-                i ++;
-        }
-        
-        return {
-                bindto: target,
-                data: {
-                        x: "x",
-                        columns: [x, y],
-                        type: "bar",
-                        colors: {
-                                "pill bottle cap": "rgba(0, 255, 0, 0.2)"
-                        }
-                },
-                bar: {
-                        width: {
-                                ratio: 1.0
-                        }
-                },
-                axis: {
-                        x: {
-                                type: "timeseries",
-                                tick: {
-                                        format: "%Y-%m-%d"
-                                }
-                        }
-                }
-        };
-}
-
-function LocalBloodPressureDisplay() {
-        this.__bptable = new ValueTable();
-        this.__file = null;
-
-        this.__update_data_from_file_stream = function() {
-                var fr = new FileReader();
-                var clazz = this;
-
-                fr.onload = function (e) {
-                        var parts = clazz.__file.name.split(".");
-                        var suffix = parts[parts.length - 1];
-                        var stream = e.target.result;
-
-                        console.log("file content: " + stream.toString());
-                        clazz.__bptable.construct_from_stream(suffix, stream);
-                }
-                fr.readAsText(this.__file);
-        }
-        
-        this.set_data_from_bp_file_stream = function(file) {
-                this.__file = file;
-                this.__update_data_from_file_stream();
-        }
-
-        this.clear_data = function() {
-                this.__bptable = new ValueTable();
-        }
-
-        this.get_bptable = function() {
-                return this.__bptable;
-        }
-
-        this.update_target = function(start_date, end_date, filter, num_samples, target) {
-                var chart = chart_update_blood_pressure(this.__bptable, start_date, end_date, num_samples, filter, target);
-                c3.generate(chart);
-        }
-
-        this.save_to_file_stream = function(file) {
-        }
-}
-
-function RemoteBloodPressureDisplay() {
-        this.__identity = null;
-        this.__browsing_user = null;
-        this.__session = null;
-        
-        this.set_access_info = function(identity, browsing_user, session) {
-                this.__identity = identity
-                this.__browsing_user = browsing_user;
-                this.__session = session;
-        }
-
-        this.update_target = function(start_date, end_date, filter, num_samples, target) {
-                var params = {
-                        identity: this.__identity, 
-                        session_id: this.__session.get_session_id(), 
-                        start_date: start_date,
-                        end_date: end_date,
-                        num_samples: null
-                };
-                Meteor.call("user_get_patient_bp_table", params, function(error, result) {
-                        if (result.error != "") {
-                                console.log("failed to obtain bptable from patient: " + JSON.stringify(params));
-                        } else {
-                                var bptable = result.bptable;
-                                bptable = ValueTable_create_from_POD(bptable);
-                                var chart = chart_update_blood_pressure(
-                                        bptable, start_date, end_date, num_samples, filter, target); 
-                                c3.generate(chart);
-                        }
-                });
-        }
-
-        this.upload_to_remote_server = function(bptable) {
-                if (bptable == null) return;
-                var params = {
-                        identity: this.__identity, 
-                        session_id: this.__session.get_session_id(), 
-                        bptable: bptable
-                };
-                Meteor.call("patient_super_update_bp_from_table", params, function(error, result) {
-                        if (result.error != "") {
-                                alert(result.error);
-                                console.log("failed to upload bp table: " + JSON.stringify(params));
-                        } else {
-                                console.log("remote blood pressure data has been updated");
-                        }
-                });
-        }
-}
-
-function SymptomsDisplay() {
-
-        this.update_target = function(start_date, end_date, target) {
-        }
-}
-
-function LocalPillBottleCapDisplay() {
-        this.__file = null;
-        this.__pbctable = new ValueTable();
-
-        this.__update_data_from_file_stream = function() {
-                var fr = new FileReader();
-                var clazz = this;
-
-                fr.onload = function (e) {
-                        var parts = clazz.__file.name.split(".");
-                        var suffix = parts[parts.length - 1];
-                        var stream = e.target.result;
-
-                        console.log("file content: " + stream.toString());
-                        clazz.__pbctable.construct_from_stream(suffix, stream);
-                }
-                fr.readAsText(this.__file);
-        }
-        
-        this.set_data_from_pbc_file_stream = function(file) {
-                this.__file = file;
-                this.__update_data_from_file_stream();
-        }
-
-        this.clear_data = function() {
-                this.__pbctable = new ValueTable();
-        }
-
-        this.update_target = function(start_date, end_date, target) {
-                var chart = chart_update_pill_bottle_cap(this.__pbctable, start_date, end_date, target);
-                c3.generate(chart);
-        }
-}
-
-function SmartDisplay() {
-        this.__identity = null;
-        this.__browsing_user = null;
-        this.__session = null;
-        
-        this.set_access_info = function(identity, browsing_user, session) {
-                this.__identity = identity
-                this.__browsing_user = browsing_user;
-                this.__session = session;
-        }
-
-        this.update_target = function(start_date, end_date, filter, num_samples, target) {
-                chart_clear(target);
-        }
-}
-
-function SessionNotesDisplay() {
-        this.__identity = null;
-        this.__session = null;
-        this.__notes_holder = null;
-        
-        this.set_access_info = function(identity, session) {
-                this.__identity = identity;
-                this.__session = session;
-        }
-        
-        this.set_notes_holder = function(holder) {
-                this.__notes_holder = holder;
-        }
-        
-        this.update_notes = function() {
-                var clazz = this;
-                
-                Meteor.call("user_get_session_notes", 
-                            {identity: this.__identity, 
-                             session_id: this.__session.get_session_id()}, function(error, result) {
-                        if (result.error != "") {
-                                console.log(result.error);
-                        } else {
-                                clazz.__notes_holder.html(result.notes);
-                        }
-                });
-        }
-        
-        this.save_notes = function() {
-                Meteor.call("provider_set_session_notes", 
-                            {identity: this.__identity, 
-                             session_id: this.__session.get_session_id(),
-                             notes: this.__notes_holder.val()}, function(error, result) {
-                        if (result.error != "") {
-                                console.log(result.error);
-                        } else {
-                                console.log("Notes are saved");
-                        }
-                });
-        }
-}
 
 export function DataBrowser() {
         this.__identity = null;
@@ -391,11 +46,11 @@ export function DataBrowser() {
         this.__filtering = "plain";
         
         this.__smart_display = new SmartDisplay();
-        this.__local_bp_display = new LocalBloodPressureDisplay();
-        this.__remote_bp_display = new RemoteBloodPressureDisplay();
+        this.__bp_display = new BloodPressureDisplay();
+        this.__pbc_display = new PillBottleCapDisplay();
         this.__symp_display = new SymptomsDisplay();
+        this.__fitbit_display = new FitbitDisplay();
         this.__notes_display = new SessionNotesDisplay();
-        this.__pbc_display = new LocalPillBottleCapDisplay();
         
         // Access infos.
         this.set_target_session = function(session, user_info, identity) {
@@ -424,7 +79,9 @@ export function DataBrowser() {
                         if (file == null) 
                                 return;
                         filepath_holder.html(file.name);
-                        clazz.__local_bp_display.set_data_from_bp_file_stream(file);
+                        clazz.__bp_display.set_local_data_from_file_stream(file, function(obj) {
+                                clazz.update_display();
+                        });
                         clazz.__pbc_display.set_data_from_pbc_file_stream(file);
                         clazz.update_display();
                 });
@@ -433,8 +90,11 @@ export function DataBrowser() {
                         filepath_holder.html("No file is connected");
                         holder.replaceWith(holder = holder.clone(true));
                         this.__file_select_holder = holder;
-                        clazz.__local_bp_display.clear_data();
-                        clazz.__pbc_display.clear_data();
+                        clazz.__bp_display.set_local_data_from_remote_server(clazz.__start_date, clazz.__end_date, 
+                                                clazz.__sample_count, function(obj) {
+                                clazz.update_display();
+                        });
+                        clazz.__pbc_display.clear_local_data();
                         clazz.update_display();
                 });
         }
@@ -521,7 +181,7 @@ export function DataBrowser() {
                 else this.set_display_mode(display_mode);
                 
                 // Handle access info.
-                this.__remote_bp_display.set_access_info(this.__identity, this.__browsing_user, this.__session);
+                this.__bp_display.set_access_info(this.__identity, this.__browsing_user, this.__session);
                 this.__smart_display.set_access_info(this.__identity, this.__browsing_user, this.__session);
                 this.__notes_display.set_access_info(this.__identity, this.__session);
                 
@@ -531,16 +191,16 @@ export function DataBrowser() {
                 // Update charting area.
                 switch (display_mode) {
                 case "Smart Display Mode":
-                        this.__smart_display.update_target(this.__start_date, this.__end_date,
-                                                           this.__filtering,
-                                                           this.__sample_count,
-                                                           this.__charting_area);
-                        break;
-                case "Blood Pressure Data": 
-                        this.__remote_bp_display.update_target(this.__start_date, this.__end_date, 
+                        this.__smart_display.render_local_data(this.__start_date, this.__end_date,
                                                                this.__filtering,
                                                                this.__sample_count,
                                                                this.__charting_area);
+                        break;
+                case "Blood Pressure Data": 
+                        this.__bp_display.render_local_data(this.__start_date, this.__end_date, 
+                                                            this.__filtering,
+                                                            this.__sample_count,
+                                                            this.__charting_area);
                         break;
                 case "Symptoms Data": 
                         this.__symp_display.update_target(this.__start_date, this.__end_date, this.__charting_area);
@@ -570,36 +230,6 @@ export function DataBrowser() {
 }
 
 export var G_DataBrowser = new DataBrowser();
-
-Template.tmplsmartbrowser.onRendered(function() {
-        console.log("smart browser rendered");
-        G_DataBrowser.set_charting_area(this.find("#charting-area"));
-        G_DataBrowser.update_display();
-});
-
-Template.tmplbpbrowser.onRendered(function() {
-        console.log("bp browser rendered");
-        G_DataBrowser.set_charting_area(this.find("#charting-area"));
-        G_DataBrowser.update_display();
-});
-
-Template.tmplpbcbrowser.onRendered(function() {
-        console.log("pbc browser rendered");
-        G_DataBrowser.set_charting_area(this.find("#charting-area"));
-        G_DataBrowser.update_display();
-});
-
-Template.tmplsymptombrowser.onRendered(function() {
-        console.log("symptom browser rendered");
-        G_DataBrowser.set_charting_area(this.find("#charting-area"));
-        G_DataBrowser.update_display();
-});
-
-Template.tmplfitbitbrowser.onRendered(function() {
-        console.log("fitbit browser rendered");
-        G_DataBrowser.set_charting_area(this.find("#charting-area"));
-        G_DataBrowser.update_display();
-});
 
 Template.tmpldatabrowser.onRendered(function () {
         console.log("data browser rendered");
