@@ -14,14 +14,25 @@
 // HTTP Web APIs go here
 import {Meteor} from 'meteor/meteor'
 
-Router.route('/http_protocols/super_update_symptom', 
-        /**
-         * Update a patient's symptom data through HTTP request.
-         * @param {String} email of the patient.
-         * @param {Date} date of the blob.
-         * @return {null}
-         * @example, Meteor.HTTP.post("www.medicom.org/http_protocols/super_update_symptom?email=davis@mail.org&date=Wed_Apr_13_2016_16:37:45_GMT-0700");
-         **/
-        function super_update_symptom_on_http() {
-        }
-);
+function super_update_symptoms(symptoms) {
+}
+
+/**
+ * Update a patient's symptom data through HTTP request.
+ * @param {Symptoms[]} an array of symptom objects where
+                       each is formatted as: 
+   var symptom = {
+        patients_feel(Integer),
+        comments(String),
+        timestamp(Date),
+        patient_id(Integer),
+        session_id(Integer)
+   }
+ * @return {null}
+ * @example, Meteor.HTTP.post("www.medicom.org/http_protocols/update_symptoms");
+ **/
+Router.route("/http_protocols/update_symptoms", 
+            {where: "server"}).post(function() {
+        super_update_symptoms(this.request.body);
+        this.response.end("Symptoms received");
+});
