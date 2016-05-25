@@ -11,7 +11,6 @@
  * You should have received a copy of the GNU General Public License along with this program; if not,
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
-import {G_DataBrowser} from "./databrowser.js";
 import {Chart} from "./charts.js";
 import {ValueTable, ValueTable_create_from_POD} from "../../api/valuetable.js";
 
@@ -20,7 +19,13 @@ export function SmartDisplay() {
         this.__browsing_user = null;
         this.__session = null;
         this.__chart = new Chart(); 
-
+        
+        this.__charting_area = null;
+        
+        this.set_charting_area = function(holder) {
+                this.__charting_area = holder;
+        }
+        
         this.set_access_info = function(identity, browsing_user, session) {
                 this.__identity = identity
                 this.__browsing_user = browsing_user;
@@ -30,10 +35,16 @@ export function SmartDisplay() {
         this.render_local_data = function(start_date, end_date, filter, num_samples, target) {
                 this.__chart.clear(target);
         }
+        
+        this.update = function() {
+                this.render_local_data(this.__start_date, this.__end_date, 
+                                       this.__filtering, this.__sample_count, this.__charting_area);
+        }
 }
+
+export var G_SmartDisplay = new SmartDisplay();
 
 Template.tmplsmartbrowser.onRendered(function() {
         console.log("smart browser rendered");
-        G_DataBrowser.set_charting_area(this.find("#charting-area"));
-        G_DataBrowser.update_display();
+        G_SmartDisplay.set_charting_area(this.find("#charting-area"));
 });

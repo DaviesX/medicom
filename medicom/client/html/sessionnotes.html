@@ -1,4 +1,4 @@
-/*
+<!--
  * This file is part of MediCom
  *
  * Copyright © 2016, Chifeng Wen.
@@ -10,18 +10,13 @@
  *
  * You should have received a copy of the GNU General Public License along with this program; if not,
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
- */
-export function FitbitDisplay() {
-        this.__charting_area = null;
-        
-        this.set_charting_area = function(holder) {
-                this.__charting_area = holder;
-        }
-}
-
-export var G_FitbitDisplay = new FitbitDisplay();
-
-Template.tmplfitbitbrowser.onRendered(function() {
-        console.log("fitbit browser rendered");
-        G_FitbitDisplay.set_charting_area(this.find("#charting-area"));
-});
+ -->
+<template name="tmplsessionnotes">
+        <div style="margin-top: 15px;">Issues and Notes: </div>
+        <div>
+                <textarea id="txt-notes" 
+                          style="width: 100%; resize: vertical;" 
+                          rows="8" cols="50" 
+                          placeholder="High blood pressure..."></textarea>
+        </div>
+</template>

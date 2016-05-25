@@ -14,13 +14,9 @@
 <template name="tmpldatabrowser">
 <div id="data-panel">
         <div class="simp_browser-title-holder">Session: {{session_id}}</div>
-        <div style="margin-top: 15px;">Issues and Notes: </div>
-        <div>
-                <textarea id="txt-notes" 
-                          style="width: 100%; resize: vertical;" 
-                          rows="8" cols="50" 
-                          placeholder="High blood pressure..."></textarea>
-        </div>
+        
+        {{> tmplsessionnotes}}
+        
         <select id="sel-chart-types" class="simp_select" style="margin-bottom: 10px;">
         </select>
 

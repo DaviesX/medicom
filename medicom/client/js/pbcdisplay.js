@@ -11,7 +11,6 @@
  * You should have received a copy of the GNU General Public License along with this program; if not,
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
-import {G_DataBrowser} from "./databrowser.js";
 import {ValueTable, ValueTable_create_from_POD} from "../../api/valuetable.js";
 import {Chart} from "./charts.js";
 
@@ -19,7 +18,13 @@ export function PillBottleCapDisplay() {
         this.__file = null;
         this.__chart = new Chart();
         this.__pbctable = new ValueTable();
-
+        
+        this.__charting_area = null;
+        
+        this.set_charting_area = function(holder) {
+                this.__charting_area = holder;
+        }
+        
         this.__update_data_from_file_stream = function() {
                 var fr = new FileReader();
                 var clazz = this;
@@ -50,8 +55,9 @@ export function PillBottleCapDisplay() {
         }
 }
 
+export var G_PBCDisplay = new PillBottleCapDisplay();
+
 Template.tmplpbcbrowser.onRendered(function() {
         console.log("pbc browser rendered");
-        G_DataBrowser.set_charting_area(this.find("#charting-area"));
-        G_DataBrowser.update_display();
+        G_PBCDisplay.set_charting_area(this.find("#charting-area"));
 });

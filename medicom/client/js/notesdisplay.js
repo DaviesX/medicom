@@ -22,10 +22,16 @@ export function SessionNotesDisplay() {
                 this.__session = session;
         }
         
+        // Holders.
         this.set_notes_holder = function(holder) {
                 this.__notes_holder = holder;
+                
+                var clazz = this;
+                holder.on("change", function(e) {
+                        clazz.save_notes();
+                });
         }
-        
+
         this.update_notes = function() {
                 var clazz = this;
                 
@@ -53,3 +59,9 @@ export function SessionNotesDisplay() {
                 });
         }
 }
+
+export var G_SessionNotesDisplay = new SessionNotesDisplay();
+
+Template.tmplsessionnotes.onRendered(function () {
+        G_SessionNotesDisplay.set_notes_holder($("#txt-notes"));
+});
