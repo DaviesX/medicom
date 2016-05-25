@@ -49,9 +49,12 @@ export function PillBottleCapDisplay() {
                 this.__pbctable = new ValueTable();
         }
 
-        this.update_target = function(start_date, end_date, target) {
+        this.render_local_data = function(start_date, end_date, target) {
                 var chart = this.__chart.render_pill_bottle_cap(this.__pbctable, start_date, end_date, target);
                 c3.generate(chart);
+        }
+        
+        this.update = function() {
         }
 }
 

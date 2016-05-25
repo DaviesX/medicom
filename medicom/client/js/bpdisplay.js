@@ -127,7 +127,7 @@ export function BloodPressureDisplay() {
                         session_id: this.__session.get_session_id(), 
                         start_date: start_date,
                         end_date: end_date,
-                        num_samples: num_samples, 
+                        num_samples: null, 
                 };
                 var clazz = this;
                 Meteor.call("user_get_patient_bp_table", params, function(error, result) {
@@ -153,15 +153,15 @@ export function BloodPressureDisplay() {
                 var clazz = this;
                 if (this.__file != null) {
                         this.set_local_data_from_file_stream(this.__file, function(obj) {
-                                clazz.render_local_data(clazz.__start_date, this.__end_date, 
-                                                        clazz.__filtering, this.__sample_count, 
+                                clazz.render_local_data(clazz.__start_date, clazz.__end_date, 
+                                                        clazz.__filtering, clazz.__sample_count, 
                                                         clazz.__charting_area);
                         });
                 } else {
                         this.set_local_data_from_remote_server(this.__start_date, this.__end_date, 
                                                                this.__sample_count, function(obj) {
-                                clazz.render_local_data(clazz.__start_date, this.__end_date, 
-                                                        clazz.__filtering, this.__sample_count, 
+                                clazz.render_local_data(clazz.__start_date, clazz.__end_date, 
+                                                        clazz.__filtering, clazz.__sample_count, 
                                                         clazz.__charting_area);
                         });
                 }

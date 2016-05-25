@@ -133,7 +133,7 @@ export var G_DataBrowser = new DataBrowser();
 Template.tmpldatabrowser.onRendered(function () {
         console.log("data browser rendered");
 
-        var effect = new BatchedEffect("fade", 500);
+        var effect = new BatchedEffect("slide", 400);
         effect.add_elm($("#data-panel"));
         effect.finalize();
         effect.animate();
