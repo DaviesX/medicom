@@ -20,7 +20,6 @@ export function BloodPressureDisplay() {
         this.__session = null;
         
         this.__charting_area = null;
-
         this.__start_date = null;
         this.__end_date = null;
         this.__sample_count = null;
@@ -105,6 +104,7 @@ export function BloodPressureDisplay() {
         this.set_local_data_from_file_stream = function(file, f_On_Complete) {
                 var fr = new FileReader();
                 var clazz = this;
+                this.clear_local_data();
 
                 fr.onload = function (e) {
                         var parts = file.name.split(".");
@@ -122,6 +122,8 @@ export function BloodPressureDisplay() {
         
         // Data
         this.set_local_data_from_remote_server = function(start_date, end_date, num_samples, f_On_Complete) {
+                this.clear_local_data();
+                
                 var params = {
                         identity: this.__identity, 
                         session_id: this.__session.get_session_id(), 
@@ -165,7 +167,6 @@ export function BloodPressureDisplay() {
                                                         clazz.__charting_area);
                         });
                 }
-                
         }
 
         this.upload_to_remote_server = function(bptable) {
