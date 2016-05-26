@@ -11,7 +11,6 @@
  * You should have received a copy of the GNU General Public License along with this program; if not,
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
-import {Chart} from "./charts.js";
 import {ValueTable, ValueTable_create_from_POD} from "../../api/valuetable.js";
 
 export function BloodPressureDisplay() {
@@ -26,7 +25,6 @@ export function BloodPressureDisplay() {
         this.__filtering = "plain";
         this.__file = null;
         
-        this.__chart = new Chart();
         this.__local_bptable = null;
 
         this.set_access_info = function(identity, browsing_user, session) {
@@ -118,7 +116,9 @@ export function BloodPressureDisplay() {
                                                                 diastolic: k*v.diastolic}; },
                         },
                         function (a, b) {
-                                return a.getYear() == b.getYear() && a.getMonth() == b.getMonth() && a.getDay() == b.getDay();
+                                return a.getYear() == b.getYear() && 
+                                       a.getMonth() == b.getMonth() && 
+                                       a.getDate() == b.getDate();
                         }
                 );
                 bptable = bptable.sample(start_date, end_date, num_samples);
@@ -222,7 +222,7 @@ export function BloodPressureDisplay() {
                 }
         }
 
-        this.upload_to_remote_server = function(bptable) {
+        this.upload_to_remote_server = function() {
                 if (this.__local_bptable == null) return false;
                 
                 var params = {
