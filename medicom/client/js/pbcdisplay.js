@@ -12,7 +12,6 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 import {ValueTable, ValueTable_create_from_POD} from "../../api/valuetable.js";
-import {Chart} from "./charts.js";
 
 export function PillBottleCapDisplay() {
         this.__identity = null;
@@ -24,7 +23,6 @@ export function PillBottleCapDisplay() {
         this.__file = null;
         this.__charting_area = null;
         
-        this.__chart = new Chart();
         this.__pbctable = new ValueTable();
         
         this.set_access_info = function(identity, browsing_user, session) {
@@ -82,6 +80,67 @@ export function PillBottleCapDisplay() {
         }
         
         // Data.
+        this.get_processed_table = function(start_date, end_date) {
+                var pbctable = this.__pbctable;
+                pbctable = pbctable.sort_data(false);
+                pbctable = pbctable.sample(start_date, end_date, null);
+                return pbctable.merge_adjacent_data({name: "first",},
+                        function (a, b) {
+                                return a.getYear() == b.getYear() && 
+                                       a.getMonth() == b.getMonth() && 
+                                       a.getDate() == b.getDate();
+                        }
+                );
+        }
+        
+        this.__render_pbc = function(pbctable, target) {
+                var x = ["x"];
+                var y = ["pill bottle cap"];
+                var pairs = pbctable.get_pairs();
+                for (var i = 0; i < pairs.length; i ++) {
+                        x[i + 1] = pairs[i].date;
+                        y[i + 1] = pairs[i].num_insts;
+                }
+                
+//                s = pairs[0].date.getTime();
+//                e = pairs[valid_indices[valid_indices.length - 1]].date.getTime();
+//        
+//                const a_day = 1000*60*60*24;
+//                for (var d = s, i = 1; d <= e; d += a_day) {
+//                        var today = new Date(d);
+//                        var doses = this.find_pair_on(today, 2);
+//        
+//                        x[i] = doses.length > 0 ? doses[0].date : today;
+//                        y[i] = doses.length;
+//                        i ++;
+//                }
+                
+                return {
+                        bindto: target,
+                        data: {
+                                x: "x",
+                                columns: [x, y],
+                                type: "bar",
+                                colors: {
+                                        "pill bottle cap": "rgba(0, 255, 0, 0.2)"
+                                }
+                        },
+                        bar: {
+                                width: {
+                                        ratio: 1.0
+                                }
+                        },
+                        axis: {
+                                x: {
+                                        type: "timeseries",
+                                        tick: {
+                                                format: "%Y-%m-%d"
+                                        }
+                                }
+                        }
+                };
+        }
+        
         this.set_local_data_from_file_stream = function(file, f_On_Complete) {
                 var fr = new FileReader();
                 var clazz = this;
@@ -106,7 +165,7 @@ export function PillBottleCapDisplay() {
         }
 
         this.render_local_data = function(start_date, end_date, target) {
-                c3.generate(this.__chart.render_pill_bottle_cap(this.__pbctable, start_date, end_date, target));
+                c3.generate(this.__render_pbc(this.get_processed_table(start_date, end_date), target));
         }
         
         this.update = function() {
