@@ -31,7 +31,7 @@ export function SuperIndendantControl() {
                         err.log("You don't have a valid identity");
                         return false;
                 }
-                var pairs = bptable.get_pairs();
+                var pairs = table.get_pairs();
                 for (var i = 0; i < pairs.length; i ++) {
                         this.__measure_mgr.update_measure(session_id, f_Construct_Measure(pairs[i]));
                 }
