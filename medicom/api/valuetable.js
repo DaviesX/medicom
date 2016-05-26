@@ -54,8 +54,8 @@ export function ValueTable() {
                         var timestamp = parts[0];
                         var bpvalue = parts[1];
                         
-                        this.__pairs[i] = {date: this.__parse_bpcsv_date(timestamp),
-                                           value: {systolic: parseFloat(bpvalue, 10), diastolic: 0, bpm: 0}};
+                        this.add_row(this.__parse_bpcsv_date(timestamp),
+                                     {systolic: parseFloat(bpvalue, 10), diastolic: 0, bpm: 0});
                 }
         }
 
@@ -149,22 +149,22 @@ export function ValueTable() {
                         }
                 }
                 for (var i = 0; i < bps_values.length; i ++) {
-                        this.__pairs[i] = {date: this.__parse_bp2csv_date(bps_values[i].timestamp),
-                                           value: {systolic: this.__parse_bp2csv_sys(bps_values[i].bp_values), 
-                                                   diastolic:this.__parse_bp2csv_dia(bps_values[i].bp_values),
-                                                   bpm: this.__parse_bp2csv_bpm(bpm_values[i].bpm)}};
+                        this.add_row(this.__parse_bp2csv_date(bps_values[i].timestamp),
+                                     {systolic: this.__parse_bp2csv_sys(bps_values[i].bp_values), 
+                                      diastolic:this.__parse_bp2csv_dia(bps_values[i].bp_values),
+                                      bpm: this.__parse_bp2csv_bpm(bpm_values[i].bpm)});
                 }
         }
         
         this.construct_from_pbccsv_stream = function(stream) {
                 stream = stream.toString();
                 var lines = stream.split(this.__c_LineDelim);
-                for (var i = 0, j = 0; i < lines.length; i ++) {
+                for (var i = 0; i < lines.length; i ++) {
                         var parts = lines[i].split(this.__c_Delimiter);
                         var action = parts[3];
                         var date = parts[4];
                         if (action == "Cap off") {
-                                this.__pairs[j ++] = {date: new Date(date), value: {action: true}};
+                                this.add_row(new Date(date), {action: true});
                         }
                 }
         }
@@ -187,7 +187,7 @@ export function ValueTable() {
 
         this.add_row = function(date, value) {
                 var i = this.__pairs.length;
-                this.__pairs[i] = {date: date, value: value};
+                this.__pairs[i] = {date: date, value: value, num_insts: 1};
         }
 
         this.get_row = function(date) {
@@ -250,7 +250,11 @@ export function ValueTable() {
                                 case "uniform average":
                                         new_table.__pairs[new_table.__pairs.length] = this.__avg_pair(last, i, method);
                                         break;
+                                case "first":
+                                        new_table.__pairs[new_table.__pairs.length] = this.__pairs[last];
+                                        break;                                        
                                 }
+                                new_table.__pairs[new_table.__pairs.length - 1].num_insts = i - last + 1;
                                 last = i + 1;
                         }
                 }
