@@ -121,7 +121,7 @@ export function DataBrowser() {
         }
         
         this.save_changes = function() {
-                this.__remote_bp_display.upload_to_remote_server(this.__local_bp_display.get_bptable());
+                this.__bp_display.upload_to_remote_server();
                 this.__notes_display.save_notes();
                 this.load_display();
                 alert("Everything has been saved");
