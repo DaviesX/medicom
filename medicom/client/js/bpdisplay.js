@@ -100,7 +100,59 @@ export function BloodPressureDisplay() {
                         clazz.update();
                 });
         }
+        
+        // Data.
+        this.get_processed_table = function(start_date, end_date, num_samples, filter) {
+                var bptable = this.__local_bptable;
 
+                bptable = bptable.sort_data(false);
+
+                // merge the data from the same day.
+                bptable = bptable.merge_adjacent_data(
+                        {
+                                name: filter, 
+                                scalar: function(v) { return (v.systolic + v.diastolic)/2; },
+                                add: function(r, s) { return {systolic: r.systolic + s.systolic,
+                                                              diastolic: r.diastolic + s.diastolic}; },
+                                scale: function(k, v) { return {systolic: k*v.systolic,
+                                                                diastolic: k*v.diastolic}; },
+                        },
+                        function (a, b) {
+                                return a.getYear() == b.getYear() && a.getMonth() == b.getMonth() && a.getDay() == b.getDay();
+                        }
+                );
+                bptable = bptable.sample(start_date, end_date, num_samples);
+                return bptable;
+        }
+        
+        this.__render_blood_pressure = function(bptable, target) {
+                var x = ["x"];
+                var y = ["systolic blood pressure"];
+                var z = ["diastolic blood pressure"];
+                var pairs = bptable.get_pairs();
+                for (var i = 0; i < pairs.length; i ++) {
+                        x[i + 1] = pairs[i].date;
+                        y[i + 1] = pairs[i].value.systolic.toFixed(1);
+                        z[i + 1] = pairs[i].value.diastolic.toFixed(1);
+                }
+                
+                return {
+                        bindto: target,
+                        data: {
+                                x: "x",
+                                columns: [x, y, z]
+                        },
+                        axis: {
+                                x: {
+                                        type: "timeseries",
+                                        tick: {
+                                                format: "%Y-%m-%d"
+                                        }
+                                }
+                        }
+                };
+        }
+        
         this.set_local_data_from_file_stream = function(file, f_On_Complete) {
                 var fr = new FileReader();
                 var clazz = this;
@@ -120,7 +172,6 @@ export function BloodPressureDisplay() {
                 fr.readAsText(file);
         }
         
-        // Data
         this.set_local_data_from_remote_server = function(start_date, end_date, num_samples, f_On_Complete) {
                 this.clear_local_data();
                 
@@ -147,8 +198,10 @@ export function BloodPressureDisplay() {
         }
 
         this.render_local_data = function(start_date, end_date, filter, num_samples, target) {
-                if (this.__local_bptable)
-                        c3.generate(this.__chart.render_blood_pressure(this.__local_bptable, start_date, end_date, num_samples, filter, target));
+                if (this.__local_bptable) {
+                        var bptable = this.get_processed_table(start_date, end_date, num_samples, filter);
+                        c3.generate(this.__render_blood_pressure(bptable, target));
+                }
         }
         
         this.update = function() {

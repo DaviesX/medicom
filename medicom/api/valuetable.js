@@ -38,6 +38,10 @@ export function ValueTable() {
                 return date;
         }
 
+        this.construct_from_pairs = function(pairs) {
+                this.__pairs = pairs;
+        }
+
         this.construct_from_bpcsv_stream = function(stream) {
                 stream = stream.toString();
                 var lines = stream.split(this.__c_LineDelim);
@@ -227,42 +231,75 @@ export function ValueTable() {
         }
         
         this.merge_adjacent_data = function(method, f_Time_Eval) {
-                if (this.__pairs.length == 0 || method.name == "plain") return;
+                var new_table = new ValueTable();
+                new_table.construct_from_pairs(this.__pairs.slice(0));
+
+                if (this.__pairs.length == 0 || method.name == "plain") return new_table;
                 
                 var last = 0;
-                var new_pairs = [];
                 for (var i = 0; i < this.__pairs.length; i ++) {
                         if (i + 1 == this.__pairs.length || 
                             !f_Time_Eval(this.__pairs[i].date, this.__pairs[i + 1].date)) {
                                 switch (method.name) {
                                 case "uniform min":
-                                        new_pairs[new_pairs.length] = this.__min_pair(last, i, method);
+                                        new_table.__pairs[new_table.__pairs.length] = this.__min_pair(last, i, method);
                                         break;
                                 case "uniform max":
-                                        new_pairs[new_pairs.length] = this.__max_pair(last, i, method);
+                                        new_table.__pairs[new_table.__pairs.length] = this.__max_pair(last, i, method);
                                         break;
                                 case "uniform average":
-                                        new_pairs[new_pairs.length] = this.__avg_pair(last, i, method);
+                                        new_table.__pairs[new_table.__pairs.length] = this.__avg_pair(last, i, method);
                                         break;
                                 }
                                 last = i + 1;
                         }
                 }
-                this.__pairs = new_pairs;
+                return new_table;
         }
         
         this.sort_data = function(desc) {
+                var new_pairs = this.__pairs.slice(0);         
                 if (desc) {
-                        this.__pairs.sort(function (x, y) {
+                        new_pairs.sort(function (x, y) {
                                 return x.date.getTime() > y.date.getTime() ? -1 : 
                                       (x.date.getTime() < y.date.getTime() ? 1 : 0);
                         });
                 } else {
-                        this.__pairs.sort(function (x, y) {
+                        new_pairs.sort(function (x, y) {
                                 return x.date.getTime() < y.date.getTime() ? -1 : 
                                       (x.date.getTime() > y.date.getTime() ? 1 : 0);
                         });
                 }
+                var new_table = new ValueTable();
+                new_table.construct_from_pairs(new_pairs);
+                return new_table;
+        }
+
+        this.sample = function(start_date, end_date, num_samples) {
+                var pairs = this.__pairs;
+        
+                var s = start_date == null ? Number.MIN_VALUE : start_date.getTime();
+                var e = end_date == null ? Number.MAX_VALUE : end_date.getTime();
+                
+                var valid_indices = [];
+                for (var i = 0, j = 0; j < pairs.length; j ++) {
+                        var millidate = pairs[j].date.getTime();
+                        if (millidate < s || millidate > e)
+                                continue;
+                        valid_indices[i ++] = j;
+                }
+        
+                var new_pairs = [];
+                num_samples = num_samples != null ? 
+                        Math.min(valid_indices.length, Math.max(1, num_samples)) : valid_indices.length;   
+                var interval = valid_indices.length/num_samples;
+                for (var i = 0, j = 0; j < num_samples; i += interval, j ++) {
+                        new_pairs[j] = pairs[valid_indices[Math.floor(i)]];
+                }
+
+                var new_table = new ValueTable();
+                new_table.construct_from_pairs(new_pairs);
+                return new_table;
         }
 }
 

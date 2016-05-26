@@ -35,75 +35,7 @@
                 });
         }
 
-        this.__add_bp = function(r, s) {
-                return {systolic: r.systolic + s.systolic,
-                        diastolic: r.diastolic + s.diastolic};
-        }
-
-        this.__scale_bp = function(k, v) {
-                return {systolic: k*v.systolic,
-                        diastolic: k*v.diastolic};
-        }
-
-        this.__scalar_bp = function(v) {
-                return (v.systolic + v.diastolic)/2;
-        }
-
-        this.render_blood_pressure = function(bptable, start_date, end_date, num_samples, method_name, target) {
-                var x = ["x"];
-                var y = ["systolic blood pressure"];
-                var z = ["diastolic blood pressure"];
-                
-                bptable.sort_data(false);
-                // merge the data from the same day.
-                bptable.merge_adjacent_data({
-                                name: method_name, 
-                                scalar: this.__scalar_bp,
-                                add: this.__add_bp,
-                                scale: this.__scale_bp
-                        },
-                function (a, b) {
-                        return a.getYear() == b.getYear() && a.getMonth() == b.getMonth() && a.getDay() == b.getDay();
-                });
-                var pairs = bptable.get_pairs();
         
-                var s = start_date == null ? Number.MIN_VALUE : start_date.getTime();
-                var e = end_date == null ? Number.MAX_VALUE : end_date.getTime();
-                
-                var valid_indices = [];
-                for (var i = 0, j = 0; j < pairs.length; j ++) {
-                        var millidate = pairs[j].date.getTime();
-                        if (millidate < s || millidate > e)
-                                continue;
-                        valid_indices[i ++] = j;
-                }
-        
-                num_samples = num_samples != null ? 
-                        Math.min(valid_indices.length, Math.max(1, num_samples)) : valid_indices.length;   
-                var interval = valid_indices.length/num_samples;
-                for (var i = 0, j = 1; j - 1 < num_samples; i += interval, j ++) {
-                        var obj = pairs[valid_indices[Math.floor(i)]];
-                        x[j] = obj.date;
-                        y[j] = obj.value.systolic.toFixed(1);
-                        z[j] = obj.value.diastolic.toFixed(1);
-                }
-                
-                return {
-                        bindto: target,
-                        data: {
-                                x: "x",
-                                columns: [x, y, z]
-                        },
-                        axis: {
-                                x: {
-                                        type: "timeseries",
-                                        tick: {
-                                                format: "%Y-%m-%d"
-                                        }
-                                }
-                        }
-                };
-        }
 
         this.render_pill_bottle_cap = function(pbctable, start_date, end_date, target) {
                 var x = ["x"];
