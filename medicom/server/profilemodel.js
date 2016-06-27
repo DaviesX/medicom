@@ -15,7 +15,7 @@ import {Meteor} from "meteor/meteor";
 import {Profile, Profile_create_from_POD} from "../api/profile.js";
 
 
-export function ProfileManager(mongodb) {
+export function ProfileModel(mongodb) {
         this.__mongodb = mongodb;
         
         this.c_Profile_Coll_Name = "ProfileCollection";

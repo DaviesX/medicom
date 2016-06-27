@@ -13,9 +13,9 @@
  */
 // Data models go here
 import {Meteor} from "meteor/meteor";
-import {AdminRecordManager} from "./adminrecordmanager.js";
-import {ProfileManager} from "./profilemanager.js";
-import {ProviderManager} from "./providermanager.js";
+import {AdminRecordModel} from "./adminrecordmodel.js";
+import {ProfileModel} from "./profilemodel.js";
+import {ProviderModel} from "./providermodel.js";
 import * as M_AccountType from "../api/accounttype.js";
 
 

@@ -15,7 +15,7 @@ import {Meteor} from "meteor/meteor";
 import {Provider, Provider_Create_From_POD} from "../api/provider.js";
 import {ErrorMessageQueue, MongoDB} from "../api/common.js";
 
-export function ProviderManager(mongodb) {
+export function ProviderModel(mongodb) {
         this.__mongodb = mongodb;
         this.c_Provider_Coll_Name = "ProviderCollection";
         

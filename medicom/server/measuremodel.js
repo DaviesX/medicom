@@ -15,7 +15,7 @@ import {Meteor} from "meteor/meteor";
 import {Measure_Create_From_POD} from "./measure.js"
 
 
-export function MeasureManager(mongodb) {
+export function MeasureModel(mongodb) {
         this.__mongodb = mongodb;
         this.c_Measure_Coll_Name = "MeasurementCollection";
         

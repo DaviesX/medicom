@@ -12,22 +12,22 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 import {MongoDB} from "../api/common.js";
-import {AdminRecordManager} from "./adminrecordmanager.js";
-import {ProfileManager} from "./profilemanager.js";
+import {AdminRecordModel} from "./adminrecordmodel.js";
+import {ProfileModel} from "./profilemodel.js";
 import {AccountManager} from "./accountmanager.js";
-import {IdentityManager} from "./identitymanager.js";
-import {ProviderManager} from "./providermanager.js";
-import {PatientManager} from "./patientmanager.js";
+import {IdentityModel} from "./identitymodel.js";
+import {ProviderModel} from "./providermodel.js";
+import {PatientModel} from "./patientmodel.js";
 import {ParticipatedSessionManager} from "./sessionmanager.js";
-import {MeasureManager} from "./measuremanager.js";
+import {MeasureModel} from "./measuremodel.js";
 
 export function DataModelContext() {
         this.__mongodb = new MongoDB();
-        this.__provider_mgr = new ProviderManager(this.__mongodb);
-        this.__patient_mgr = new PatientManager(this.__mongodb);
-        this.__profile_mgr = new ProfileManager(this.__mongodb);
-        this.__admin_record_mgr = new AdminRecordManager(this.__mongodb);
-        this.__identity_mgr = new IdentityManager(this.__mongodb, 10);
+        this.__provider_mgr = new ProviderModel(this.__mongodb);
+        this.__patient_mgr = new PatientModel(this.__mongodb);
+        this.__profile_mgr = new ProfileModel(this.__mongodb);
+        this.__admin_record_mgr = new AdminRecordModel(this.__mongodb);
+        this.__identity_mgr = new IdentityModel(this.__mongodb, 10);
         this.__account_mgr = new AccountManager(this.__mongodb, 
                                                 this.__admin_record_mgr, 
                                                 this.__profile_mgr, 
@@ -37,7 +37,7 @@ export function DataModelContext() {
         this.__session_mgr = new ParticipatedSessionManager(this.__mongodb,
                                                 this.__provider_mgr,
                                                 this.__patient_mgr);
-        this.__measure_mgr = new MeasureManager(this.__mongodb);
+        this.__measure_mgr = new MeasureModel(this.__mongodb);
         
         this.get_mongodb = function() { return this.__mongodb; }
         this.get_account_manager = function() { return this.__account_mgr; }

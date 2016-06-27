@@ -15,7 +15,7 @@ import {Meteor} from 'meteor/meteor';
 import {Identity, Identity_create_from_POD} from '../api/identity.js'
 
 
-export function IdentityManager(mongo, session_out_intv) {
+export function IdentityModel(mongo, session_out_intv) {
         this.__minute2milli = function(min) { return min*60*1000; }
         this.__mongo = mongo;
         this.__session_out_intv = this.__minute2milli(session_out_intv);

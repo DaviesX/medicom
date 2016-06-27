@@ -15,7 +15,7 @@ import {ErrorMessageQueue, MongoDB} from "../api/common.js";
 import {AdminRecord} from "../api/adminrecord.js";
 import {Profile} from "../api/profile.js";
 import {AccountManager} from "./accountmanager.js"
-import {IdentityManager} from "./identitymanager.js";
+import {IdentityModel} from "./identitymodel.js";
 import {AccountInfo, AccountControl} from "./accountcontrol.js";
 import * as M_AccountControl from "./accountcontrol.js";
 import {DataModelContext, G_DataModelContext} from "./datamodelcontext.js";

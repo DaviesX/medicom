@@ -14,7 +14,7 @@
 import {Meteor} from 'meteor/meteor';
 import {AdminRecord, AdminRecord_create_from_POD} from "../api/adminrecord.js"
 
-export function AdminRecordManager(mongodb) {
+export function AdminRecordModel(mongodb) {
         this.__mongodb = mongodb;
         
         // handle the collection.

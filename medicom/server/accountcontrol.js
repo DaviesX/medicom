@@ -13,7 +13,7 @@
  */
 import {Meteor} from "meteor/meteor";
 import {AccountManager} from "./accountmanager.js";
-import {IdentityManager} from "./identitymanager.js";
+import {IdentityModel} from "./identitymodel.js";
 import {DataModelContext, G_DataModelContext} from "./datamodelcontext.js";
 import {Profile} from "../api/profile.js";
 import {ErrorMessageQueue, MongoDB} from "../api/common.js";
