@@ -196,6 +196,34 @@ function patient_super_update_bp_from_file(identity, session_id, format, blob) {
         return patient_super_update_bp_from_table(identity, session_id, bptable);
 }
 
+function update_pbc_record(identity, session_id, pbctable) {
+        var err = new ErrorMessageQueue();
+        if (identity == null) {
+                err.log("identity is required, but it's absent");
+                return { patients: null, account_infos: null, error: err.fetch_all() };
+        }
+        identity = Identity_create_from_POD(identity);
+        g_superinten_ctrl.update_pbc_measures(identity, session_id, err);
+        return {error: err.fetch_all()};
+}
+
+function get_pbc_record(identity, session_id, start_date, end_date, num_samples) {
+        var err = new ErrorMessageQueue();
+        if (identity == null) {
+                err.log("identity is required, but it's absent");
+                return { patients: null, account_infos: null, error: err.fetch_all() };
+        }
+        identity = Identity_create_from_POD(identity);
+        var measures = g_superinten_ctrl.get_pbc_measures(identity, start_date, end_date, num_samples, err);
+        var pbctable = new ValueTable();
+        if (measures != null) {
+                for (var i = 0; i < measures.length; i ++) {
+                        pbctable.add_row(measures[i].__parent.get_date(), measures[i].get_action());
+                }       
+        }
+        return {pbctable: pbctable, error: err.fetch_all()};
+}
+
 function super_update_symptom(identity, patient_id, date, json) {
         identity = Identity_create_from_POD(identity);
 }
@@ -404,7 +432,7 @@ user_get_patient_bp_table: function(arg) {
  * @param {Date} start date.
  * @param {Date} end date.
  * @param {Integer} number of samples.
- * @return {SymptomsTable, String} return a {SymptomsTable, ""} object if sucessful, or otherwise, {null, "..."}.
+ * @return {ValueTable, String} return a {SymptomsTable, ""} object if sucessful, or otherwise, {null, "..."}.
  */
 user_get_patient_symptoms: function(arg) {
                         return user_get_patient_symptoms(arg.identity, 
@@ -440,6 +468,34 @@ patient_super_update_bp_from_table: function(arg) {
                         return patient_super_update_bp_from_table(arg.identity, 
                                                                   arg.session_id, 
                                                                   arg.bptable);
+                },
+
+/**
+ * Update pill bottle cap data from pbctable.
+ * @param {Identity} Identity of the provider/patient/super intendant.
+ * @param {Integer} Target Session ID.
+ * @param {ValueTable} bptable to be updated.
+ * @return {Boolean, String} return a {True, ""} object if sucessful, or otherwise, {False, "..."}.
+ */
+user_update_pill_bottle_cap_record: function(arg) {
+                        return update_pbc_record(arg.identity,
+                                                 arg.session_id,
+                                                 arg.pbctable);
+                },
+
+/**
+ * Get a patient's pill bottle cap records.
+ * @param {Identity} Identity of the provider/patient.
+ * @param {Integer} Target Session ID.
+ * @param {Date} start date.
+ * @param {Date} end date.
+ * @return {ValueTable, String} return a {ValueTable, ""} object if sucessful, or otherwise, {null, "..."}.
+ */
+user_get_pill_bottle_cap_record: function(arg) {
+                        return get_pbc_record(arg.identity,
+                                              arg.session_id,
+                                              arg.start_date,
+                                              arg.end_date);
                 },
 
 /**
