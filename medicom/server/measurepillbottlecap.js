@@ -12,7 +12,7 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 import {Meteor} from 'meteor/meteor';
-import {Measure, c_Measure_Type_PillBottleCap} from "./measure.js";
+import {Measure, c_Measure_Type_PillBottleCap, Measure_Parent_Create_From_POD} from "./measure.js";
 
 
 export function MeasurePillBottleCap() {
@@ -22,4 +22,11 @@ export function MeasurePillBottleCap() {
         this.set_action = function(action) { this.__action = action; }
         this.get_measure_id = function() { return this.__parent.get_measure_id(); }
         this.get_action = function() { return this.__action; }
+}
+
+export function MeasurePillBottleCap_Create_From_POD(pod) {
+        var obj = new MeasurePillBottleCap();
+        obj.__parent = Measure_Parent_Create_From_POD(pod.__parent);
+        obj.__action = pod.__action;
+        return obj;
 }

@@ -92,6 +92,7 @@ export function DataBrowser() {
                 
                 // Handle access info.
                 this.__bp_display.set_access_info(this.__identity, this.__browsing_user, this.__session);
+                this.__pbc_display.set_access_info(this.__identity, this.__browsing_user, this.__session);
                 this.__smart_display.set_access_info(this.__identity, this.__browsing_user, this.__session);
                 this.__notes_display.set_access_info(this.__identity, this.__session);
                 
@@ -122,6 +123,7 @@ export function DataBrowser() {
         
         this.save_changes = function() {
                 this.__bp_display.upload_to_remote_server();
+                this.__pbc_display.upload_to_remote_server();
                 this.__notes_display.save_notes();
                 this.load_display();
                 alert("Everything has been saved");

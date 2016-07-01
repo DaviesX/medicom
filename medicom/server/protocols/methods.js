@@ -202,8 +202,9 @@ function update_pbc_record(identity, session_id, pbctable) {
                 err.log("identity is required, but it's absent");
                 return { patients: null, account_infos: null, error: err.fetch_all() };
         }
+        pbctable = ValueTable_create_from_POD(pbctable);
         identity = Identity_create_from_POD(identity);
-        g_superinten_ctrl.update_pbc_measures(identity, session_id, err);
+        g_superinten_ctrl.update_pbc_measures(identity, session_id, pbctable, err);
         return {error: err.fetch_all()};
 }
 
@@ -214,7 +215,7 @@ function get_pbc_record(identity, session_id, start_date, end_date, num_samples)
                 return { patients: null, account_infos: null, error: err.fetch_all() };
         }
         identity = Identity_create_from_POD(identity);
-        var measures = g_superinten_ctrl.get_pbc_measures(identity, start_date, end_date, num_samples, err);
+        var measures = g_superinten_ctrl.get_pbc_measures(identity, start_date, end_date, num_samples, session_id, err);
         var pbctable = new ValueTable();
         if (measures != null) {
                 for (var i = 0; i < measures.length; i ++) {
@@ -495,7 +496,8 @@ user_get_pill_bottle_cap_record: function(arg) {
                         return get_pbc_record(arg.identity,
                                               arg.session_id,
                                               arg.start_date,
-                                              arg.end_date);
+                                              arg.end_date,
+                                              arg.num_samples);
                 },
 
 /**

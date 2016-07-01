@@ -33,7 +33,8 @@ export function SuperIndendantControl() {
                 }
                 var pairs = table.get_pairs();
                 for (var i = 0; i < pairs.length; i ++) {
-                        this.__measure_mgr.update_measure(session_id, f_Construct_Measure(pairs[i]));
+                        var measure = f_Construct_Measure(pairs[i]);
+                        this.__measure_mgr.update_measure(session_id, measure);
                 }
                 return true;
         }
@@ -65,6 +66,7 @@ export function SuperIndendantControl() {
                         measure.set_bp_value({systolic: pair.value.systolic, diastolic: pair.value.diastolic});
                         return measure;
                 }, err);
+                return true;
         }
         
         this.get_bp_measures = function(identity, start_date, end_date, sample_count, session_id, err) {
@@ -77,6 +79,7 @@ export function SuperIndendantControl() {
                         measure.__parent.set_date(pair.date);
                         return measure;
                 }, err);
+                return true;
         }
 
         this.get_pbc_measures = function(identity, start_date, end_date, sample_count, session_id, err) {

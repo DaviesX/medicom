@@ -168,6 +168,24 @@ export function PillBottleCapDisplay() {
         }
         
         this.set_local_data_from_remote_server = function(start_date, end_date, f_On_Complete) {
+                this.clear_local_data();
+                
+                var params = {
+                        identity: this.__identity, 
+                        session_id: this.__session.get_session_id(), 
+                        start_date: start_date,
+                        end_date: end_date,
+                        num_samples: null, 
+                };
+                var clazz = this;
+                Meteor.call("user_get_pill_bottle_cap_record", params, function(error, result) {
+                        if (result.error != "") {
+                                console.log("failed to obtain pbctable from patient: " + JSON.stringify(params));
+                        } else {
+                                clazz.__pbctable = ValueTable_create_from_POD(result.pbctable);
+                                f_On_Complete(clazz);
+                        }
+                });
         }
 
         this.clear_local_data = function() {
@@ -179,6 +197,26 @@ export function PillBottleCapDisplay() {
                                               parseInt(this.__expected_dose.val()), 
                                               1.0,
                                               target));
+        }
+        
+        this.upload_to_remote_server = function() {
+                if (this.__pbctable == null) return false;
+                
+                var params = {
+                        identity: this.__identity, 
+                        session_id: this.__session.get_session_id(), 
+                        pbctable: this.__pbctable,
+                        num_samples: null
+                };
+                Meteor.call("user_update_pill_bottle_cap_record", params, function(error, result) {
+                        if (result.error != "") {
+                                alert(result.error);
+                                console.log("failed to upload pbc table: " + JSON.stringify(params));
+                        } else {
+                                console.log("remote pill bottle cap data has been updated");
+                        }
+                });
+                return true;
         }
         
         this.update = function() {
