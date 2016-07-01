@@ -106,14 +106,14 @@ export function PillBottleCapDisplay() {
                 );
         }
         
-        this.__render_pbc = function(pbctable, expected_dose, target) {
+        this.__render_pbc = function(pbctable, expected_dose, height, target) {
                 var x = ["x"];
                 var y = ["pill bottle cap"];
                 var color = [];
                 var pairs = pbctable.get_pairs();
                 for (var i = 0; i < pairs.length; i ++) {
                         x[i + 1] = pairs[i].date;
-                        y[i + 1] = 1;
+                        y[i + 1] = height;
                         g_does_amount[i] = pairs[i].num_insts;
                 }
                 g_expected_amount = expected_dose;
@@ -143,7 +143,7 @@ export function PillBottleCapDisplay() {
                                         }
                                 },
                                 y: {
-                                        max: 1,
+                                        max: height,
                                         min: 0,
                                         padding: {top: 0, bottom: 0}
                                 }
@@ -177,6 +177,7 @@ export function PillBottleCapDisplay() {
         this.render_local_data = function(start_date, end_date, target) {
                 c3.generate(this.__render_pbc(this.get_processed_table(start_date, end_date), 
                                               parseInt(this.__expected_dose.val()), 
+                                              1.0,
                                               target));
         }
         
