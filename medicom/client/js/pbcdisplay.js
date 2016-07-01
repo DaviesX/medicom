@@ -106,7 +106,7 @@ export function PillBottleCapDisplay() {
                 );
         }
         
-        this.__render_pbc = function(pbctable, expected_dose, height, target) {
+        this.generate_pbc_renderable = function(pbctable, expected_dose, height, target) {
                 var x = ["x"];
                 var y = ["pill bottle cap"];
                 var color = [];
@@ -193,10 +193,10 @@ export function PillBottleCapDisplay() {
         }
 
         this.render_local_data = function(start_date, end_date, target) {
-                c3.generate(this.__render_pbc(this.get_processed_table(start_date, end_date), 
-                                              parseInt(this.__expected_dose.val()), 
-                                              1.0,
-                                              target));
+                c3.generate(this.generate_pbc_renderable(this.get_processed_table(start_date, end_date), 
+                                                         parseInt(this.__expected_dose.val()), 
+                                                         1.0,
+                                                         target));
         }
         
         this.upload_to_remote_server = function() {

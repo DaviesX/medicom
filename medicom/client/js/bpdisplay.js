@@ -125,7 +125,7 @@ export function BloodPressureDisplay() {
                 return bptable;
         }
         
-        this.__render_blood_pressure = function(bptable, target) {
+        this.generate_bp_renderable = function(bptable, target) {
                 var x = ["x"];
                 var y = ["systolic blood pressure"];
                 var z = ["diastolic blood pressure"];
@@ -200,7 +200,7 @@ export function BloodPressureDisplay() {
         this.render_local_data = function(start_date, end_date, filter, num_samples, target) {
                 if (this.__local_bptable) {
                         var bptable = this.get_processed_table(start_date, end_date, num_samples, filter);
-                        c3.generate(this.__render_blood_pressure(bptable, target));
+                        c3.generate(this.generate_bp_renderable(bptable, target));
                 }
         }
         
