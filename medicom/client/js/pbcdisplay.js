@@ -97,7 +97,7 @@ export function PillBottleCapDisplay() {
                 var pbctable = this.__pbctable;
                 pbctable = pbctable.sort_data(false);
                 pbctable = pbctable.sample(start_date, end_date, null);
-                return pbctable.merge_adjacent_data({name: "first",},
+                return pbctable.merge_adjacent_data({name: "first"},
                         function (a, b) {
                                 return a.getYear() == b.getYear() && 
                                        a.getMonth() == b.getMonth() && 
@@ -107,6 +107,9 @@ export function PillBottleCapDisplay() {
         }
         
         this.generate_pbc_renderable = function(pbctable, expected_dose, height, target) {
+                console.log("pbc table");
+                console.log(pbctable);
+        
                 var x = ["x"];
                 var y = ["pill bottle cap"];
                 var color = [];

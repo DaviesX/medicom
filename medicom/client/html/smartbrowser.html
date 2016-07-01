@@ -16,8 +16,10 @@
                 <div style="margin-top: 25px; margin-bottom: 5px;">
                         <input type="text" id="ipt-start-date" placeholder="start date" /> to 
                         <input type="text" id="ipt-end-date" placeholder="end date" />
+
                         sample count
-                        <input type="text" id="ipt-num-samples" value="30" />
+                        <input type="text" id="ipt-num-samples" style="width: 35px" value="30" />
+                        
                         filter
                         <select id="sel-filter-method" class="simp_select" style="min-width: 0%; display: inline;">
                                 <option value="plain">no filter</option>
@@ -25,6 +27,9 @@
                                 <option value="uniform min">uniform min</option>
                                 <option value="uniform max">uniform max</option>
                         </select>
+
+                        expected dose
+                        <input type="text" id="ipt-expected-doses" style="width: 35px" value="2" />
                 </div>
         </div>
         <div id="charting-area" style="width: 100%; min-height: 300px;"></div>
