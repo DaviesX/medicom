@@ -13,6 +13,10 @@
  */
 import {ValueTable, ValueTable_create_from_POD} from "../../api/valuetable.js";
 
+// Nasty hacks to allow c3 chart to read the data.
+var g_does_amount = [];
+var g_expected_amount = null;
+
 export function PillBottleCapDisplay() {
         this.__identity = null;
         this.__browsing_user = null;
@@ -20,6 +24,7 @@ export function PillBottleCapDisplay() {
         
         this.__start_date = null;
         this.__end_date = null;
+        this.__expected_dose = null;
         this.__file = null;
         this.__charting_area = null;
         
@@ -79,6 +84,14 @@ export function PillBottleCapDisplay() {
                 this.__charting_area = holder;
         }
         
+        this.set_expected_dose_holder = function(holder) {
+                this.__expected_dose = holder;
+                var clazz = this;
+                holder.on("change", function(e) {
+                        clazz.update();
+                });
+        }
+        
         // Data.
         this.get_processed_table = function(start_date, end_date) {
                 var pbctable = this.__pbctable;
@@ -93,27 +106,17 @@ export function PillBottleCapDisplay() {
                 );
         }
         
-        this.__render_pbc = function(pbctable, target) {
+        this.__render_pbc = function(pbctable, expected_dose, target) {
                 var x = ["x"];
                 var y = ["pill bottle cap"];
+                var color = [];
                 var pairs = pbctable.get_pairs();
                 for (var i = 0; i < pairs.length; i ++) {
                         x[i + 1] = pairs[i].date;
-                        y[i + 1] = pairs[i].num_insts;
+                        y[i + 1] = 1;
+                        g_does_amount[i] = pairs[i].num_insts;
                 }
-                
-//                s = pairs[0].date.getTime();
-//                e = pairs[valid_indices[valid_indices.length - 1]].date.getTime();
-//        
-//                const a_day = 1000*60*60*24;
-//                for (var d = s, i = 1; d <= e; d += a_day) {
-//                        var today = new Date(d);
-//                        var doses = this.find_pair_on(today, 2);
-//        
-//                        x[i] = doses.length > 0 ? doses[0].date : today;
-//                        y[i] = doses.length;
-//                        i ++;
-//                }
+                g_expected_amount = expected_dose;
                 
                 return {
                         bindto: target,
@@ -121,9 +124,11 @@ export function PillBottleCapDisplay() {
                                 x: "x",
                                 columns: [x, y],
                                 type: "bar",
-                                colors: {
-                                        "pill bottle cap": "rgba(0, 255, 0, 0.2)"
-                                }
+                                color: function(color, d) {
+                                        var level = Math.min(Math.max(
+                                                114 + (g_does_amount[d.index] - g_expected_amount)*50, 0), 360);
+                                        return d3.hsl(level, 0.5, 0.5);
+                                },
                         },
                         bar: {
                                 width: {
@@ -136,6 +141,11 @@ export function PillBottleCapDisplay() {
                                         tick: {
                                                 format: "%Y-%m-%d"
                                         }
+                                },
+                                y: {
+                                        max: 1,
+                                        min: 0,
+                                        padding: {top: 0, bottom: 0}
                                 }
                         }
                 };
@@ -165,7 +175,9 @@ export function PillBottleCapDisplay() {
         }
 
         this.render_local_data = function(start_date, end_date, target) {
-                c3.generate(this.__render_pbc(this.get_processed_table(start_date, end_date), target));
+                c3.generate(this.__render_pbc(this.get_processed_table(start_date, end_date), 
+                                              parseInt(this.__expected_dose.val()), 
+                                              target));
         }
         
         this.update = function() {
@@ -192,4 +204,5 @@ Template.tmplpbcbrowser.onRendered(function() {
         G_PBCDisplay.set_charting_area(this.find("#charting-area"));
         G_PBCDisplay.set_file_select_holder($("#ipt-file-select"), $("#lb-disconnect"), $("#div-filepath"));
         G_PBCDisplay.set_date_holder($("#ipt-start-date"), $("#ipt-end-date"));
+        G_PBCDisplay.set_expected_dose_holder($("#ipt-expected-doses"));
 });
