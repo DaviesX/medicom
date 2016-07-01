@@ -232,29 +232,31 @@ export function ValueTable() {
         
         this.merge_adjacent_data = function(method, f_Time_Eval) {
                 var new_table = new ValueTable();
-                new_table.construct_from_pairs(this.__pairs.slice(0));
-
-                if (this.__pairs.length == 0 || method.name == "plain") return new_table;
+                if (this.__pairs.length == 0 || method.name == "plain") {
+                        new_table.construct_from_pairs(this.__pairs.slice(0));
+                        return new_table;
+                }
                 
                 var last = 0;
                 for (var i = 0; i < this.__pairs.length; i ++) {
                         if (i + 1 == this.__pairs.length || 
                             !f_Time_Eval(this.__pairs[i].date, this.__pairs[i + 1].date)) {
+                                var new_spot = new_table.__pairs.length;
                                 switch (method.name) {
                                 case "uniform min":
-                                        new_table.__pairs[new_table.__pairs.length] = this.__min_pair(last, i, method);
+                                        new_table.__pairs[new_spot] = this.__min_pair(last, i, method);
                                         break;
                                 case "uniform max":
-                                        new_table.__pairs[new_table.__pairs.length] = this.__max_pair(last, i, method);
+                                        new_table.__pairs[new_spot] = this.__max_pair(last, i, method);
                                         break;
                                 case "uniform average":
-                                        new_table.__pairs[new_table.__pairs.length] = this.__avg_pair(last, i, method);
+                                        new_table.__pairs[new_spot] = this.__avg_pair(last, i, method);
                                         break;
                                 case "first":
-                                        new_table.__pairs[new_table.__pairs.length] = this.__pairs[last];
+                                        new_table.__pairs[new_spot] = this.__pairs[last];
                                         break;                                        
                                 }
-                                new_table.__pairs[new_table.__pairs.length - 1].num_insts = i - last + 1;
+                                new_table.__pairs[new_spot].num_insts = i - last + 1;
                                 last = i + 1;
                         }
                 }
