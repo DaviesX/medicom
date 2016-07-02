@@ -12,7 +12,12 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 import { Template } from "meteor/templating";
+import * as TestCase from "./testcases.js";
 
+
+Router.route("/test-value-table", function() {
+        TestCase.test_value_table();
+});
 
 Router.route("/", function () {
         this.render("tmplhome");

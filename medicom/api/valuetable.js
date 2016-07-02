@@ -15,9 +15,13 @@ import {Meteor} from 'meteor/meteor';
 
 
 export function ValueTable() {
+        // __pairs: array of {date, value, num_insts}.
         this.__pairs = [];
+        // CSV delimiter and line break.
         this.__c_Delimiter = ",";
         this.__c_LineDelim = "\r";
+        // A dirty flag to show whether the data set is sorted or not.
+        this.__is_sorted = true;
         
         this.__parse_bpcsv_date = function(date_str) {
                 var parts = date_str.split(" ");
@@ -40,6 +44,7 @@ export function ValueTable() {
 
         this.construct_from_pairs = function(pairs) {
                 this.__pairs = pairs;
+                this.__is_sorted = false;
         }
 
         this.construct_from_bpcsv_stream = function(stream) {
@@ -188,16 +193,39 @@ export function ValueTable() {
         this.add_row = function(date, value) {
                 var i = this.__pairs.length;
                 this.__pairs[i] = {date: date, value: value, num_insts: 1};
+                this.__is_sorted = false;
+                return this.__pairs[i];
+        }
+        
+        this.__find_pairs = function(pairs, pair, f_Is_Date_Equal) {
+                var l = 0, h = pairs.length;
+                while (l <= h) {
+                        var m = l + h >> 1;
+                        if (f_Is_Date_Equal(pair.date, pairs[m].date))
+                                return pairs[m];
+                        else if (pair.date.getTime() < pairs[m].date.getTime())
+                                h = m - 1;
+                        else
+                                l = m + 1;
+                }
+                return null;
         }
 
         this.get_row = function(date) {
-                var target_time = date.getTime();
-                for (var i = 0; i < this.__pairs.length; i ++) {
-                        if (this.__pairs[i].date.getTime() == target_time) {
-                                return this.__pairs[i];
+                if (!this.__is_sorted) {
+                        var target_time = date.getTime();
+                        for (var i = 0; i < this.__pairs.length; i ++) {
+                                if (this.__pairs[i].date.getTime() === target_time) {
+                                        return this.__pairs[i];
+                                }
                         }
+                        return null;
+                } else {
+                        return this.__find_pairs(this.__pairs, {date: date}, 
+                                                 function(a, b) {
+                                                        return a.getTime() === b.getTime();
+                                                 });
                 }
-                return null;
         }
 
         this.get_pairs = function() {
@@ -260,24 +288,82 @@ export function ValueTable() {
                                 last = i + 1;
                         }
                 }
+                new_table.__is_sorted = this.__is_sorted;
                 return new_table;
         }
         
-        this.sort_data = function(desc) {
-                var new_pairs = this.__pairs.slice(0);         
+        this.__union_value = function(v0, v1) {
+                var v = {};
+                for (var prop in v0)
+                        v[prop] = v0[prop];
+                for (var prop in v1)
+                        v[prop] = v1[prop];
+                return v;
+        }
+        
+        this.intersect_with = function(value_table, f_Is_Date_Equal, is_return_new) {
+                var new_table = new ValueTable();
+                
+                // Find intersection on date. Sort the data first, then apply a series of binary search.
+                // O(nlogn) + O(mlogm) + O(MIN(m, n)*log(MAX(m, n))) = O(nlogn).
+                if (this.__is_sorted == false)
+                        this.sort_pairs(false, this.__pairs);
+                if (value_table.__is_sorted == false)
+                        value_table.sort_pairs(false, value_table.__pairs);
+                        
+                if (this.__pairs.length < value_table.__pairs.length) {
+                        for (var i = 0; i < this.__pairs.length; i ++) {
+                                var other = this.__find_pairs(value_table.__pairs, this.__pairs[i], f_Is_Date_Equal);
+                                if (other !== null) {
+                                        var v = this.__union_value(this.__pairs[i].value, other.value);
+                                        var new_pair = new_table.add_row(other.date, v);
+                                        new_pair.num_insts = Math.max(this.__pairs[i].num_insts, other.num_insts);
+                                }
+                        }
+                } else {
+                        for (var i = 0; i < value_table.__pairs.length; i ++) {
+                                var other = this.__find_pairs(this.__pairs, value_table.__pairs[i], f_Is_Date_Equal);
+                                if (other !== null) {
+                                        var v = this.__union_value(value_table.__pairs[i].value, other.value);
+                                        var new_pair = new_table.add_row(other.date, v);
+                                        new_pair.num_insts = Math.max(value_table.__pairs[i].num_insts, other.num_insts);
+                                }
+                        }
+                }
+                
+                if (is_return_new)
+                        return new_table;
+                else {
+                        this.construct_from_pairs(new_table.get_pairs());
+                        new_table = null;
+                        return this;
+                }
+        }
+        
+        this.sort_pairs = function(desc, pairs) {
                 if (desc) {
-                        new_pairs.sort(function (x, y) {
+                        pairs.sort(function (x, y) {
                                 return x.date.getTime() > y.date.getTime() ? -1 : 
                                       (x.date.getTime() < y.date.getTime() ? 1 : 0);
                         });
                 } else {
-                        new_pairs.sort(function (x, y) {
+                        pairs.sort(function (x, y) {
                                 return x.date.getTime() < y.date.getTime() ? -1 : 
                                       (x.date.getTime() > y.date.getTime() ? 1 : 0);
                         });
                 }
+                return pairs;
+        }
+        
+        this.sort_data = function(desc) {
+                var new_pairs = this.sort_pairs(desc, this.__pairs.slice(0));
+                
                 var new_table = new ValueTable();
                 new_table.construct_from_pairs(new_pairs);
+                if (desc === false)
+                        new_table.__is_sorted = true;
+                else
+                        new_table.__is_sorted = false;
                 return new_table;
         }
 
@@ -305,6 +391,7 @@ export function ValueTable() {
 
                 var new_table = new ValueTable();
                 new_table.construct_from_pairs(new_pairs);
+                new_table.__is_sorted = this.__is_sorted;
                 return new_table;
         }
 }
