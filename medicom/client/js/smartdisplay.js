@@ -32,6 +32,8 @@ export function SmartDisplay() {
         this.__options = {
                 "use_bp": true,
                 "use_pbc": true,
+                "use_sym_feeling": false,
+                "use_fb_qsleep": false,
         };
         
         this.__charting_area = null;
@@ -46,7 +48,8 @@ export function SmartDisplay() {
                 this.__session = session;
         }
         
-        this.set_holders = function(start_date, end_date, filter, expected_dose) {
+        this.set_holders = function(start_date, end_date, filter, expected_dose,
+                                    use_bp, use_pbc, use_sym_feeling, use_fb_qsleep) {
                 var clazz = this;
                 
                 start_date.on("change", function(e) {
@@ -66,6 +69,26 @@ export function SmartDisplay() {
                         clazz.__expected_dose = parseInt(e.target.value);
                         clazz.update();
                 });
+                use_bp.prop("checked", this.__options["use_bp"]);
+                use_pbc.prop("checked", this.__options["use_pbc"]);
+                use_sym_feeling.prop("checked", this.__options["use_sym_feeling"]);
+                use_fb_qsleep.prop("checked", this.__options["use_fb_qsleep"]);
+                use_bp.on("change", function(e) {
+                        clazz.__options["use_bp"] = use_bp.is(':checked');
+                        clazz.update();
+                });
+                use_pbc.on("change", function(e) {
+                        clazz.__options["use_pbc"] = use_pbc.is(':checked');
+                        clazz.update();
+                });
+                use_sym_feeling.on("change", function(e) {
+                        clazz.__options["use_sym_feeling"] = use_sym_feeling.is(':checked');
+                        clazz.update();
+                });
+                use_fb_qsleep.on("change", function(e) {
+                        clazz.__options["use_fb_qsleep"] = use_fb_qsleep.is(':checked');
+                        clazz.update();
+                });
         }
         
         this.prepare_local_data = function(start_date, end_date, filter, options, f_On_Display_Complete) {
@@ -83,6 +106,7 @@ export function SmartDisplay() {
                                 }
                         }
                 }
+                f_On_Display_Complete();
         }
 
         this.__compile_data = function(start_date, end_date, filter, options) {
@@ -103,11 +127,8 @@ export function SmartDisplay() {
                                         curr_table = G_PBCDisplay.get_processed_table(start_date, end_date);
                                         break;
                                 }
-                                if (curr_table == null) {
-                                        // Logical error: none of the display should ever return a null value table.
-                                        console.log(prop + " failed");
+                                if (curr_table == null) 
                                         return null;
-                                }
                                 if (merged_result == null)
                                         merged_result = curr_table;
                                 else
@@ -187,17 +208,22 @@ export function SmartDisplay() {
                                                 "systolic blood pressure": "line",
                                                 "diastolic blood pressure": "line",
                                         },
+                                        colors: {
+                                                "pill bottle cap": d3.rgb(0, 255, 0).toString(),
+                                                "systolic blood pressure": d3.rgb(255, 118, 50).toString(),
+                                                "diastolic blood pressure": d3.rgb(62, 65, 255).toString(),
+                                        },
                                         color: function(color, d) {
                                                 if (d.id === "pill bottle cap") {
                                                         var level = Math.min(Math.max(
                                                                 114 + (g_does_amount[d.index] - g_expected_amount)*50, 0), 360);
-                                                        return d3.hsl(level, 0.5, 0.5);
+                                                        return d3.hsl(level, 0.5, 0.6);
                                                 } else if (d.id === "systolic blood pressure") {
-                                                        return d3.rgb(255, 0, 0);
+                                                        return d3.rgb(255, 118, 50);
                                                 } else if (d.id === "diastolic blood pressure") {
-                                                        return d3.rgb(0, 0, 255);
+                                                        return d3.rgb(62, 65, 255);
                                                 } else {
-                                                        return d3.rgb(0, 0, 0);
+                                                        return color;
                                                 }
                                         },
                                 },
@@ -248,6 +274,10 @@ Template.tmplsmartbrowser.onRendered(function() {
         G_SmartDisplay.set_holders($("#ipt-start-date"), 
                                    $("#ipt-end-date"), 
                                    $("#sel-filter-method"), 
-                                   $("#ipt-expected-doses"));
+                                   $("#ipt-expected-doses"),
+                                   $("#cb-bp"),
+                                   $("#cb-pbc"),
+                                   $("#cb-sym-feeling"),
+                                   $("#cb-fb-qsleep"));
         G_SmartDisplay.update();
 });
