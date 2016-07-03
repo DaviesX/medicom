@@ -52,11 +52,11 @@ export function SmartDisplay() {
                                     use_bp, use_pbc, use_sym_feeling, use_fb_qsleep) {
                 var clazz = this;
                 
-                start_date.on("change", function(e) {
+                start_date.datepicker().on("change", function(e) {
                         clazz.__start_date = new Date(e.target.value);
                         clazz.update();
                 });
-                end_date.on("change", function(e) {
+                end_date.datepicker().on("change", function(e) {
                         clazz.__end_date = new Date(e.target.value);
                         clazz.update();
                 });
