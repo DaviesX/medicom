@@ -94,6 +94,9 @@ export function PillBottleCapDisplay() {
         
         // Data.
         this.get_processed_table = function(start_date, end_date) {
+                if (this.__pbctable == null)
+                        return null;
+                        
                 var pbctable = this.__pbctable;
                 pbctable = pbctable.sort_data(false);
                 pbctable = pbctable.sample(start_date, end_date, null);
@@ -108,11 +111,9 @@ export function PillBottleCapDisplay() {
         
         this.generate_pbc_renderable = function(pbctable, expected_dose, height, target) {
                 console.log("pbc table");
-                console.log(pbctable);
         
                 var x = ["x"];
                 var y = ["pill bottle cap"];
-                var color = [];
                 var pairs = pbctable.get_pairs();
                 for (var i = 0; i < pairs.length; i ++) {
                         x[i + 1] = pairs[i].date;
@@ -165,7 +166,8 @@ export function PillBottleCapDisplay() {
                         var stream = e.target.result;
 
                         clazz.__pbctable.construct_from_stream(suffix, stream);
-                        f_On_Complete(clazz);
+                        if (f_On_Complete != null)
+                                f_On_Complete(clazz);
                 }
                 fr.readAsText(file);
         }
@@ -186,7 +188,8 @@ export function PillBottleCapDisplay() {
                                 console.log("failed to obtain pbctable from patient: " + JSON.stringify(params));
                         } else {
                                 clazz.__pbctable = ValueTable_create_from_POD(result.pbctable);
-                                f_On_Complete(clazz);
+                                if (f_On_Complete != null)
+                                        f_On_Complete(clazz);
                         }
                 });
         }

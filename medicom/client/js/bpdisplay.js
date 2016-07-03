@@ -101,6 +101,8 @@ export function BloodPressureDisplay() {
         
         // Data.
         this.get_processed_table = function(start_date, end_date, num_samples, filter) {
+                if (this.__local_bptable == null)
+                        return null;
                 var bptable = this.__local_bptable;
 
                 bptable = bptable.sort_data(false);
@@ -166,8 +168,9 @@ export function BloodPressureDisplay() {
                         var bptable = new ValueTable();
                         bptable.construct_from_stream(suffix, stream);
                         clazz.__local_bptable = bptable;
-
-                        f_On_Complete(clazz);
+                        
+                        if(f_On_Complete != null)
+                                f_On_Complete(clazz);
                 }
                 fr.readAsText(file);
         }
@@ -188,7 +191,8 @@ export function BloodPressureDisplay() {
                                 console.log("failed to obtain bptable from patient: " + JSON.stringify(params));
                         } else {
                                 clazz.__local_bptable = ValueTable_create_from_POD(result.bptable);
-                                f_On_Complete(clazz);
+                                if (f_On_Complete != null)
+                                        f_On_Complete(clazz);
                         }
                 });
         }
