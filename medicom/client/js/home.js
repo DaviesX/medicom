@@ -22,6 +22,8 @@ function Gallery() {
         ];
         this.__meta_map = new Map();
         this.__i_gallery = 0;
+        this.__interval = 15000;
+        this.__auto_transition = true;
         
         this.set_holders = function(medicom_intro, admin, patient, devices, app,
                                     intro_text, admin_text, patient_text, device_text, app_text,
@@ -49,12 +51,20 @@ function Gallery() {
                 var clazz = this;
                 prev.on("click", function(e) {
                         clazz.__i_gallery = (clazz.__i_gallery + clazz.__galleries.length - 1)%clazz.__galleries.length;
+                        clazz.__auto_transition = false;
                         clazz.update();
                 });
                 next.on("click", function(e) {
                         clazz.__i_gallery = (clazz.__i_gallery + 1)%clazz.__galleries.length;
+                        clazz.__auto_transition = false;
                         clazz.update();
                 });
+                Meteor.setInterval(function() {
+                        if (clazz.__auto_transition) {
+                                clazz.__i_gallery = (clazz.__i_gallery + 1)%clazz.__galleries.length;
+                                clazz.update();
+                        }
+                }, this.__interval);
         }
         
         this.update = function() {
