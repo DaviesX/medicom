@@ -163,14 +163,14 @@ export function SymptomsDisplay() {
                 this.__sym_table = null;
         }
         
-        this.set_local_data_from_remote_server = function(f_On_Complete) {
+        this.set_local_data_from_remote_server = function(start_date, end_date, f_On_Complete) {
                 this.clear_local_data();
                 
                 var params = {
                         identity: this.__identity, 
                         session_id: this.__session.get_session_id(), 
-                        start_date: this.__start_date,
-                        end_date: this.__end_date,
+                        start_date: start_date,
+                        end_date: end_date,
                         num_items: null, 
                 };
                 var clazz = this;
@@ -187,7 +187,7 @@ export function SymptomsDisplay() {
         
         this.update = function() {
                 var clazz = this;
-                this.set_local_data_from_remote_server(function(obj) {
+                this.set_local_data_from_remote_server(this.__start_date, this.__end_date, function(obj) {
                         clazz.render_local_data(clazz.__start_date,
                                                 clazz.__end_date, 
                                                 clazz.__i_page,

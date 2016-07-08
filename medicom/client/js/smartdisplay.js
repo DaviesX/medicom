@@ -14,6 +14,7 @@
 import {ValueTable, ValueTable_create_from_POD} from "../../api/valuetable.js";
 import {G_BPDisplay} from "./bpdisplay.js";
 import {G_PBCDisplay} from "./pbcdisplay.js";
+import {G_SymptomsDisplay} from "./symptomsdisplay.js";
 
 // Nasty hacks to allow c3 chart to read the data.
 var g_does_amount = [];
@@ -103,6 +104,9 @@ export function SmartDisplay() {
                                         G_PBCDisplay.set_local_data_from_remote_server(
                                                         start_date, end_date, f_On_Display_Complete);
                                         break;
+                                case "use_sym_feeling":
+                                        G_SymptomsDisplay.set_local_data_from_remote_server(
+                                                        start_date, end_date, f_On_Display_Complete);
                                 }
                         }
                 }
@@ -125,6 +129,9 @@ export function SmartDisplay() {
                                         break;
                                 case "use_pbc":
                                         curr_table = G_PBCDisplay.get_processed_table(start_date, end_date);
+                                        break;
+                                case "use_sym_feeling":
+                                        curr_table = G_SymptomsDisplay.get_processed_table(start_date, end_date);
                                         break;
                                 }
                                 if (curr_table == null) 
@@ -169,6 +176,7 @@ export function SmartDisplay() {
                         var y = ["pill bottle cap"];
                         var z = ["systolic blood pressure"];
                         var w = ["diastolic blood pressure"];
+                        var a = ["general feeling"];
                         
                         var columns = [x];
                         var pairs = merged.get_pairs();
@@ -197,6 +205,15 @@ export function SmartDisplay() {
                                 columns.push(y);
                                 g_expected_amount = expected_dose;
                         }
+                        // Fill in general feeling
+                        if (options.use_sym_feeling === true) {
+                                const scale = 50;
+                                for (var i = 0; i < pairs.length; i ++) {
+                                        a[i + 1] = Math.ceil(parseInt(pairs[i].value.patients_feel)/5*scale);
+                                        max_height = Math.max(max_height, a[i + 1]);
+                                }
+                                columns.push(a);
+                        }
                         
                         return {
                                 bindto: charting_area,
@@ -207,21 +224,19 @@ export function SmartDisplay() {
                                                 "pill bottle cap": "bar",
                                                 "systolic blood pressure": "line",
                                                 "diastolic blood pressure": "line",
+                                                "general feeling": "line",
                                         },
                                         colors: {
                                                 "pill bottle cap": d3.rgb(0, 255, 0).toString(),
                                                 "systolic blood pressure": d3.rgb(255, 118, 50).toString(),
                                                 "diastolic blood pressure": d3.rgb(62, 65, 255).toString(),
+                                                "general feeling": d3.rgb(255, 0, 0).toString(),
                                         },
                                         color: function(color, d) {
                                                 if (d.id === "pill bottle cap") {
                                                         var level = Math.min(Math.max(
                                                                 114 + (g_does_amount[d.index] - g_expected_amount)*50, 0), 360);
                                                         return d3.hsl(level, 0.4, 0.7);
-                                                } else if (d.id === "systolic blood pressure") {
-                                                        return d3.rgb(255, 118, 50);
-                                                } else if (d.id === "diastolic blood pressure") {
-                                                        return d3.rgb(62, 65, 255);
                                                 } else {
                                                         return color;
                                                 }
