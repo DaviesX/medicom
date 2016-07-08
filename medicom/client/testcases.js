@@ -62,35 +62,34 @@ export function test_value_table() {
 export function test_admin_record() {
         var admin_rec = new AdminRecord(0, '123456');
 		
-	if (!admin_rec.verify_password('123456')) {
-		console.log(admin_rec);
+		if (!admin_rec.verify_password('123456')) {
+			console.log(admin_rec);
 			throw "Password fucked up";
 		}
-	if (admin_rec.verify_password("000000")) {
+		if (admin_rec.verify_password("000000")) {
 			console.log(admin_rec);
 			throw "Password fucked up = 000000";
 		}
-	console.log("test_admin_password passed");	
-	}
+		console.log("test_admin_password passed");
+}
 
 export function test_account_info() {
-	var account_info = new AccountInfo(null, 32, 'frog', 'frogl@uci.edu');
+		var account_info = new AccountInfo(null, 32, 'frog', 'frogl@uci.edu');
 		
-	if (account_info.get_record() != null || account_info.get_account_id() != 32 || account_info.get_name() != 'frog' 
-		|| account_info.get_email() != 'frogl@uci.edu') {
-		console.log(account_info);
-		throw "account info fucked up";
+		if (account_info.get_record() != null || account_info.get_account_id() != 32 || account_info.get_name() != 'frog' || account_info.get_email() != 'frogl@uci.edu') {
+			console.log(account_info);
+			throw "account info fucked up";
 		}
-	console.log("test_account_info passed");
+		console.log("test_account_info passed");
 }
 
 export function test_account_type() {
-	var account_type = new AccountType();
+		var account_type = new AccountType();
 		
-	for (account in c_Account_Type_Strings) {
-		if (account_type.get_string_from_account_type(account_type.get_account_type_from_string(account) in ["admin", "provider", "patient", "super intendant"])) {
-			console.log(account);
-			throw "General account type fucked up";
+		for (account in c_Account_Type_Strings) {
+			if (account_type.get_string_from_account_type(account_type.get_account_type_from_string(account) in ["admin", "provider", "patient", "super intendant"])) {
+				console.log(account);
+				throw "General account type fucked up";
 				}
 		}
 		
@@ -100,7 +99,7 @@ export function test_account_type() {
 				throw "Registerable account type fucked up";
 				}
 		}
-	console.log('test_account_type passed');
+		console.log('test_account_type passed');
 }
 
 
