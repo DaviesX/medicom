@@ -57,10 +57,10 @@ export function SessionBrowser() {
         this.__make_session_ui = function(session_id, session_date, is_active) {
                 if (is_active) {
                         return '<button class="simp_classic-list-item" name="session-list" id="' + session_id + '">' + 
-                                session_date + '. Session ID: ' + session_id + ', active</button>';
+                                session_date.toDateString() + '. Session ID: ' + session_id + ', active</button>';
                 } else {
                         return '<button class="simp_classic-list-item" name="session-list" id="' + session_id + '">' + 
-                                session_date + '. Session ID: ' + session_id + ', non-active</button>';
+                                session_date.toDateString() + '. Session ID: ' + session_id + ', non-active</button>';
                 }
         }
         
