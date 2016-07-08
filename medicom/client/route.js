@@ -27,11 +27,11 @@ Router.route("/test-admin-record", function() {
 });
 
 Router.route("/test-value-table", function() {
-        TestCase.test_value_table();
+		TestCase.test_value_table();
 });
 
 Router.route("/", function () {
-        this.render("tmplhome");
+		this.render("tmplhome");
 });
 
 Router.route("/home", function () {
