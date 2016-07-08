@@ -94,6 +94,7 @@ export function DataBrowser() {
                 this.__bp_display.set_access_info(this.__identity, this.__browsing_user, this.__session);
                 this.__pbc_display.set_access_info(this.__identity, this.__browsing_user, this.__session);
                 this.__smart_display.set_access_info(this.__identity, this.__browsing_user, this.__session);
+                this.__symp_display.set_access_info(this.__identity, this.__browsing_user, this.__session);
                 this.__notes_display.set_access_info(this.__identity, this.__session);
                 
                 // Update notes
@@ -108,7 +109,7 @@ export function DataBrowser() {
                         this.__bp_display.update();
                         break;
                 case "Symptoms Data": 
-                        this.__symp_display.udpate();
+                        this.__symp_display.update();
                         break;
                 case "Pill Bottle Cap": 
                         this.__pbc_display.update();

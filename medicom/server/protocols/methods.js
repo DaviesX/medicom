@@ -212,7 +212,7 @@ function get_pbc_record(identity, session_id, start_date, end_date, num_samples)
         var err = new ErrorMessageQueue();
         if (identity == null) {
                 err.log("identity is required, but it's absent");
-                return { patients: null, account_infos: null, error: err.fetch_all() };
+                return {pbctable: null, error: err.fetch_all()};
         }
         identity = Identity_create_from_POD(identity);
         var measures = g_superinten_ctrl.get_pbc_measures(identity, start_date, end_date, num_samples, session_id, err);
@@ -225,8 +225,41 @@ function get_pbc_record(identity, session_id, start_date, end_date, num_samples)
         return {pbctable: pbctable, error: err.fetch_all()};
 }
 
-function super_update_symptom(identity, patient_id, date, json) {
+function user_get_symptom(identity, session_id, start_date, end_date, num_items) {
+        var err = new ErrorMessageQueue();
+        if (identity == null) {
+                err.log("identity is required, but it's absent");
+                return {sym_table: null, error: err.fetch_all()};
+        }
         identity = Identity_create_from_POD(identity);
+        var measures = g_superinten_ctrl.get_symptom_measures(identity, start_date, end_date, session_id, err);
+        var sym_table = new ValueTable();
+        if (measures != null) {
+                var n = Math.min(measures.length, num_items == null ? measures.length : num_items);
+                for (var i = 0; i < n; i ++) {
+                        sym_table.add_row(measures[i].__parent.get_date(), 
+                                          {
+                                                patients_feel: measures[i].get_patients_feel(),
+                                                description: measures[i].get_description(),
+                                          });
+                }
+        }
+        return {sym_table: sym_table, error: err.fetch_all()};
+}
+
+function user_update_symptom(identity, session_id, sym_table) {
+        var err = new ErrorMessageQueue();
+        if (identity == null) {
+                err.log("identity is required, but it's absent");
+                return {result: false, error: err.fetch_all()};
+        }
+        identity = Identity_create_from_POD(identity);
+        sym_table = ValueTable_create_from_POD(sym_table);
+        if (!g_superinten_ctrl.update_symptom_measures(identity, session_id, sym_table, err)) {
+                err.log("failed to update symptom measures");
+                return {result: false, error: err.fetch_all()};
+        }
+        return {result: true, error: err.fetch_all()};
 }
 
 function user_get_session_notes(identity, session_id) {
@@ -427,23 +460,6 @@ user_get_patient_bp_table: function(arg) {
                 },
 
 /**
- * Get a patient's symptom data.
- * @param {Identity} Identity of the provider/patient.
- * @param {Integer} Target Session ID.
- * @param {Date} start date.
- * @param {Date} end date.
- * @param {Integer} number of samples.
- * @return {ValueTable, String} return a {SymptomsTable, ""} object if sucessful, or otherwise, {null, "..."}.
- */
-user_get_patient_symptoms: function(arg) {
-                        return user_get_patient_symptoms(arg.identity, 
-                                                         arg.session_id,
-                                                         arg.start_date, 
-                                                         arg.end_date,
-                                                         arg.num_samples);
-                },
-
-/**
  * Update blood pressure data from file.
  * @param {Identity} Identity of the provider/patient/super intendant.
  * @param {Integer} Target Session ID.
@@ -502,16 +518,32 @@ user_get_pill_bottle_cap_record: function(arg) {
 
 /**
  * Update symptom of a patient.
- * @param {Identity} Identity of the provider/patient/super intendant.
- * @param {Integer} Account ID of the patient.
- * @param {Date} date of the blob.
- * @param {String} JSON blob of the symptom object.
+ * @param {Identity} Identity of the user.
+ * @param {Integer} Target Session ID.
+ * @param {ValueTable} Symtom table from which to update.
  * @return {Boolean, String} return a {True, ""} object if sucessful, or otherwise, {False, "..."}.
  */
-super_update_symptom: function(arg) {
-                        return super_update_symptom(arg.identity, arg.id, arg.date, arg.blob);
+user_update_symptom: function(arg) {
+                        return user_update_symptom(arg.identity, arg.session_id, arg.sym_table);
                 },
-
+                
+/**
+ * Get a patient's symptom data.
+ * @param {Identity} Identity of the user.
+ * @param {Integer} Target Session ID.
+ * @param {Date} start date.
+ * @param {Date} end date.
+ * @param {Integer} number of items.
+ * @return {ValueTable, String} return a {SymptomsTable, ""} object if sucessful, or otherwise, {null, "..."}.
+ */
+user_get_sypmtom: function(arg) {
+                        return user_get_symptom(arg.identity, 
+                                                arg.session_id,
+                                                arg.start_date, 
+                                                arg.end_date,
+                                                arg.num_items);
+                },
+                
 /**
  * Get session notes.
  * @param {Identity} Identity of the provider/patient/super intendant.
