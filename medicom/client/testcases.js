@@ -58,6 +58,7 @@ export function test_value_table() {
         console.log(table_intersect);
         console.log("test_value_table passed");
 }
+
 export function test_admin_record() {
 		var admin_rec = new AdminRecord(0, '123456');
 		
@@ -101,6 +102,7 @@ export function test_account_type() {
 		}
 		console.log('test_account_type passed');
 }
+
 
 
 
