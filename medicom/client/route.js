@@ -14,6 +14,17 @@
 import { Template } from "meteor/templating";
 import * as TestCase from "./testcases.js";
 
+Router.route("/test-account-type", function() {
+		TestCase.test_account_type();
+})
+
+Router.route("/test-account-info", function() {
+		TestCase.test_account_info();
+})
+
+Router.route("/test-admin-record", function() {
+		TestCase.test_admin_record();
+});
 
 Router.route("/test-value-table", function() {
         TestCase.test_value_table();
