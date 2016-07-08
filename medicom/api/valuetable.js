@@ -198,7 +198,7 @@ export function ValueTable() {
         }
         
         this.__find_pairs = function(pairs, pair, f_Is_Date_Equal) {
-                var l = 0, h = pairs.length;
+                var l = 0, h = pairs.length - 1;
                 while (l <= h) {
                         var m = l + h >> 1;
                         if (f_Is_Date_Equal(pair.date, pairs[m].date))
