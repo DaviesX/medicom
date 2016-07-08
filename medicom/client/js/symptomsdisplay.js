@@ -70,18 +70,83 @@ export function SymptomsDisplay() {
         }
         
         this.__make_symptom_ui = function(date, description) {
+                const max_len = 120;
+                var desc_str;
+                if (description.length > max_len) {
+                        desc_str = description.slice(0, max_len);
+                        desc_str += "...";
+                } else
+                        desc_str = description;
                 return '<button class="simp_classic-list-item" name="session-list" id="' + date.getTime() + '">' + 
-                        date + ': ' + description + '</button>';
+                        date.toDateString() + ': ' + desc_str + '</button>';
         }
         
-        this.render_local_data = function(sym_table, i_page, num_items, target) {
-                var pairs = this.__sym_table.get_pairs();
-                if (pairs == null || pairs.length == 0)
+        this.get_processed_table = function(start_date, end_date) {
+                if (this.__sym_table == null)
+                        return null;
+                        
+                var sym_table = this.__sym_table;
+                sym_table = sym_table.sort_data(true);
+                sym_table = sym_table.sample(start_date, end_date, null);
+                return sym_table;
+        }
+        
+        this.render_local_data = function(start_date, end_date, i_page, num_items, target) {
+                var table = this.get_processed_table(start_date, end_date);
+                if (table == null || table.get_pairs().length == 0) {
+                        // Render empty chart.
+                        c3.generate({
+                                bindto: target,
+                                data: {
+                                        x: "x",
+                                        columns: [["x"], ["Nothing to display"]]
+                                },
+                                axis: {
+                                        x: {
+                                                type: "timeseries",
+                                                tick: {
+                                                        format: "%Y-%m-%d"
+                                                }
+                                        }
+                                }
+                        });
+                        // Render empty records.
                         this.__sym_record_holder.html("<div style='text-align: center;\
                                                                    padding-top: 10%;\
                                                                    padding-bottom: 10%'>\
                                                         No Symptom Records Are Found</div>");
-                else {
+                } else {
+                        var pairs = table.get_pairs();
+                        
+                        // Render chart.
+                        var x = ["x"];
+                        var y = ["general feeling"];
+                        for (var i = 0; i < pairs.length; i ++) {
+                                x[i + 1] = pairs[i].date;
+                                y[i + 1] = pairs[i].value.patients_feel;
+                        }
+                        c3.generate({
+                                bindto: target,
+                                data: {
+                                        x: "x",
+                                        columns: [x, y],
+                                        types: {
+                                                "general feeling": "line",
+                                        },
+                                        colors: {
+                                                "general feeling": d3.rgb(255, 0, 0).toString(),
+                                        },
+                                },
+                                axis: {
+                                        x: {
+                                                type: "timeseries",
+                                                tick: {
+                                                        format: "%Y-%m-%d"
+                                                }
+                                        },
+                                }
+                        });
+                        // Render records.
                         this.__sym_record_holder.empty();
                         var start = (this.__i_page - 1)*this.__num_items;
                         var end = start + this.__num_items;
@@ -114,7 +179,6 @@ export function SymptomsDisplay() {
                                 console.log("failed to obtain symptom records from patient: " + JSON.stringify(params));
                         } else {
                                 clazz.__sym_table = ValueTable_create_from_POD(result.sym_table);
-                                clazz.__sym_table.sort_data(true);
                                 if (f_On_Complete != null)
                                         f_On_Complete(clazz);
                         }
@@ -124,7 +188,8 @@ export function SymptomsDisplay() {
         this.update = function() {
                 var clazz = this;
                 this.set_local_data_from_remote_server(function(obj) {
-                        clazz.render_local_data(clazz.__sym_table, 
+                        clazz.render_local_data(clazz.__start_date,
+                                                clazz.__end_date, 
                                                 clazz.__i_page,
                                                 clazz.__num_items, 
                                                 clazz.__charting_area);
