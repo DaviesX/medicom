@@ -129,9 +129,13 @@ export function PillBottleCapDisplay() {
                                 columns: [x, y],
                                 type: "bar",
                                 color: function(color, d) {
-                                        var level = Math.min(Math.max(
-                                                114 + (g_does_amount[d.index] - g_expected_amount)*50, 0), 360);
-                                        return d3.hsl(level, 0.5, 0.5);
+                                        if (d.id == "pill bottle cap") {
+                                                var level = Math.min(Math.max(
+                                                        114 + (g_does_amount[d.index] - g_expected_amount)*50, 0), 360);
+                                                return d3.hsl(level, 0.4, 0.7);
+                                        } else {
+                                                return color;
+                                        }
                                 },
                         },
                         bar: {
