@@ -70,15 +70,21 @@ export function SymptomsDisplay() {
         }
         
         this.__make_symptom_ui = function(date, description) {
-                const max_len = 120;
+                const max_len = 100;
                 var desc_str;
                 if (description.length > max_len) {
                         desc_str = description.slice(0, max_len);
                         desc_str += "...";
                 } else
                         desc_str = description;
-                return '<button class="simp_classic-list-item" name="session-list" id="' + date.getTime() + '">' + 
-                        date.toDateString() + ': ' + desc_str + '</button>';
+                return "<div style='width: 100%;\
+                                    text-align: center;\
+                                    padding-top: 15px;\
+                                    padding-bottom: 15px;\
+                                    margin-top: 5px;\
+                                    margin-bottom: 5px;' class='simp_classic-flat' id='"
+                                + date.getTime() + "'>"
+                                + date.toDateString() + ': ' + desc_str + '</div>';
         }
         
         this.get_processed_table = function(start_date, end_date) {
