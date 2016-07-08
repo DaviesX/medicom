@@ -46,6 +46,7 @@ export function IdentityModel(mongo, session_out_intv) {
                         return false;
                 }
                 db_iden.update_date();
+                this.__identities.update({__session_id : db_iden.get_session_id()}, db_iden);
                 return true;
         }
         
