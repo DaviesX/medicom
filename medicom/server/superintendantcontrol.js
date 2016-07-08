@@ -91,9 +91,10 @@ export function SuperIndendantControl() {
                 this.__update_measures_from_table(identity, session_id, symptomtable, function(pair) {
                         measure.__parent.set_date(pair.date);
                         measure.set_patients_feel(pair.value.patients_feel);
-                        measure.set_comment(pair.value.comment);
+                        measure.set_description(pair.value.description);
                         return measure;
                 }, err);
+                return true;
         }
 
         this.get_symptom_measures = function(identity, start_date, end_date, session_id, err) {
