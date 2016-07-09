@@ -20,6 +20,37 @@ body.simp_nature {
     margin:                     0;
 }
 
+.simp_paragraph-block {
+        margin-left:            25%; 
+        margin-right:           25%; 
+        margin-bottom:          100px;
+}
+
+.simp_first-word {
+        font-size:              18pt; 
+        display:                inline;
+}
+
+.simp_gallery {
+        box-shadow:             0px 0px 50px #000000;
+}
+
+.simp_gallery_navi {
+        box-shadow:             inset 0px 1px 0px 0px #ffffff;
+        opacity:                0.5;
+        background:             rgba(0, 0, 0, 1);
+        border:                 none;
+        display:                inline-block;
+        cursor:                 pointer;
+        text-shadow:            0px 1px 0px #ffffff;
+        height: 		8%;
+        line-height:	        8%;
+}
+
+.simp_indent {
+        margin-left:            10%;
+}
+
 .simp_classic-list-item {
         box-shadow:             inset 0px 1px 0px 0px #ffffff;
         background:             linear-gradient(to bottom, rgba(250, 250, 250, 1) 5%, rgba(240, 240, 240, 1) 100%);
