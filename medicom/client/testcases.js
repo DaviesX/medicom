@@ -1,7 +1,7 @@
 /*
  * This file is part of MediCom
  *
- * Copyright © 2016, Chifeng Wen.
+ * Copyright © 2016, Chifeng Wen, Zhaonian Luan.
  * MediCom is free software; you can redistribute it and/or modify it under the terms of
  * the GNU General Public License, version 2, as published by the Free Software Foundation.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
@@ -20,7 +20,7 @@ import {Identity} from "../api/identity.js";
 import {Patient} from "../api/patient.js";
 import {Provider} from "../api/provider.js";
 import {Profile} from "../api/profile.js";
-
+import {ErrorMessageQueue} from "../api/common.js";
 
 
 
@@ -171,10 +171,25 @@ export function test_profile() {
 }
 
 
-
-
-
-
+export function test_ErrorMessageQueue() {
+        var error_message_q = new ErrorMessageQueue();
+        error_message_q.log("dog")
+        error_message_q.log("cat")
+        error_message_q.log("fish")
+        error_message_q.log("frog")
+        
+        if (!_.isEqual(error_message_q.fetch_all(), ["dog", "cat", "fish", "frog"])) {
+                console.log(error_message_q.fetch_all());
+                throw "ErrorMessageQueue fucked up";
+        }
+        
+        error_message_q.clear();
+        if (!error_message_q.is_empty()) {
+                console.log(error_message_q);
+                throw "ErrorMessageQueue clear fucked up";
+        }
+        console.log("test_ErrorMessageQueue passed");
+}
 
 
 

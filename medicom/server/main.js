@@ -13,10 +13,12 @@
  */
 // server
 import {Meteor} from 'meteor/meteor';
-import * as testcases from './testcases.js'
+import * as testcases from './testdata.js'
 import * as protocol from './protocols/methods.js'
+import * as TestCase from './testcase.js'
 
 Meteor.startup(() => {
+               //TestCase.test_MongoDB();
         // code to run on server at startup
         console.log("Meteor - starting up medicom server...");
         console.log("Meteor - loading up methods...");
@@ -27,3 +29,7 @@ Meteor.startup(() => {
         testcases.TestPrepareSampleData(false);
         // testcases.TestBPTable();
 });
+
+
+
+
