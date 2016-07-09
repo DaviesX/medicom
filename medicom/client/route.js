@@ -14,13 +14,33 @@
 import { Template } from "meteor/templating";
 import * as TestCase from "./testcases.js";
 
+Router.route("/test-profile", function() {
+		TestCase.test_profile();
+});
+
+Router.route("/test-provider", function() {
+		TestCase.test_provider();
+});
+
+Router.route("/test-patient", function() {
+		TestCase.test_patient();
+});
+
+Router.route("/test-identity", function() {
+		TestCase.test_identity();
+});
+
+Router.route("/test-participated-session", function() {
+		TestCase.test_participated_session();
+});
+
 Router.route("/test-account-type", function() {
 		TestCase.test_account_type();
-})
+});
 
 Router.route("/test-account-info", function() {
 		TestCase.test_account_info();
-})
+});
 
 Router.route("/test-admin-record", function() {
 		TestCase.test_admin_record();

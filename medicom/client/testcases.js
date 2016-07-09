@@ -15,6 +15,12 @@ import {ValueTable} from "../api/valuetable.js";
 import {AdminRecord} from "../api/adminrecord.js";
 import {AccountInfo} from "../api/accountinfo.js";
 import {c_Account_Type_Strings, c_Account_Type_Strings_Registerable, AccountType} from "../api/accounttype.js";
+import {ParticipatedSession} from "../api/participatedsession.js";
+import {Identity} from "../api/identity.js";
+import {Patient} from "../api/patient.js";
+import {Provider} from "../api/provider.js";
+import {Profile} from "../api/profile.js";
+
 
 
 
@@ -59,6 +65,7 @@ export function test_value_table() {
         console.log("test_value_table passed");
 }
 
+
 export function test_admin_record() {
 		var admin_rec = new AdminRecord(0, '123456');
 		
@@ -73,6 +80,7 @@ export function test_admin_record() {
 		console.log("test_admin_password passed");
 }
 
+
 export function test_account_info() {
 		var account_info = new AccountInfo(null, 32, 'frog', 'frogl@uci.edu');
 		
@@ -82,6 +90,7 @@ export function test_account_info() {
 		}
 		console.log("test_account_info passed");
 }
+
 
 export function test_account_type() {
 		var account_type = new AccountType();
@@ -99,9 +108,64 @@ export function test_account_type() {
 					throw "Registerable account type fucked up";
 				}
 		}
-		console.log('test_account_type passed');
+		console.log("test_account_type passed");
 }
 
+
+export function test_participated_session() {
+		var participated_session = new ParticipatedSession(4, 8, 24);
+		
+		if (participated_session.get_session_id() != 4 || participated_session.get_provider_id() != 8 || participated_session.get_patient_id() != 24) {
+				console.log(participated_session);
+				throw "Participated session fucked up";
+		}
+		console.log("test_participated_session passed");
+}
+
+
+export function test_identity() {
+		admin_rec = new AdminRecord(1, "327322");
+		var identity = new Identity("100", admin_rec);
+
+		if (identity.get_session_id() != "100" || !identity.get_account_record().verify_password("327322")) {
+				console.log(identity);
+				throw "Identity fucked up";
+		}
+		console.log("test_idenity passed");
+}
+
+
+export function test_patient() {
+		var patient = new Patient(48844835);
+		
+		if (patient.get_account_id() != 48844835) {
+				console.log(patient);
+				throw "Patient fucked up";
+		}
+		console.log("test_patient passed");
+}
+
+
+export function test_provider() {
+		var provider = new Provider(342785028);
+		
+		if (provider.get_account_id() != 342785028) {
+				console.log(provider);
+				throw "Provider fucked up";
+		}
+		console.log("test_provider passed");
+}
+
+
+export function test_profile() {
+		var profile = new Profile("yijunw4@uci.edu", "Alex Thornton", 949-552-3234, "patient", "Alex likes boo.");
+		
+		if (profile.get_email() != "yijunw4@uci.edu" || profile.get_name() != "Alex Thornton" || profile.get_phone() != 949-552-3234 || profile.get_avatar() != "patient" || profile.get_description() != "Alex likes boo.") {
+				console.log(profile);
+				throw "profile fucked up";
+		}
+		console.log("test_profile passed");
+}
 
 
 
