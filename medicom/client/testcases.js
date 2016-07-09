@@ -58,25 +58,25 @@ export function test_value_table() {
         console.log(table_intersect);
         console.log("test_value_table passed");
 }
+
 export function test_admin_record() {
 		var admin_rec = new AdminRecord(0, '123456');
 		
 		if (!admin_rec.verify_password('123456')) {
-				console.log(admin_rec);
-				throw "Password fucked up";
+			console.log(admin_rec);
+			throw "Password fucked up";
 		}
 		if (admin_rec.verify_password("000000")) {
-				console.log(admin_rec);
-				throw "Password fucked up = 000000";
+			console.log(admin_rec);
+			throw "Password fucked up = 000000";
 		}
-		console.log("test_admin_password passed");	
-	}
+		console.log("test_admin_password passed");
+}
 
 export function test_account_info() {
 		var account_info = new AccountInfo(null, 32, 'frog', 'frogl@uci.edu');
 		
-		if (account_info.get_record() != null || account_info.get_account_id() != 32 || account_info.get_name() != 'frog' 
-				|| account_info.get_email() != 'frogl@uci.edu') {
+		if (account_info.get_record() != null || account_info.get_account_id() != 32 || account_info.get_name() != 'frog' || account_info.get_email() !=	'frogl@uci.edu') {
 				console.log(account_info);
 				throw "account info fucked up";
 		}
@@ -94,13 +94,14 @@ export function test_account_type() {
 		}
 		
 		for (account in c_Account_Type_Strings_Registerable) {
-				if (account_type.get_string_from_account_type(account_type.get_account_type_from_string(account) in ["provider", "patient", "super intendant"])) {
-						console.log(account);
-						throw "Registerable account type fucked up";
+			if (account_type.get_string_from_account_type(account_type.get_account_type_from_string(account) in ["provider", "patient", "super intendant"])) {
+					console.log(account);
+					throw "Registerable account type fucked up";
 				}
 		}
 		console.log('test_account_type passed');
 }
+
 
 
 
