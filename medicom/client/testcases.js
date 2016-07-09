@@ -57,114 +57,117 @@ export function test_value_table() {
                 throw "Get unsorted row return incorrect result";
         }
         
-        // Test intersection.       
+        // Test intersection.
         var table_intersect = table.intersect_with(table2, function(a, b) {
-                                        return a.getTime() === b.getTime();
-                                }, true);
+                                                   return a.getTime() === b.getTime();
+                                                   }, true);
         console.log(table_intersect);
         console.log("test_value_table passed");
 }
 
 
 export function test_admin_record() {
-		var admin_rec = new AdminRecord(0, '123456');
-		
-		if (!admin_rec.verify_password('123456')) {
-			console.log(admin_rec);
-			throw "Password fucked up";
-		}
-		if (admin_rec.verify_password("000000")) {
-			console.log(admin_rec);
-			throw "Password fucked up = 000000";
-		}
-		console.log("test_admin_password passed");
+        var admin_rec = new AdminRecord(0, '123456');
+        
+        if (!admin_rec.verify_password('123456')) {
+                console.log(admin_rec);
+                throw "Password fucked up";
+        }
+        if (admin_rec.verify_password("000000")) {
+                console.log(admin_rec);
+                throw "Password fucked up = 000000";
+        }
+        console.log("test_admin_password passed");
 }
 
 
 export function test_account_info() {
-		var account_info = new AccountInfo(null, 32, 'frog', 'frogl@uci.edu');
-		
-		if (account_info.get_record() != null || account_info.get_account_id() != 32 || account_info.get_name() != 'frog' || account_info.get_email() !=	'frogl@uci.edu') {
-				console.log(account_info);
-				throw "account info fucked up";
-		}
-		console.log("test_account_info passed");
+        var account_info = new AccountInfo(null, 32, 'frog', 'frogl@uci.edu');
+        
+        if (account_info.get_record() != null || account_info.get_account_id() != 32 || account_info.get_name() != 'frog' || account_info.get_email() !=	'frogl@uci.edu') {
+                console.log(account_info);
+                throw "account info fucked up";
+        }
+        console.log("test_account_info passed");
 }
 
 
 export function test_account_type() {
-		var account_type = new AccountType();
-		
-		for (account in c_Account_Type_Strings) {
-				if (account_type.get_string_from_account_type(account_type.get_account_type_from_string(account) in ["admin", "provider", "patient", "super intendant"])) {
-						console.log(account);
-						throw "General account type fucked up";
-				}
-		}
-		
-		for (account in c_Account_Type_Strings_Registerable) {
-			if (account_type.get_string_from_account_type(account_type.get_account_type_from_string(account) in ["provider", "patient", "super intendant"])) {
-					console.log(account);
-					throw "Registerable account type fucked up";
-				}
-		}
-		console.log("test_account_type passed");
+        var account_type = new AccountType();
+        
+        for (account in c_Account_Type_Strings) {
+                if (account_type.get_string_from_account_type(account_type.get_account_type_from_string(account) in ["admin", "provider", "patient", "super intendant"])) {
+                        console.log(account);
+                        throw "General account type fucked up";
+                }
+        }
+        
+        for (account in c_Account_Type_Strings_Registerable) {
+                if (account_type.get_string_from_account_type(account_type.get_account_type_from_string(account) in ["provider", "patient", "super intendant"])) {
+                        console.log(account);
+                        throw "Registerable account type fucked up";
+                }
+        }
+        console.log("test_account_type passed");
 }
 
 
 export function test_participated_session() {
-		var participated_session = new ParticipatedSession(4, 8, 24);
-		
-		if (participated_session.get_session_id() != 4 || participated_session.get_provider_id() != 8 || participated_session.get_patient_id() != 24) {
-				console.log(participated_session);
-				throw "Participated session fucked up";
-		}
-		console.log("test_participated_session passed");
+        var participated_session = new ParticipatedSession(4, 8, 24);
+        
+        if (participated_session.get_session_id() != 4 || participated_session.get_provider_id() != 8 || participated_session.get_patient_id() != 24) {
+                console.log(participated_session);
+                throw "Participated session fucked up";
+        }
+        console.log("test_participated_session passed");
 }
 
 
 export function test_identity() {
-		admin_rec = new AdminRecord(1, "327322");
-		var identity = new Identity("100", admin_rec);
-
-		if (identity.get_session_id() != "100" || !identity.get_account_record().verify_password("327322")) {
-				console.log(identity);
-				throw "Identity fucked up";
-		}
-		console.log("test_idenity passed");
+        admin_rec = new AdminRecord(1, "327322");
+        var identity = new Identity("100", admin_rec);
+        
+        if (identity.get_session_id() != "100" || !identity.get_account_record().verify_password("327322")) {
+                console.log(identity);
+                throw "Identity fucked up";
+        }
+        console.log("test_idenity passed");
 }
 
 
 export function test_patient() {
-		var patient = new Patient(48844835);
-		
-		if (patient.get_account_id() != 48844835) {
-				console.log(patient);
-				throw "Patient fucked up";
-		}
-		console.log("test_patient passed");
+        var patient = new Patient(48844835);
+        
+        if (patient.get_account_id() != 48844835) {
+                console.log(patient);
+                throw "Patient fucked up";
+        }
+        console.log("test_patient passed");
 }
 
 
 export function test_provider() {
-		var provider = new Provider(342785028);
-		
-		if (provider.get_account_id() != 342785028) {
-				console.log(provider);
-				throw "Provider fucked up";
-		}
-		console.log("test_provider passed");
+        var provider = new Provider(342785028);
+        
+        if (provider.get_account_id() != 342785028) {
+                console.log(provider);
+                throw "Provider fucked up";
+        }
+        console.log("test_provider passed");
 }
 
 
 export function test_profile() {
-		var profile = new Profile("yijunw4@uci.edu", "Alex Thornton", 949-552-3234, "patient", "Alex likes boo.");
-		
-		if (profile.get_email() != "yijunw4@uci.edu" || profile.get_name() != "Alex Thornton" || profile.get_phone() != 949-552-3234 || profile.get_avatar() != "patient" || profile.get_description() != "Alex likes boo.") {
-				console.log(profile);
-				throw "profile fucked up";
-		}
-		console.log("test_profile passed");
+        var profile = new Profile("yijunw4@uci.edu", "Alex Thornton", 949-552-3234, "patient", "Alex likes boo.");
+        
+        if (profile.get_email() != "yijunw4@uci.edu" || profile.get_name() != "Alex Thornton"
+            || profile.get_phone() != "949-552-3234"
+            || profile.get_avatar() != "patient"
+            || profile.get_description() != "Alex likes boo.") {
+                console.log(profile);
+                throw "profile fucked up";
+        }
+        console.log("test_profile passed");
 }
 
 
