@@ -13,6 +13,10 @@
  */
 
 import {MongoDB} from "../api/common.js";
+import {Measure} from "./measure.js";
+import {MeasureBP} from "./measurebp.js";
+import {AccountControl} from "./accountcontrol.js";
+import {ErrorMessageQueue} from "../api/common.js";
 
 // if test_MongoDB failed,
 export function test_MongoDB() {
@@ -29,4 +33,60 @@ export function test_MongoDB() {
         }
         console.log("test_MongoDB passed");
 }
+
+
+export function test_measure() {
+        var measure = new Measure(1);
+        
+        measure.set_session_id(123);
+        measure.set_measure_id("345");
+
+        if (measure.get_session_id() != 123 || measure.get_measure_id() != "345") {
+                console.log(measure);
+                throw "test_measure fucked up";
+        }
+        console.log("test_measure passed");
+}
+
+
+export function test_account_control() {
+        var account_control = new AccountControl();
+        var errmq = new ErrorMessageQueue();
+        // zhaonias@uci.edu does not work!
+        var account_info = account_control.register("provider", "zhaonias@uci.edu", "tomasds", "9495628820", "lzn19940830haha", errmq);
+        if (account_info == null) {
+                console.log(errmq.fetch_all());
+                throw "account_info fucked up";
+        }
+        // Will perform this test later!!!
+        
+//        if (account_control.login_by_email("zhaonia@uci.edu", "lzn19940830haha", errmq) != null) {
+//                console.log(account_control);
+//                throw("How could you log in by email without activating your account!?");
+//        }
+        var activator = account_info.get_record().get_activator();
+        account_control.activate(activator, errmq);
+        
+        if (account_control.login_by_email("zhaonias@uci.edu", "lzn19940830haha", errmq) == null) {
+                console.log(account_control);
+                throw "test_account_control fucked up";
+        }
+        console.log("test_account_control passed");
+        
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

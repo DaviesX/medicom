@@ -1,7 +1,7 @@
 /*
  * This file is part of MediCom
  *
- * Copyright © 2016, Chifeng Wen.
+ * Copyright © 2016, Chifeng Wen, Zhaonian Luan.
  * MediCom is free software; you can redistribute it and/or modify it under the terms of
  * the GNU General Public License, version 2, as published by the Free Software Foundation.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
