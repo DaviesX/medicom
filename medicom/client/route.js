@@ -1,7 +1,7 @@
 /*
  * This file is part of MediCom
  *
- * Copyright © 2016, Chifeng Wen.
+ * Copyright © 2016, Chifeng Wen, Zhaonian Luan.
  * MediCom is free software; you can redistribute it and/or modify it under the terms of
  * the GNU General Public License, version 2, as published by the Free Software Foundation.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
@@ -14,54 +14,82 @@
 import { Template } from "meteor/templating";
 import * as TestCase from "./testcases.js";
 
+Router.route("/test-MongoDB", function() {
+             TestCase.test_MongoDB();
+             });
+
+Router.route("/test-ErrorMessageQueue", function() {
+             TestCase.test_ErrorMessageQueue();
+             });
+
+Router.route("/test-profile", function() {
+             TestCase.test_profile();
+             });
+
+Router.route("/test-provider", function() {
+             TestCase.test_provider();
+             });
+
+Router.route("/test-patient", function() {
+             TestCase.test_patient();
+             });
+
+Router.route("/test-identity", function() {
+             TestCase.test_identity();
+             });
+
+Router.route("/test-participated-session", function() {
+             TestCase.test_participated_session();
+             });
+
 Router.route("/test-account-type", function() {
-		TestCase.test_account_type();
-})
+             TestCase.test_account_type();
+             });
 
 Router.route("/test-account-info", function() {
-		TestCase.test_account_info();
-})
+             TestCase.test_account_info();
+             });
 
 Router.route("/test-admin-record", function() {
-		TestCase.test_admin_record();
-});
+             TestCase.test_admin_record();
+             });
 
 Router.route("/test-value-table", function() {
-		TestCase.test_value_table();
-});
+             TestCase.test_value_table();
+             });
 
 Router.route("/", function () {
-		this.render("tmplhome");
-});
+             this.render("tmplhome");
+             });
 
 Router.route("/home", function () {
-        this.render("tmplhome");
-});
+             this.render("tmplhome");
+             });
 
 Router.route("/reg", function () {
-        this.render("tmplreg");
-});
+             this.render("tmplreg");
+             });
 
 Router.route("/login", function () {
-        this.render("tmpllogin");
-});
+             this.render("tmpllogin");
+             });
 
 Router.route("/provider", function () {
-        this.render("tmplprovider");
-});
+             this.render("tmplprovider");
+             });
 
 Router.route("/patient", function () {
-        this.render("tmplpatient");
-});
+             this.render("tmplpatient");
+             });
 
 Router.route("/profile", function () {
-        this.render("tmplprofile");
-});
+             this.render("tmplprofile");
+             });
 
 Router.route("/autherror", function () {
-        this.render("tmplautherror");
-});
+             this.render("tmplautherror");
+             });
 
 Router.route("/regresult", function () {
-        this.render("tmplregresult");
-});
+             this.render("tmplregresult");
+             });
