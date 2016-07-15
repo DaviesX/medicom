@@ -2,3 +2,7 @@
 /netbeans/medicom-server/nbproject/private/
 /netbeans/medicom-client/nbproject/private/
 /netbeans/medicom-api/nbproject/private/
+*.o
+*.layout
+*.depend
+*.xml
