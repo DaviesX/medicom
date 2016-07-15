@@ -23,44 +23,6 @@ import {c_Meteor_Methods} from "./protocols/methods.js";
 import {ValueTable} from "../api/valuetable.js";
 
 
-// test cases
-export function TestAccountControl() {
-        console.log("TestAccountControl - begins");
-        console.log("TestAccountControl - reset database");
-        
-        G_DataModelContext.get_mongodb().reset();
-        G_DataModelContext.get_account_manager().reset();
-        G_DataModelContext.get_identity_manager().reset();
-        
-        console.log("TestAccountControl - creating account");
-        var acc_ctrl = new AccountControl();
-        var err = new ErrorMessageQueue();
-        var account_info = acc_ctrl.register("provider", "example@mail.org", "Chifeng Wen", "424-299-7492", "12345abcde", err);
-        console.log("created record: ");
-        console.log(account_info);
-        console.log("error: " + err.fetch_all());
-        
-        console.log("TestAccountControl - creating the same account(error expected).");
-        var account_info2 = acc_ctrl.register("provider", 
-                                              "example@mail.org", "Chifeng Wen", "424-299-7492", "12345abcde", err);
-        console.log("created record: ");
-        console.log(account_info2);
-        console.log("error: " + err.fetch_all());
-        
-        console.log("TestAccountControl - try to activate the account");
-        var record = G_DataModelContext.get_account_manager().get_account_record_by_id(account_info.get_account_id());
-        if (!acc_ctrl.activate(record.__activator, err)) {
-                console.log("TestAccountControl - Failed to activate the account when it should, error: " + err.fetch_all());
-        }
-        
-        console.log("TestAccountControl - try to login the account");
-        var identity = acc_ctrl.login_by_email("example@mail.org", "12345abcde", err);
-        console.log("identity retrieved: ");
-        console.log(identity);
-        console.log("error: " + err.fetch_all());
-        console.log("TestAccountControl - ends");
-}
-
 const providers_name = [
         "Chifeng Wen",
         "Buck Stites",
@@ -115,13 +77,13 @@ const providers_email = [
         "veronica@live.com"
 ];
 
-export function TestPrepareSampleData(to_reset) {
+export function PrepareTestData(to_reset) {
         console.log("TestPrepareSampleData - begins");
-        
+
         if (!to_reset) return;
         console.log("TestPrepareSampleData - reset database");
         G_DataModelContext.reset_all();
-        
+
         // Create patient's account
         var patient_ids = [];
         for (var i = 0; i < patients_name.length; i ++) {
@@ -201,46 +163,11 @@ export function TestPrepareSampleData(to_reset) {
         session_ids.forEach(function (session_id, junk, set) {
                 for (var k = 0; k < identities.length; k ++) {
                         var result = c_Meteor_Methods.user_update_symptom({
-                                identity: identities[k], 
+                                identity: identities[k],
                                 session_id: session_id,
                                 sym_table: sym_measures
-                        }); 
+                        });
                 }
         });
         console.log("TestPrepareSampleData - ends");
-}
-
-const csv_stream = 
-" 2015-11-11 22:05:00,95  \n" +    
-" 2015-11-12 23:08:00,108 \n" +    
-" 2015-11-13 22:57:00,91  \n" +    
-" 2015-11-15 22:15:00,109 \n" +    
-" 2015-11-16 22:17:00,92  \n" +    
-" 2015-11-17 22:11:00,90  \n" +    
-" 2015-11-18 21:22:00,108 \n" +    
-" 2015-11-19 21:34:00,99  \n" +    
-" 2015-11-20 22:50:00,97  \n" +    
-" 2015-11-22 23:47:00,107 \n" +    
-" 2015-11-23 22:10:00,90  \n" +    
-" 2015-11-24 21:31:00,83  \n" +    
-" 2015-11-24 21:32:00,85  \n" +    
-" 2015-11-25 23:12:00,91  \n" +    
-" 2015-11-28 23:49:00,108 \n" +    
-" 2015-11-29 23:18:00,96  \n" +    
-" 2015-11-30 11:16:00,97  \n" +    
-" 2015-12-04 21:46:00,97  \n" +    
-" 2015-12-06 21:43:00,104 \n" +    
-" 2015-12-07 23:32:00,99  \n" +    
-" 2015-12-08 22:58:00,90  \n" +    
-" 2015-12-09 23:21:00,100";
-
-export function TestBPTable() {
-        var bptable = new ValueTable();
-        bptable.construct_from_csv_stream(csv_stream);
-
-        var pairs = bptable.get_pairs();
-
-        for (var i = 0; i < pairs.length; i ++) {
-                console.log("date: " + pairs[i].date + "value: " + pairs[i].value);
-        }
 }

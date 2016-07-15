@@ -13,25 +13,22 @@
  */
 // server
 import {Meteor} from 'meteor/meteor';
-import * as testcases from './testdata.js'
+import * as TestData from './testdata.js'
 import * as protocol from './protocols/methods.js'
 import * as TestCase from './testcase.js'
 
 
 Meteor.startup(() => {
-               
+
                // code to run on server at startup
                console.log("Meteor - starting up medicom server...");
                console.log("Meteor - loading up methods...");
                console.log(protocol.c_Meteor_Methods);
                Meteor.methods(protocol.c_Meteor_Methods);
-               // testcases.TestAccountControl();
-               // testcases.TestHttpSession();
-               testcases.TestPrepareSampleData(false);
-               // testcases.TestBPTable();
-               //TestCase.test_MongoDB();
-               TestCase.test_measure();
-               TestCase.test_account_control();
+               TestData.PrepareTestData(false);
+               // TestCase.test_MongoDB();
+               // TestCase.test_measure();
+               // TestCase.test_account_control();
                });
 
 

@@ -58,6 +58,10 @@ Router.route("/test-value-table", function() {
              TestCase.test_value_table();
              });
 
+Router.route("/test-value-table-bp", function() {
+             TestCase.test_value_table_bp();
+             });
+
 Router.route("/", function () {
              this.render("tmplhome");
              });

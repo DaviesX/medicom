@@ -108,7 +108,8 @@
 		<Unit filename="../../medicom/server/sessionmanager.js" />
 		<Unit filename="../../medicom/server/sessionutils.js" />
 		<Unit filename="../../medicom/server/superintendantcontrol.js" />
-		<Unit filename="../../medicom/server/testcases.js" />
+		<Unit filename="../../medicom/server/testcase.js" />
+		<Unit filename="../../medicom/server/testdata.js" />
 		<Extensions>
 			<code_completion />
 			<envvars />
