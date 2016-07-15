@@ -12,6 +12,7 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 import {Meteor} from "meteor/meteor";
+import {Privilege} from "../api/privilege.js";
 
 function PrivilegeEdge(src, dst, action) {
         this.__src = src;
@@ -258,5 +259,9 @@ export function PrivilegeNetwork() {
 
         this.has_action = function(node_ref, action) {
                 return this.__nodes[node_ref] != null && this.__nodes[node_ref].has_action();
+        }
+
+        this.reset = function() {
+                this.__storage.remove({});
         }
 }

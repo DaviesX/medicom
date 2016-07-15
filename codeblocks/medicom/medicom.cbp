@@ -99,6 +99,7 @@
 		<Unit filename="../../medicom/server/measuresymptoms.js" />
 		<Unit filename="../../medicom/server/patientcontrol.js" />
 		<Unit filename="../../medicom/server/patientmodel.js" />
+		<Unit filename="../../medicom/server/privilegecontrol.js" />
 		<Unit filename="../../medicom/server/privilegenetwork.js" />
 		<Unit filename="../../medicom/server/profilemodel.js" />
 		<Unit filename="../../medicom/server/protocols/httpprotocols.js" />

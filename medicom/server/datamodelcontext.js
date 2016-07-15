@@ -20,6 +20,7 @@ import {ProviderModel} from "./providermodel.js";
 import {PatientModel} from "./patientmodel.js";
 import {ParticipatedSessionManager} from "./sessionmanager.js";
 import {MeasureModel} from "./measuremodel.js";
+import {PrivilegeNetwork} from "./privilegenetwork.js";
 
 export function DataModelContext() {
         this.__mongodb = new MongoDB();
@@ -28,9 +29,9 @@ export function DataModelContext() {
         this.__profile_mgr = new ProfileModel(this.__mongodb);
         this.__admin_record_mgr = new AdminRecordModel(this.__mongodb);
         this.__identity_mgr = new IdentityModel(this.__mongodb, 10);
-        this.__account_mgr = new AccountManager(this.__mongodb, 
-                                                this.__admin_record_mgr, 
-                                                this.__profile_mgr, 
+        this.__account_mgr = new AccountManager(this.__mongodb,
+                                                this.__admin_record_mgr,
+                                                this.__profile_mgr,
                                                 this.__provider_mgr,
                                                 this.__patient_mgr,
                                                 this.__account_mgr);
@@ -38,7 +39,8 @@ export function DataModelContext() {
                                                 this.__provider_mgr,
                                                 this.__patient_mgr);
         this.__measure_mgr = new MeasureModel(this.__mongodb);
-        
+        this.__priv_network = new PrivilegeNetwork();
+
         this.get_mongodb = function() { return this.__mongodb; }
         this.get_account_manager = function() { return this.__account_mgr; }
         this.get_admin_record_manager = function() { return this.__admin_record_mgr; }
@@ -48,6 +50,7 @@ export function DataModelContext() {
         this.get_patient_manager = function() { return this.__patient_mgr; }
         this.get_session_manager = function() { return this.__session_mgr; }
         this.get_measure_manager = function() { return this.__measure_mgr; }
+        this.get_privilege_network = function() { return this.__priv_network; }
         this.reset_all = function() {
                 this.__profile_mgr.reset();
                 this.__provider_mgr.reset();
@@ -57,6 +60,7 @@ export function DataModelContext() {
                 this.__account_mgr.reset();
                 this.__session_mgr.reset();
                 this.__measure_mgr.reset();
+                this.__priv_network.reset();
         }
 }
 
