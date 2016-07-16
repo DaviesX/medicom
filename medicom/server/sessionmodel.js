@@ -15,10 +15,10 @@ import {Meteor} from "meteor/meteor";
 import {ParticipatedSession, ParticipatedSession_Create_From_POD} from "../api/participatedsession.js"
 
 
-export function SessionModel(mongodb, provider_mgr, patient_mgr) {
+export function SessionModel(mongodb, provider_model, patient_model) {
         this.__mongodb = mongodb;
-        this.__provider_mgr = provider_mgr;
-        this.__patient_mgr = patient_mgr;
+        this.__provider_model = provider_model;
+        this.__patient_model = patient_model;
         this.c_Participated_Session_Coll_Name = "ParticipatedSessionCollection";
         this.__sessions = new Mongo.Collection(this.c_Participated_Session_Coll_Name);
 
@@ -37,8 +37,8 @@ export function SessionModel(mongodb, provider_mgr, patient_mgr) {
         }
 
         this.create_session = function(provider_id, patient_id) {
-                if (!this.__patient_mgr.has_patient(patient_id) ||
-                    !this.__provider_mgr.has_provider(provider_id)) {
+                if (!this.__patient_model.has_patient(patient_id) ||
+                    !this.__provider_model.has_provider(provider_id)) {
                         return null;
                 }
                 var uuid = this.__mongodb.get_uuid();

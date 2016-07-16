@@ -22,31 +22,31 @@ import * as M_AccountType from "../api/accounttype.js";
 import * as M_Measure from "./measure.js";
 
 export function SuperIndendantControl() {
-        this.__measure_mgr = G_DataModelContext.get_measure_manager();
-        this.__identity_mgr = G_DataModelContext.get_identity_manager();
-        this.__session_mgr = G_DataModelContext.get_session_model();
+        this.__measure_model = G_DataModelContext.get_measure_model();
+        this.__identity_model = G_DataModelContext.get_identity_model();
+        this.__session_model = G_DataModelContext.get_session_model();
 
         this.__update_measures_from_table = function(identity, session_id, table, f_Construct_Measure, err) {
-                if (!this.__identity_mgr.verify_identity(identity)) {
+                if (!this.__identity_model.verify_identity(identity)) {
                         err.log("You don't have a valid identity");
                         return false;
                 }
                 var pairs = table.get_pairs();
                 for (var i = 0; i < pairs.length; i ++) {
                         var measure = f_Construct_Measure(pairs[i]);
-                        this.__measure_mgr.update_measure(session_id, measure);
+                        this.__measure_model.update_measure(session_id, measure);
                 }
                 return true;
         }
 
         this.__get_measure_samples = function(identity, type, start_date, end_date, sample_count, session_id, err) {
-                if (!this.__identity_mgr.verify_identity(identity)) {
+                if (!this.__identity_model.verify_identity(identity)) {
                         err.log("You don't have a valid identity");
                         return null;
                 }
                 start_date = start_date == null ? new Date(0) : start_date;
                 end_date = end_date == null ? new Date(Math.pow(2, 52)) : end_date;
-                var measures = this.__measure_mgr.get_measures_by_date_session_and_type(
+                var measures = this.__measure_model.get_measures_by_date_session_and_type(
                         start_date, end_date, session_id, type, 1);
                 if (measures == null) return null;
                 var sampled = [];
@@ -102,11 +102,11 @@ export function SuperIndendantControl() {
         }
 
         this.__get_session_by_id = function(identity, session_id, err) {
-                if (!this.__identity_mgr.verify_identity(identity)) {
+                if (!this.__identity_model.verify_identity(identity)) {
                         err.log("You don't have a valid identity");
                         return null;
                 }
-                var session = this.__session_mgr.get_session_by_id(session_id);
+                var session = this.__session_model.get_session_by_id(session_id);
                 if (session == null) {
                         err.log("Session: " + session_id + " doesn't exists");
                         return null;

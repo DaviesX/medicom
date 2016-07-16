@@ -46,6 +46,7 @@
 		<Unit filename="../../medicom/client/css/emotionless.css" />
 		<Unit filename="../../medicom/client/css/simplicity.css" />
 		<Unit filename="../../medicom/client/css/tranquil.css" />
+		<Unit filename="../../medicom/client/html/accountsettings.html" />
 		<Unit filename="../../medicom/client/html/activitycenter.html" />
 		<Unit filename="../../medicom/client/html/admin.html" />
 		<Unit filename="../../medicom/client/html/autherror.html" />
@@ -56,7 +57,6 @@
 		<Unit filename="../../medicom/client/html/login.html" />
 		<Unit filename="../../medicom/client/html/patient.hml" />
 		<Unit filename="../../medicom/client/html/pbcbrowser.html" />
-		<Unit filename="../../medicom/client/html/profile.html" />
 		<Unit filename="../../medicom/client/html/provider.html" />
 		<Unit filename="../../medicom/client/html/registration.html" />
 		<Unit filename="../../medicom/client/html/registrationresult.html" />
@@ -65,6 +65,7 @@
 		<Unit filename="../../medicom/client/html/smartbrowser.html" />
 		<Unit filename="../../medicom/client/html/symptombrowser.html" />
 		<Unit filename="../../medicom/client/html/userbrowser.html" />
+		<Unit filename="../../medicom/client/js/accountsettings.js" />
 		<Unit filename="../../medicom/client/js/activitycenter.js" />
 		<Unit filename="../../medicom/client/js/bpdisplay.js" />
 		<Unit filename="../../medicom/client/js/databrowser.js" />
@@ -75,9 +76,8 @@
 		<Unit filename="../../medicom/client/js/notesdisplay.js" />
 		<Unit filename="../../medicom/client/js/patient.js" />
 		<Unit filename="../../medicom/client/js/pbcdisplay.js" />
-		<Unit filename="../../medicom/client/js/profile.js" />
 		<Unit filename="../../medicom/client/js/provider.js" />
-		<Unit filename="../../medicom/client/js/reg.js" />
+		<Unit filename="../../medicom/client/js/registration.js" />
 		<Unit filename="../../medicom/client/js/session.js" />
 		<Unit filename="../../medicom/client/js/sessionbrowser.js" />
 		<Unit filename="../../medicom/client/js/smartdisplay.js" />

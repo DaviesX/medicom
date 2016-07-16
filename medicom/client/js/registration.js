@@ -12,11 +12,11 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 import { Template } from "meteor/templating";
-import {SessionManager} from "./session.js";
+import {SessionModel} from "./session.js";
 import {ErrorMessageQueue} from "../../api/common.js";
 import {AccountInfo_Create_From_POD} from "../../api/accountinfo.js";
 
-var G_Session = new SessionManager();
+var G_Session = new SessionModel();
 
 function option_make(value, text) {
         return '<option value="' + value + '">' + text + "</option>";
@@ -24,7 +24,7 @@ function option_make(value, text) {
 
 Template.tmplreg.onRendered(function () {
         console.log("reg template rendered");
-        
+
         $(".emo_central").fadeOut(0);
         $(".emo_central").fadeIn(800);
 
@@ -39,7 +39,7 @@ Template.tmplreg.onRendered(function () {
 
 Template.tmplreg.events({"submit"(event) {
         event.preventDefault();
-        
+
         var regerror = new ErrorMessageQueue();
         if ($("#txb-password").val() != $("#txb-retype-password").val()) {
                 console.log("password doesn't match");
@@ -61,7 +61,7 @@ Template.tmplreg.events({"submit"(event) {
                 phone:          $("#txb-phone-number").val(),
                 account_type:   $("#sel-reg-as").val()
         };
-        
+
         console.log(form_content);
         Meteor.call("user_register_and_activate", form_content, function(error, result) {
                 console.log(result.account_info);
@@ -89,7 +89,7 @@ Template.tmplregresult.onRendered(function () {
                 var reginfo = G_Session.get_account_info();
                 console.log(reginfo);
                 $("#h-reg-info").css("color", "green");
-                $("#h-reg-info").html("Registration is successful, your account ID is: " + 
+                $("#h-reg-info").html("Registration is successful, your account ID is: " +
                         reginfo.get_account_id());
         }
 });

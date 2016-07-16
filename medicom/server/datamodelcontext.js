@@ -24,42 +24,42 @@ import {PrivilegeNetwork} from "./privilegenetwork.js";
 
 export function DataModelContext() {
         this.__mongodb = new MongoDB();
-        this.__provider_mgr = new ProviderModel(this.__mongodb);
-        this.__patient_mgr = new PatientModel(this.__mongodb);
-        this.__profile_mgr = new ProfileModel(this.__mongodb);
-        this.__admin_record_mgr = new AdminRecordModel(this.__mongodb);
-        this.__identity_mgr = new IdentityModel(this.__mongodb, 10);
+        this.__provider_model = new ProviderModel(this.__mongodb);
+        this.__patient_model = new PatientModel(this.__mongodb);
+        this.__profile_model = new ProfileModel(this.__mongodb);
+        this.__admin_record_model = new AdminRecordModel(this.__mongodb);
+        this.__identity_model = new IdentityModel(this.__mongodb, 10);
         this.__account_mgr = new AccountManager(this.__mongodb,
-                                                this.__admin_record_mgr,
-                                                this.__profile_mgr,
-                                                this.__provider_mgr,
-                                                this.__patient_mgr,
+                                                this.__admin_record_model,
+                                                this.__profile_model,
+                                                this.__provider_model,
+                                                this.__patient_model,
                                                 this.__account_mgr);
-        this.__session_mgr = new SessionModel(this.__mongodb,
-                                                this.__provider_mgr,
-                                                this.__patient_mgr);
-        this.__measure_mgr = new MeasureModel(this.__mongodb);
+        this.__session_model = new SessionModel(this.__mongodb,
+                                                this.__provider_model,
+                                                this.__patient_model);
+        this.__measure_model = new MeasureModel(this.__mongodb);
         this.__priv_network = new PrivilegeNetwork();
 
         this.get_mongodb = function() { return this.__mongodb; }
         this.get_account_manager = function() { return this.__account_mgr; }
-        this.get_admin_record_manager = function() { return this.__admin_record_mgr; }
-        this.get_profile_manager = function() { return this.__profile_mgr; }
-        this.get_identity_manager = function() { return this.__identity_mgr; }
-        this.get_provider_manager = function() { return this.__provider_mgr; }
-        this.get_patient_manager = function() { return this.__patient_mgr; }
-        this.get_measure_manager = function() { return this.__measure_mgr; }
-        this.get_session_model = function() { return this.__session_mgr; }
+        this.get_admin_record_model = function() { return this.__admin_record_model; }
+        this.get_profile_model = function() { return this.__profile_model; }
+        this.get_identity_model = function() { return this.__identity_model; }
+        this.get_provider_model = function() { return this.__provider_model; }
+        this.get_patient_model = function() { return this.__patient_model; }
+        this.get_measure_model = function() { return this.__measure_model; }
+        this.get_session_model = function() { return this.__session_model; }
         this.get_privilege_network = function() { return this.__priv_network; }
         this.reset_all = function() {
-                this.__profile_mgr.reset();
-                this.__provider_mgr.reset();
-                this.__patient_mgr.reset();
-                this.__admin_record_mgr.reset();
-                this.__identity_mgr.reset();
+                this.__profile_model.reset();
+                this.__provider_model.reset();
+                this.__patient_model.reset();
+                this.__admin_record_model.reset();
+                this.__identity_model.reset();
                 this.__account_mgr.reset();
-                this.__session_mgr.reset();
-                this.__measure_mgr.reset();
+                this.__session_model.reset();
+                this.__measure_model.reset();
                 this.__priv_network.reset();
         }
 }

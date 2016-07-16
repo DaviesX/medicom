@@ -20,17 +20,17 @@ import {c_Account_Type_Provider} from "../api/accounttype.js";
 
 export function ProviderControl() {
         this.__session_utils = new SessionUtils();
-        this.__identity_mgr = G_DataModelContext.get_identity_manager();
-        this.__session_mgr = G_DataModelContext.get_session_model();
-        this.__provider_mgr = G_DataModelContext.get_provider_manager();
+        this.__identity_model = G_DataModelContext.get_identity_model();
+        this.__session_model = G_DataModelContext.get_session_model();
+        this.__provider_model = G_DataModelContext.get_provider_model();
 
         this.__has_provider_identity = function(identity) {
-                return (this.__identity_mgr.verify_identity(identity)) &&
+                return (this.__identity_model.verify_identity(identity)) &&
                        (identity.get_account_record().get_account_type() == c_Account_Type_Provider);
         }
 
         this.__get_provider_from_identity = function(identity) {
-                return this.__provider_mgr.get_provider_by_id(identity.get_account_record().get_account_id);
+                return this.__provider_model.get_provider_by_id(identity.get_account_record().get_account_id);
         }
 
         this.__get_provider_id_from_identity = function(identity, err) {
@@ -88,7 +88,7 @@ export function ProviderControl() {
         }
 
         this.__get_session_by_id = function(provider_id, session_id, err) {
-                var session = this.__session_mgr.get_session_by_id(session_id);
+                var session = this.__session_model.get_session_by_id(session_id);
                 if (session == null) {
                         err.log("Session: " + session_id + " doesn't exists");
                         return null;
@@ -108,7 +108,7 @@ export function ProviderControl() {
                         var session = this.__get_session_by_id(provider_id, session_id, err);
                         if (session == null) return false;
                         session.set_notes(notes);
-                        this.__session_mgr.update_session(session);
+                        this.__session_model.update_session(session);
                 }
                 return true;
         }

@@ -41,11 +41,11 @@ export function AccountControl() {
         this.get_registerable_account_types = function() {
                 return M_AccountType.c_Account_Type_Strings_Registerable;
         }
-        
+
         this.get_account_types = function(){
                 return M_AccountType.c_Account_Type_Strings;
         }
-        
+
         // Return account info if successful, or otherwise null.
         this.register = function(saccount_type, email, name, phone, password, err) {
                 var account_type = new M_AccountType.AccountType().get_account_type_from_string(saccount_type);
@@ -57,7 +57,7 @@ export function AccountControl() {
                         err.log("Cannot register a super intendant, but it can be made");
                         return null;
                 default:
-                        // Build an initial profile.                
+                        // Build an initial profile.
                         var profile = new Profile(email, name, phone, null, "");
                         var record = G_DataModelContext.get_account_manager().create_account(
                                                         account_type, password, profile);
@@ -72,11 +72,11 @@ export function AccountControl() {
                         return account_info;
                 }
         }
-        
+
         this.make_account = function(identity, saccount_type, email, name, phone, password, err) {
                 var account_type = M_AccountType.c_String2Account_type[saccount_type];
-                
-                // Build an initial profile.                
+
+                // Build an initial profile.
                 var profile = new Profile(email, name, phone, null, "");
                 var record = G_DataModelContext.get_account_manager().create_account(
                                                 account_type, password, profile);
@@ -90,19 +90,19 @@ export function AccountControl() {
                                                    profile.get_email());
                 return account_info;
         }
-        
+
         this.get_all_account_infos = function(identity) {
         }
-        
+
         this.remove_account = function(identity, account_id, err) {
         }
-        
+
         this.get_account_infos_by_ids = function(identity, account_ids, err) {
                 if (account_ids == null) {
                         err.log("Account IDs given are invalid");
                         return null;
                 }
-                if (!G_DataModelContext.get_identity_manager().verify_identity(identity)) {
+                if (!G_DataModelContext.get_identity_model().verify_identity(identity)) {
                         err.log("Your identity is invalid");
                         return null;
                 }
@@ -117,20 +117,20 @@ export function AccountControl() {
                                         err.log("Account ID: " + account_ids[i] + " is invalid");
                                         continue;
                                 }
-                                if (c_Account_Privilege[self_record.get_account_type()] <= 
+                                if (c_Account_Privilege[self_record.get_account_type()] <=
                                     c_Account_Privilege[record.get_account_type()]) {
                                         err.log("You don't have the privilege to obtain such account");
                                         continue;
                                 }
                         }
-                        var profile = G_DataModelContext.get_profile_manager().
+                        var profile = G_DataModelContext.get_profile_model().
                                         get_profile_by_id(account_ids[i]);
-                        infos[i] = new AccountInfo(record, account_ids[i], 
+                        infos[i] = new AccountInfo(record, account_ids[i],
                                                    profile.get_name(), profile.get_email());
                 }
                 return infos;
         }
-        
+
         this.get_account_info_by_id = function(identity, account_id, err) {
                 if (account_id == null) {
                         err.log("Account ID given is invalid");
@@ -139,35 +139,35 @@ export function AccountControl() {
                 var infos = this.get_account_infos_by_ids(identity, [account_id], err);
                 return infos != null ? infos[0] : null;
         }
-        
+
         // Return an identity if successful, or otherwise null.
         this.login_by_email = function(email, password, err) {
                 var record = G_DataModelContext.get_account_manager().get_account_record_by_email(email);
-                var identity = G_DataModelContext.get_identity_manager().login(record, password);
+                var identity = G_DataModelContext.get_identity_model().login(record, password);
                 if (identity === null) {
                         err.log("Invalid user name/password");
                         return null;
                 }
                 return identity;
         }
-        
+
         // Return an identity if successful, or otherwise null.
         this.login_by_account_id = function(account_id, password, err) {
                 var record = G_DataModelContext.get_account_manager().get_account_record_by_id(account_id);
-                var identity = G_DataModelContext.get_identity_manager().login(record, password);
+                var identity = G_DataModelContext.get_identity_model().login(record, password);
                 if (identity === null) {
                         err.log("Invalid user name/password");
                         return null;
                 }
-                return identity;       
+                return identity;
         }
-        
+
         this.logout = function(identity, err) {
-                if (!G_DataModelContext.get_identity_manager().verify_identity(identity))
+                if (!G_DataModelContext.get_identity_model().verify_identity(identity))
                         err.log("The identity is invalid");
-                G_DataModelContext.get_identity_manager().logout(identity);
+                G_DataModelContext.get_identity_model().logout(identity);
         }
-        
+
         // Return true if the activation is successful, or otherwise false, error message is left in the ErrorMessageQueue.
         this.activate = function(activator, err) {
                 var record = G_DataModelContext.get_account_manager().get_account_record_by_activator(activator);
@@ -177,10 +177,10 @@ export function AccountControl() {
                 }
                 return true;
         }
-        
+
         // Return true if the activation is successful, or otherwise false, error message is left in the ErrorMessageQueue.
         this.force_activate = function(identity, account_id, err) {
-                if (!G_DataModelContext.get_identity_manager().verify(identity)) {
+                if (!G_DataModelContext.get_identity_model().verify(identity)) {
                         err.log("Your identity is invalid, please try to login");
                 }
                 var record = identity.get_account_record();

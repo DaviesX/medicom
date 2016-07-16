@@ -99,8 +99,8 @@ Router.route("/patient", function () {
              this.render("tmplpatient");
              });
 
-Router.route("/profile", function () {
-             this.render("tmplprofile");
+Router.route("/account-settings", function () {
+             this.render("tmplaccountsettings");
              });
 
 Router.route("/autherror", function () {
