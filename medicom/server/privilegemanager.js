@@ -20,5 +20,17 @@ import {Privilege,
         c_Provider_Actions,
         c_Patient_Actions} from "../api/privilege.js";
 
-export function PrivilegeControl() {
+export function PrivilegeManager() {
+
+        this.authorize_privileges_to = function(identity, target_record, actions) {
+        }
+
+        this.revoke_privileges_from = function(identity, target_record, actions) {
+        }
+
+        this.get_privilege_actions = function(identity) {
+        }
+
+        this.authenticate = function(identity, action, f_Additional_Rule) {
+        }
 }
