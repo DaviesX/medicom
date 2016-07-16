@@ -21,6 +21,8 @@ import {AccountControl} from "../accountcontrol.js";
 import {ProviderControl} from "../providercontrol.js";
 import {PatientControl} from "../patientcontrol.js";
 import {SuperIndendantControl} from "../superintendantcontrol.js";
+import * as TestData from "../testdata.js";
+import * as TestCase from "../testcase.js";
 
 var g_account_ctrl = new AccountControl();
 var g_provider_ctrl = new ProviderControl();
@@ -132,7 +134,7 @@ function provider_get_patient_ids(identity) {
                 err.log("identity is required, but it's absent");
                 return { patients: null, account_infos: null, error: err.fetch_all() };
         }
-        identity = Identity_create_from_POD(identity);        
+        identity = Identity_create_from_POD(identity);
         var patient_ids = g_provider_ctrl.get_participated_patient_ids(identity, err);
         var account_infos = null;
         if (patient_ids != null) {
@@ -145,7 +147,7 @@ function provider_get_patient_ids(identity) {
 
 function provider_get_sessions_by_patient_id(identity, patient_id) {
         var err = new ErrorMessageQueue();
-        identity = Identity_create_from_POD(identity); 
+        identity = Identity_create_from_POD(identity);
         var sessions = g_provider_ctrl.get_sessions_by_patient_id(identity, patient_id, err);
         if (sessions == null) {
                 err.log("failed to find sessions");
@@ -220,7 +222,7 @@ function get_pbc_record(identity, session_id, start_date, end_date, num_samples)
         if (measures != null) {
                 for (var i = 0; i < measures.length; i ++) {
                         pbctable.add_row(measures[i].__parent.get_date(), measures[i].get_action());
-                }       
+                }
         }
         return {pbctable: pbctable, error: err.fetch_all()};
 }
@@ -237,7 +239,7 @@ function user_get_symptom(identity, session_id, start_date, end_date, num_items)
         if (measures != null) {
                 var n = Math.min(measures.length, num_items == null ? measures.length : num_items);
                 for (var i = 0; i < n; i ++) {
-                        sym_table.add_row(measures[i].__parent.get_date(), 
+                        sym_table.add_row(measures[i].__parent.get_date(),
                                           {
                                                 patients_feel: measures[i].get_patients_feel(),
                                                 description: measures[i].get_description(),
@@ -279,6 +281,37 @@ function provider_set_session_notes(identity, session_id, notes) {
 
 export var c_Meteor_Methods = {
 /**
+ * Inject test data into the database.
+ * @return {null}
+ */
+inject_test_data: function(arg) {
+                        TestData.PrepareTestData(true);
+                },
+
+/**
+ * Test the usability of the mongo database.
+ * @return {null}
+ */
+test_mongodb: function(arg) {
+                        TestCase.test_MongoDB();
+                },
+
+/**
+ * Unit test on the Measure.
+ * @return {null}
+ */
+test_measure: function(arg) {
+                        TestCase.test_measure();
+                },
+
+/**
+ * Unit test on the AccountControl.
+ * @return {null}
+ */
+test_account_control: function(arg) {
+                        TestCase.test_account_control();
+                },
+/**
  * Print a message on server side.
  * @param {String} The message string.
  * @return {null}
@@ -293,7 +326,7 @@ server_print: function(arg) {
 user_account_types: function(arg) {
                         return user_account_types();
                 },
-                
+
 /**
  * Get account info by id.
  * @param {Identity} The user identity.
@@ -340,10 +373,10 @@ user_logout: function(arg) {
  * @return {AccountInfo, String} return a {AccountInfo, ""} object if sucessful, or otherwise, {null, "..."}.
  */
 user_register: function(arg) {
-                        return user_register(arg.account_type, 
-                                             arg.email, 
-                                             arg.user_name, 
-                                             arg.phone, 
+                        return user_register(arg.account_type,
+                                             arg.email,
+                                             arg.user_name,
+                                             arg.phone,
                                              arg.password);
                 },
 
@@ -357,10 +390,10 @@ user_register: function(arg) {
  * @return {AccountInfo, String} return a {AccountInfo, ""} object if sucessful, or otherwise, {null, "..."}.
  */
 user_register_and_activate: function(arg) {
-                        return user_register_and_activate(arg.account_type, 
-                                                          arg.email, 
-                                                          arg.user_name, 
-                                                          arg.phone, 
+                        return user_register_and_activate(arg.account_type,
+                                                          arg.email,
+                                                          arg.user_name,
+                                                          arg.phone,
                                                           arg.password);
                 },
 
@@ -401,7 +434,7 @@ provider_remove_patient: function(arg) {
 provider_get_patient_ids: function(arg) {
                         return provider_get_patient_ids(arg.identity);
                 },
-        
+
 /**
  * Get sessions between the provider and patient.
  * @param {Identity} Identity of the provider.
@@ -411,7 +444,7 @@ provider_get_patient_ids: function(arg) {
 provider_get_sessions_by_patient_id: function(arg) {
                         return provider_get_sessions_by_patient_id(arg.identity, arg.id);
                 },
-                
+
 /**
  * Start a new session with a patient.
  * @param {Identity} Identity of the provider.
@@ -441,7 +474,7 @@ provider_end_session: function(arg) {
 provider_recover_session: function(arg) {
                         return provider_recover_session(arg.identity, arg.session_id);
                 },
-                
+
 /**
  * Get a patient's blood pressure graph data.
  * @param {Identity} Identity of the provider/patient.
@@ -452,9 +485,9 @@ provider_recover_session: function(arg) {
  * @return {ValueTable, String} return a {ValueTable, ""} object if sucessful, or otherwise, {null, "..."}.
  */
 user_get_patient_bp_table: function(arg) {
-                        return user_get_patient_bp_table(arg.identity, 
+                        return user_get_patient_bp_table(arg.identity,
                                                          arg.session_id,
-                                                         arg.start_date, 
+                                                         arg.start_date,
                                                          arg.end_date,
                                                          arg.num_samples);
                 },
@@ -468,12 +501,12 @@ user_get_patient_bp_table: function(arg) {
  * @return {Boolean, String} return a {True, ""} object if sucessful, or otherwise, {False, "..."}.
  */
 patient_super_update_bp_from_file: function(arg) {
-                        return patient_super_update_bp_from_file(arg.identity, 
-                                                                 arg.session_id, 
+                        return patient_super_update_bp_from_file(arg.identity,
+                                                                 arg.session_id,
                                                                  arg.format,
                                                                  arg.blob);
                 },
-                
+
 /**
  * Update blood pressure data from bptable.
  * @param {Identity} Identity of the provider/patient/super intendant.
@@ -482,8 +515,8 @@ patient_super_update_bp_from_file: function(arg) {
  * @return {Boolean, String} return a {True, ""} object if sucessful, or otherwise, {False, "..."}.
  */
 patient_super_update_bp_from_table: function(arg) {
-                        return patient_super_update_bp_from_table(arg.identity, 
-                                                                  arg.session_id, 
+                        return patient_super_update_bp_from_table(arg.identity,
+                                                                  arg.session_id,
                                                                   arg.bptable);
                 },
 
@@ -526,7 +559,7 @@ user_get_pill_bottle_cap_record: function(arg) {
 user_update_symptom: function(arg) {
                         return user_update_symptom(arg.identity, arg.session_id, arg.sym_table);
                 },
-                
+
 /**
  * Get a patient's symptom data.
  * @param {Identity} Identity of the user.
@@ -537,13 +570,13 @@ user_update_symptom: function(arg) {
  * @return {ValueTable, String} return a {SymptomsTable, ""} object if sucessful, or otherwise, {null, "..."}.
  */
 user_get_sypmtom: function(arg) {
-                        return user_get_symptom(arg.identity, 
+                        return user_get_symptom(arg.identity,
                                                 arg.session_id,
-                                                arg.start_date, 
+                                                arg.start_date,
                                                 arg.end_date,
                                                 arg.num_items);
                 },
-                
+
 /**
  * Get session notes.
  * @param {Identity} Identity of the provider/patient/super intendant.

@@ -1,7 +1,7 @@
 /*
  * This file is part of MediCom
  *
- * Copyright © 2016, Zhaonian Luan.
+ * Copyright © 2016, Zhaonian Luan, Chifeng Wen.
  * MediCom is free software; you can redistribute it and/or modify it under the terms of
  * the GNU General Public License, version 2, as published by the Free Software Foundation.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
@@ -21,7 +21,7 @@ import {ErrorMessageQueue} from "../api/common.js";
 // if test_MongoDB failed,
 export function test_MongoDB() {
         var db = new MongoDB();
-        
+
         temp_set = new set();
         const test_scale = 1000;
         for (var i = 0; i < test_scale; i++) {
@@ -37,7 +37,7 @@ export function test_MongoDB() {
 
 export function test_measure() {
         var measure = new Measure(1);
-        
+
         measure.set_session_id(123);
         measure.set_measure_id("345");
 
@@ -53,40 +53,33 @@ export function test_account_control() {
         var account_control = new AccountControl();
         var errmq = new ErrorMessageQueue();
         // zhaonias@uci.edu does not work!
-        var account_info = account_control.register("provider", "zhaonias@uci.edu", "tomasds", "9495628820", "lzn19940830haha", errmq);
+        // @todo#davis: This error could be reproduced. Need more work on the controller layer in order to resolve the issue.
+        var account_info = account_control.register(
+                        "provider", "zhaonias@uci.edu", "tomasds", "9495628820", "lzn19940830haha", errmq);
         if (account_info == null) {
                 console.log(errmq.fetch_all());
                 throw "account_info fucked up";
         }
-        // Will perform this test later!!!
-        
-//        if (account_control.login_by_email("zhaonia@uci.edu", "lzn19940830haha", errmq) != null) {
-//                console.log(account_control);
-//                throw("How could you log in by email without activating your account!?");
-//        }
+        // Login without activating the account.
+        var identity = account_control.login_by_email("zhaonia@uci.edu", "lzn19940830haha", errmq);
+        if (identity != null) {
+                if (identity.get_account_record().get_activator() == "-1") {
+                        // The account was falsely activated when it shouldn't.
+                        console.log(account_control);
+                        throw "How could you log in by email without activating your account!?";
+                }
+        } else {
+                console.log(errmq.fetch_all());
+                throw "Login should return a valid identity at any time";
+        }
+        // Login with an activated account.
         var activator = account_info.get_record().get_activator();
         account_control.activate(activator, errmq);
-        
+
         if (account_control.login_by_email("zhaonias@uci.edu", "lzn19940830haha", errmq) == null) {
                 console.log(account_control);
                 throw "test_account_control fucked up";
         }
         console.log("test_account_control passed");
-        
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

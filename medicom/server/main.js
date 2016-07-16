@@ -12,23 +12,16 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 // server
-import {Meteor} from 'meteor/meteor';
-import * as TestData from './testdata.js'
-import * as protocol from './protocols/methods.js'
-import * as TestCase from './testcase.js'
+import {Meteor} from "meteor/meteor";
+import * as protocol from "./protocols/methods.js";
 
 
 Meteor.startup(() => {
-
                // code to run on server at startup
                console.log("Meteor - starting up medicom server...");
                console.log("Meteor - loading up methods...");
                console.log(protocol.c_Meteor_Methods);
                Meteor.methods(protocol.c_Meteor_Methods);
-               TestData.PrepareTestData(false);
-               // TestCase.test_MongoDB();
-               // TestCase.test_measure();
-               // TestCase.test_account_control();
                });
 
 

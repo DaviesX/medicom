@@ -14,11 +14,24 @@
 import { Template } from "meteor/templating";
 import * as TestCase from "./testcases.js";
 
-Router.route("/test-MongoDB", function() {
-             TestCase.test_MongoDB();
+
+Router.route("/inject-test-data", function() {
+             TestCase.inject_test_data();
              });
 
-Router.route("/test-ErrorMessageQueue", function() {
+Router.route("/test-account-control", function() {
+             TestCase.test_account_control();
+             });
+
+Router.route("/test-measure", function() {
+             TestCase.test_measure();
+             });
+
+Router.route("/test-mongodb", function() {
+             TestCase.test_mongodb();
+             });
+
+Router.route("/test-error-message-queue", function() {
              TestCase.test_ErrorMessageQueue();
              });
 

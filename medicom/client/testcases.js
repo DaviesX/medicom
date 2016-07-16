@@ -11,6 +11,7 @@
  * You should have received a copy of the GNU General Public License along with this program; if not,
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
+import {Meteor} from "meteor/meteor";
 import {ValueTable} from "../api/valuetable.js";
 import {AdminRecord} from "../api/adminrecord.js";
 import {AccountInfo} from "../api/accountinfo.js";
@@ -225,15 +226,18 @@ export function test_ErrorMessageQueue() {
         console.log("test_ErrorMessageQueue passed");
 }
 
+export function test_mongodb() {
+        Meteor.call("test_mongodb");
+}
 
+export function test_measure() {
+        Meteor.call("test_measure");
+}
 
+export function test_account_control() {
+        Meteor.call("test_account_control");
+}
 
-
-
-
-
-
-
-
-
-
+export function inject_test_data() {
+        Meteor.call("inject_test_data");
+}
