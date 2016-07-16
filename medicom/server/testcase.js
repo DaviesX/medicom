@@ -17,17 +17,18 @@ import {Measure} from "./measure.js";
 import {MeasureBP} from "./measurebp.js";
 import {AccountControl} from "./accountcontrol.js";
 import {ErrorMessageQueue} from "../api/common.js";
+import {G_DataModelContext} from "./datamodelcontext.js";
 
-// if test_MongoDB failed,
+
 export function test_MongoDB() {
-        var db = new MongoDB();
+        var db = G_DataModelContext.get_mongodb();
 
-        temp_set = new set();
+        temp_set = new Set();
         const test_scale = 1000;
         for (var i = 0; i < test_scale; i++) {
                 temp_set.add(db.get_string_uuid());
         }
-        if (temp_set.size() != test_scale) {
+        if (temp_set.size != test_scale) {
                 console.log(temp_set);
                 throw "test_MongoDB fucked up";
         }
@@ -82,4 +83,7 @@ export function test_account_control() {
         }
         console.log("test_account_control passed");
 
+}
+
+export function test_privilege_network() {
 }

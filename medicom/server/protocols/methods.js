@@ -289,6 +289,14 @@ inject_test_data: function(arg) {
                 },
 
 /**
+ * Unit test on the PrivilegeNetwork.
+ * @return {null}
+ */
+test_privilege_network: function(arg) {
+                        TestData.test_privilege_network();
+                },
+
+/**
  * Test the usability of the mongo database.
  * @return {null}
  */
