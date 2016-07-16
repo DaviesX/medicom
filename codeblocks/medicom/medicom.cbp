@@ -106,7 +106,7 @@
 		<Unit filename="../../medicom/server/protocols/methods.js" />
 		<Unit filename="../../medicom/server/providercontrol.js" />
 		<Unit filename="../../medicom/server/providermodel.js" />
-		<Unit filename="../../medicom/server/sessionmanager.js" />
+		<Unit filename="../../medicom/server/sessionmodel.js" />
 		<Unit filename="../../medicom/server/sessionutils.js" />
 		<Unit filename="../../medicom/server/superintendantcontrol.js" />
 		<Unit filename="../../medicom/server/testcase.js" />

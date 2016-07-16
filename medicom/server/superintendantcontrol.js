@@ -24,7 +24,7 @@ import * as M_Measure from "./measure.js";
 export function SuperIndendantControl() {
         this.__measure_mgr = G_DataModelContext.get_measure_manager();
         this.__identity_mgr = G_DataModelContext.get_identity_manager();
-        this.__session_mgr = G_DataModelContext.get_session_manager();
+        this.__session_mgr = G_DataModelContext.get_session_model();
 
         this.__update_measures_from_table = function(identity, session_id, table, f_Construct_Measure, err) {
                 if (!this.__identity_mgr.verify_identity(identity)) {
@@ -48,9 +48,9 @@ export function SuperIndendantControl() {
                 end_date = end_date == null ? new Date(Math.pow(2, 52)) : end_date;
                 var measures = this.__measure_mgr.get_measures_by_date_session_and_type(
                         start_date, end_date, session_id, type, 1);
-                if (measures == null) return null; 
+                if (measures == null) return null;
                 var sampled = [];
-                var sample_count = sample_count != null ? 
+                var sample_count = sample_count != null ?
                                         Math.min(measures.length, Math.max(1, sample_count)) : measures.length;
                 var interval = measures.length/sample_count;
                 for (var i = 0, j = 0; i < sample_count; i ++, j += interval) {
@@ -58,7 +58,7 @@ export function SuperIndendantControl() {
                 }
                 return sampled;
         }
-        
+
         this.update_bp_measures = function(identity, session_id, bptable, err) {
                 var measure = new MeasureBP();
                 this.__update_measures_from_table(identity, session_id, bptable, function(pair) {
@@ -68,7 +68,7 @@ export function SuperIndendantControl() {
                 }, err);
                 return true;
         }
-        
+
         this.get_bp_measures = function(identity, start_date, end_date, sample_count, session_id, err) {
                 return this.__get_measure_samples(identity, M_Measure.c_Measure_Type_BP, start_date, end_date, sample_count, session_id, err);
         }
@@ -85,7 +85,7 @@ export function SuperIndendantControl() {
         this.get_pbc_measures = function(identity, start_date, end_date, sample_count, session_id, err) {
                 return this.__get_measure_samples(identity, M_Measure.c_Measure_Type_PillBottleCap, start_date, end_date, sample_count, session_id, err);
         }
-        
+
         this.update_symptom_measures = function(identity, session_id, symptomtable, err) {
                 var measure = new MeasureSymptoms();
                 this.__update_measures_from_table(identity, session_id, symptomtable, function(pair) {
@@ -118,7 +118,7 @@ export function SuperIndendantControl() {
                 }
                 return session;
         }
-        
+
         this.get_session_notes = function(identity, session_id, err) {
                 var session = this.__get_session_by_id(identity, session_id, err);
                 return session != null ? session.get_notes() : null;

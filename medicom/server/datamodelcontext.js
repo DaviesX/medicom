@@ -18,7 +18,7 @@ import {AccountManager} from "./accountmanager.js";
 import {IdentityModel} from "./identitymodel.js";
 import {ProviderModel} from "./providermodel.js";
 import {PatientModel} from "./patientmodel.js";
-import {ParticipatedSessionManager} from "./sessionmanager.js";
+import {SessionModel} from "./sessionmodel.js";
 import {MeasureModel} from "./measuremodel.js";
 import {PrivilegeNetwork} from "./privilegenetwork.js";
 
@@ -35,7 +35,7 @@ export function DataModelContext() {
                                                 this.__provider_mgr,
                                                 this.__patient_mgr,
                                                 this.__account_mgr);
-        this.__session_mgr = new ParticipatedSessionManager(this.__mongodb,
+        this.__session_mgr = new SessionModel(this.__mongodb,
                                                 this.__provider_mgr,
                                                 this.__patient_mgr);
         this.__measure_mgr = new MeasureModel(this.__mongodb);
@@ -48,8 +48,8 @@ export function DataModelContext() {
         this.get_identity_manager = function() { return this.__identity_mgr; }
         this.get_provider_manager = function() { return this.__provider_mgr; }
         this.get_patient_manager = function() { return this.__patient_mgr; }
-        this.get_session_manager = function() { return this.__session_mgr; }
         this.get_measure_manager = function() { return this.__measure_mgr; }
+        this.get_session_model = function() { return this.__session_mgr; }
         this.get_privilege_network = function() { return this.__priv_network; }
         this.reset_all = function() {
                 this.__profile_mgr.reset();
