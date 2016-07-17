@@ -19,6 +19,10 @@ Router.route("/inject-test-data", function() {
              TestCase.inject_test_data();
              });
 
+Router.route("/test-privilege-network", function() {
+             TestCase.test_privilege_network();
+             });
+
 Router.route("/test-account-control", function() {
              TestCase.test_account_control();
              });

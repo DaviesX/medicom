@@ -22,10 +22,10 @@ import {Privilege,
 
 export function PrivilegeManager() {
 
-        this.authorize_privileges_to = function(identity, target_record, actions) {
+        this.authorize_privileges_to = function(identity, account_id, actions, with_grant_option) {
         }
 
-        this.revoke_privileges_from = function(identity, target_record, actions) {
+        this.revoke_privileges_from = function(identity, account_id, actions) {
         }
 
         this.get_privilege_actions = function(identity) {

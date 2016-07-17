@@ -17,6 +17,12 @@ import {Measure} from "./measure.js";
 import {MeasureBP} from "./measurebp.js";
 import {AccountControl} from "./accountcontrol.js";
 import {ErrorMessageQueue} from "../api/common.js";
+import {Privilege,
+        c_Root_Actions,
+        c_Admin_Actions,
+        c_Assistant_Actions,
+        c_Provider_Actions,
+        c_Patient_Actions} from "../api/privilege.js";
 import {G_DataModelContext} from "./datamodelcontext.js";
 
 
@@ -85,5 +91,39 @@ export function test_account_control() {
 
 }
 
+
 export function test_privilege_network() {
+        var priv_network = G_DataModelContext.get_privilege_network();
+        priv_network.reset();
+        var root = priv_network.allocate_root(-1, "root");
+        var bob = priv_network.allocate(123, "system");
+        var amy = priv_network.allocate(124, "system");
+        var janet = priv_network.allocate(125, "system");
+        var paul = priv_network.allocate(126, "system");
+        // Assign root actions.
+        for (var i = 0; i < c_Root_Actions.length; i ++)
+                if (!priv_network.add_root_action(c_Root_Actions[i].action)) {
+                        console.log(priv_network);
+                        throw new Error("Failed to add root action");
+                }
+
+        // bob and amy being the administrators -- derived from the root.
+        for (var i = 0; i < c_Admin_Actions.length; i ++) {
+                if (!priv_network.derive_action_from(root, bob,
+                                                     c_Admin_Actions[i].action,
+                                                     c_Admin_Actions[i].scope,
+                                                     c_Admin_Actions[i].grant_option)) {
+                        console.log(priv_network);
+                        throw new Error("Failed to add admin action for bob: " + bob);
+                }
+                if (!priv_network.derive_action_from(root, amy,
+                                                     c_Admin_Actions[i].action,
+                                                     c_Admin_Actions[i].scope,
+                                                     c_Admin_Actions[i].grant_option)) {
+                        console.log(priv_network);
+                        throw new Error("Failed to add admin action for amy: " + amy);
+                }
+        }
+        console.log(priv_network);
+        console.log("test_privilege_network passed");
 }

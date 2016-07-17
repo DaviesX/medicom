@@ -293,7 +293,7 @@ inject_test_data: function(arg) {
  * @return {null}
  */
 test_privilege_network: function(arg) {
-                        TestData.test_privilege_network();
+                        TestCase.test_privilege_network();
                 },
 
 /**

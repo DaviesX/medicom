@@ -62,6 +62,7 @@ export const c_Provider_Actions = [
         {action: "remove measure",              scope: ["Owner"], grant_option: false},
         {action: "view measure",                scope: ["Owner"], grant_option: false},
 ];
+
 export const c_Patient_Actions = [];
 
 export function Privilege(actions) {

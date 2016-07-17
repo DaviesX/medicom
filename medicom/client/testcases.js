@@ -238,6 +238,10 @@ export function test_account_control() {
         Meteor.call("test_account_control");
 }
 
+export function test_privilege_network() {
+        Meteor.call("test_privilege_network");
+}
+
 export function inject_test_data() {
         Meteor.call("inject_test_data");
 }
