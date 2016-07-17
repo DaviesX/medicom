@@ -124,6 +124,66 @@ export function test_privilege_network() {
                         throw new Error("Failed to add admin action for amy: " + amy);
                 }
         }
+        // verify action.for bob and amy.
+        for (var i = 0; i < c_Admin_Actions.length; i ++) {
+                if (!priv_network.has_action(bob, c_Admin_Actions[i].action, [132, 222])) {
+                        console.log(priv_network);
+                        throw new Error("Failed to authenticate for bob while he should be able to: " + bob);
+                }
+                if (!priv_network.has_action(amy, c_Admin_Actions[i].action, [132, 222])) {
+                        console.log(priv_network);
+                        throw new Error("Failed to authenticate for amy while she should be able to: " + amy);
+                }
+        }
+        // bob will grant privilege to janet, and amy and root will grant privilege to paul.
+        for (var i = 0; i < c_Admin_Actions.length; i ++) {
+                if (!priv_network.derive_action_from(bob, janet,
+                                                     c_Admin_Actions[i].action,
+                                                     c_Admin_Actions[i].scope,
+                                                     c_Admin_Actions[i].grant_option)) {
+                        console.log(priv_network);
+                        throw new Error("Failed to add admin action for janet from bob: " + janet);
+                }
+                if (!priv_network.derive_action_from(amy, paul,
+                                                     c_Admin_Actions[i].action,
+                                                     c_Admin_Actions[i].scope,
+                                                     c_Admin_Actions[i].grant_option)) {
+                        console.log(priv_network);
+                        throw new Error("Failed to add admin action for paul from amy: " + paul);
+                }
+                if (!priv_network.derive_action_from(root, paul,
+                                                     c_Admin_Actions[i].action,
+                                                     c_Admin_Actions[i].scope,
+                                                     c_Admin_Actions[i].grant_option)) {
+                        console.log(priv_network);
+                        throw new Error("Failed to add admin action for paul from root: " + paul);
+                }
+        }
+        // verify action for janet and paul.
+        for (var i = 0; i < c_Admin_Actions.length; i ++) {
+                if (!priv_network.has_action(janet, c_Admin_Actions[i].action, [132, 222])) {
+                        console.log(priv_network);
+                        throw new Error("Failed to authenticate for janet while she should be able to: " + janet);
+                }
+                if (!priv_network.has_action(paul, c_Admin_Actions[i].action, [132, 222])) {
+                        console.log(priv_network);
+                        throw new Error("Failed to authenticate for paul while he should be able to: " + paul);
+                }
+        }
+        // revoke privilege to bob and janet....
+        priv_network.free(bob);
+        priv_network.free(janet);
+        // janet should lost all her privileges while paul should have retained all his privileges.
+        for (var i = 0; i < c_Admin_Actions.length; i ++) {
+                if (priv_network.has_action(janet, c_Admin_Actions[i].action, [])) {
+                        console.log(priv_network);
+                        throw new Error("It's able to authenticate for janet while it shouldn't have: " + janet);
+                }
+                if (!priv_network.has_action(paul, c_Admin_Actions[i].action, [])) {
+                        console.log(priv_network);
+                        throw new Error("Failed to authenticate for paul while he should be able to: " + paul);
+                }
+        }
         console.log(priv_network);
         console.log("test_privilege_network passed");
 }

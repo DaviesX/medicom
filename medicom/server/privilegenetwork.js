@@ -417,9 +417,21 @@ PrivilegeNetwork.prototype.derive_action_from = function(src_ref, dst_ref, actio
         return true;
 }
 
+PrivilegeNetwork.prototype.modify_scope_on = function(src_ref, dst_ref, action, scope_set, with_grant_option)
+{
+        return this.derive_action_from(src_ref, dst_ref, action, scope_set, with_grant_option);
+}
+
+PrivilegeNetwork.prototype.get_action = function(node_ref, action)
+{
+        if (this.__nodes[node_ref] == null)
+                return null;
+        return this.__nodes[node_ref].get_granted(action);
+}
+
 PrivilegeNetwork.prototype.get_all_actions = function(node_ref)
 {
-        if (this.__nodes[node_ref] != null)
+        if (this.__nodes[node_ref] == null)
                 return null;
         return this.__nodes[node_ref].get_all_actions();
 }
