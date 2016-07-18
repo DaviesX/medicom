@@ -29,17 +29,18 @@ export function DataModelContext() {
         this.__profile_model = new ProfileModel(this.__mongodb);
         this.__admin_record_model = new AdminRecordModel(this.__mongodb);
         this.__identity_model = new IdentityModel(this.__mongodb, 10);
+        this.__priv_network = new PrivilegeNetwork();
         this.__account_mgr = new AccountManager(this.__mongodb,
                                                 this.__admin_record_model,
                                                 this.__profile_model,
                                                 this.__provider_model,
                                                 this.__patient_model,
-                                                this.__account_mgr);
+                                                this.__account_mgr,
+                                                this.__priv_network);
         this.__session_model = new SessionModel(this.__mongodb,
                                                 this.__provider_model,
                                                 this.__patient_model);
         this.__measure_model = new MeasureModel(this.__mongodb);
-        this.__priv_network = new PrivilegeNetwork();
 
         this.get_mongodb = function() { return this.__mongodb; }
         this.get_account_manager = function() { return this.__account_mgr; }
