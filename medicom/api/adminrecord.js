@@ -14,48 +14,94 @@
 import {Meteor} from 'meteor/meteor';
 
 
-export function AdminRecord(user_group, password) {
-        this.__hash33 = function(s) {
-                var h = 5381;
-                for (var i = 0; i < s.length; i ++) {
-                        var c = s.charCodeAt(i);
-                        h = ((h << 5) + h) + c;
-                }
-                return h >>> 0;
-        }
-
+export function AdminRecord(user_group, password)
+{
         this.__account_id = 0;
         this.__privilege_ref = 0;
-        this.__account_type = user_group;
-        this.__internal_pass = this.__hash33(password);
+        this.__user_group = user_group;
+        this.__internal_pass = password != null ? this.__hash33(password) : 0;
         this.__activator = "";
+}
 
-        this.set_account_id = function(account_id) { this.__account_id = account_id; }
-        this.set_activator = function(activator) { this.__activator = activator; }
 
-        this.get_account_id = function() { return this.__account_id; }
-        this.user_group = function() { return this.__account_type; }
-        this.get_activator = function() { return this.__activator; }
-        this.verify_password = function(password) { return this.__internal_pass === this.__hash33(password); }
-        this.verify_internal_pass = function(pass) { return this.__internal_pass === pass; }
-        this.get_internal_pass = function() { return this.__internal_pass; }
-        this.activate = function(activator) {
-                if (this.__activator === activator) {
-                        this.__activator = "-1";
-                        return true;
-                } else {
-                        return false;
-                }
+AdminRecord.prototype.__hash33 = function(s)
+{
+        var h = 5381;
+        for (var i = 0; i < s.length; i ++) {
+                var c = s.charCodeAt(i);
+                h = ((h << 5) + h) + c;
         }
-        this.deactivate = function(activator) { this.__activator = activator; }
-        this.force_activate = function() { this.__activator = "-1"; }
-        this.is_activated = function() { return this.__activator === "-1"; }
+        return h >>> 0;
+}
+
+AdminRecord.prototype.set_account_id = function(account_id)
+{
+        this.__account_id = account_id;
+}
+
+AdminRecord.prototype.set_activator = function(activator)
+{
+        this.__activator = activator;
+}
+
+AdminRecord.prototype.get_account_id = function()
+{
+        return this.__account_id;
+}
+
+AdminRecord.prototype.user_group = function()
+{
+        return this.__user_group;
+}
+
+AdminRecord.prototype.get_activator = function()
+{
+        return this.__activator;
+}
+
+AdminRecord.prototype.verify_password = function(password)
+{
+        return this.__internal_pass === this.__hash33(password);
+}
+
+AdminRecord.prototype.verify_internal_pass = function(pass)
+{
+        return this.__internal_pass === pass;
+}
+
+AdminRecord.prototype.get_internal_pass = function()
+{
+        return this.__internal_pass;
+}
+
+AdminRecord.prototype.activate = function(activator)
+{
+        if (this.__activator === activator) {
+                this.__activator = "-1";
+                return true;
+        } else
+                return false;
+}
+
+AdminRecord.prototype.deactivate = function(activator)
+{
+        this.__activator = activator;
+}
+
+AdminRecord.prototype.force_activate = function()
+{
+        this.__activator = "-1";
+}
+
+AdminRecord.prototype.is_activated = function()
+{
+        return this.__activator === "-1";
 }
 
 export function AdminRecord_create_from_POD(pod) {
-        var obj = new AdminRecord(0, "");
+        var obj = new AdminRecord();
         obj.__account_id = pod.__account_id;
-        obj.__account_type = pod.__account_type;
+        obj.__user_group = pod.__user_group;
         obj.__internal_pass = pod.__internal_pass;
         obj.__activator = pod.__activator;
         return obj;
