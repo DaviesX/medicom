@@ -12,18 +12,22 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-export const c_UserGroup_Admin = 0;
-export const c_UserGroup_Provider = 1;
-export const c_UserGroup_Patient = 2;
-export const c_UserGroup_Assistant = 3;
+export const c_UserGroup_Root           = 0;
+export const c_UserGroup_Admin          = 1;
+export const c_UserGroup_Provider       = 2;
+export const c_UserGroup_Patient        = 3;
+export const c_UserGroup_Assistant      = 4;
+export const c_UserGroup_Default        = 5;
 
 export const c_UserGroup_Strings =
-["admin", "provider", "patient", "assistant"];
+["root", "admin", "provider", "patient", "assistant", "default"];
 
 export const c_Account_Type_Strings_Registerable =
-["provider", "patient", "super intendant"];
+["provider", "patient", "assistant"];
 
 var c_UserGroup2String = [];
+c_UserGroup2String[c_UserGroup_Root] = "root";
+c_UserGroup2String[c_UserGroup_Default] = "default";
 c_UserGroup2String[c_UserGroup_Admin] = "admin";
 c_UserGroup2String[c_UserGroup_Provider] = "provider";
 c_UserGroup2String[c_UserGroup_Patient] = "patient";

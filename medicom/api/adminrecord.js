@@ -14,13 +14,13 @@
 import {Meteor} from 'meteor/meteor';
 
 
-export function AdminRecord(user_group, password)
+export function AdminRecord(account_id, user_group, password, activator, privi_ref)
 {
-        this.__account_id = 0;
-        this.__privilege_ref = 0;
+        this.__account_id = account_id;
+        this.__privilege_ref = privi_ref;
         this.__user_group = user_group;
         this.__internal_pass = password != null ? this.__hash33(password) : 0;
-        this.__activator = "";
+        this.__activator = activator;
 }
 
 
@@ -32,11 +32,6 @@ AdminRecord.prototype.__hash33 = function(s)
                 h = ((h << 5) + h) + c;
         }
         return h >>> 0;
-}
-
-AdminRecord.prototype.set_account_id = function(account_id)
-{
-        this.__account_id = account_id;
 }
 
 AdminRecord.prototype.set_activator = function(activator)
@@ -96,6 +91,11 @@ AdminRecord.prototype.force_activate = function()
 AdminRecord.prototype.is_activated = function()
 {
         return this.__activator === "-1";
+}
+
+AdminRecord.prototype.get_privilege_ref = function()
+{
+        return this.__privilege_ref;
 }
 
 export function AdminRecord_create_from_POD(pod) {
