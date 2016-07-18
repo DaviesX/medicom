@@ -14,7 +14,7 @@
 import {Meteor} from 'meteor/meteor';
 
 
-export function AdminRecord(account_type, password) {        
+export function AdminRecord(user_group, password) {
         this.__hash33 = function(s) {
                 var h = 5381;
                 for (var i = 0; i < s.length; i ++) {
@@ -23,24 +23,24 @@ export function AdminRecord(account_type, password) {
                 }
                 return h >>> 0;
         }
-        
+
         this.__account_id = 0;
         this.__privilege_ref = 0;
-        this.__account_type = account_type;
+        this.__account_type = user_group;
         this.__internal_pass = this.__hash33(password);
         this.__activator = "";
 
         this.set_account_id = function(account_id) { this.__account_id = account_id; }
         this.set_activator = function(activator) { this.__activator = activator; }
-        
+
         this.get_account_id = function() { return this.__account_id; }
-        this.get_account_type = function() { return this.__account_type; }
+        this.user_group = function() { return this.__account_type; }
         this.get_activator = function() { return this.__activator; }
         this.verify_password = function(password) { return this.__internal_pass === this.__hash33(password); }
         this.verify_internal_pass = function(pass) { return this.__internal_pass === pass; }
         this.get_internal_pass = function() { return this.__internal_pass; }
-        this.activate = function(activator) { 
-                if (this.__activator === activator) { 
+        this.activate = function(activator) {
+                if (this.__activator === activator) {
                         this.__activator = "-1";
                         return true;
                 } else {

@@ -72,9 +72,9 @@ function user_logout(identity) {
         return { error: err.fetch_all() };
 }
 
-function user_register(account_type, email, name, phone, password) {
+function user_register(user_group, email, name, phone, password) {
         var err = new ErrorMessageQueue();
-        var info = g_account_ctrl.register(account_type, email, name, phone, password, err);
+        var info = g_account_ctrl.register(user_group, email, name, phone, password, err);
         return { account_info: info, error: err.fetch_all() };
 }
 
@@ -84,9 +84,9 @@ function user_activate(activator) {
         return { account_info: info, error: err.fetch_all() };
 }
 
-function user_register_and_activate(account_type, email, name, phone, password) {
+function user_register_and_activate(user_group, email, name, phone, password) {
         var err = new ErrorMessageQueue();
-        var info = g_account_ctrl.register(account_type, email, name, phone, password, err);
+        var info = g_account_ctrl.register(user_group, email, name, phone, password, err);
         if (info != null) {
                 g_account_ctrl.activate(info.get_record().get_activator(), err);
         }
@@ -381,7 +381,7 @@ user_logout: function(arg) {
  * @return {AccountInfo, String} return a {AccountInfo, ""} object if sucessful, or otherwise, {null, "..."}.
  */
 user_register: function(arg) {
-                        return user_register(arg.account_type,
+                        return user_register(arg.user_group,
                                              arg.email,
                                              arg.user_name,
                                              arg.phone,
@@ -398,7 +398,7 @@ user_register: function(arg) {
  * @return {AccountInfo, String} return a {AccountInfo, ""} object if sucessful, or otherwise, {null, "..."}.
  */
 user_register_and_activate: function(arg) {
-                        return user_register_and_activate(arg.account_type,
+                        return user_register_and_activate(arg.user_group,
                                                           arg.email,
                                                           arg.user_name,
                                                           arg.phone,

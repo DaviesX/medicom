@@ -15,7 +15,7 @@ import { Template } from "meteor/templating";
 import {SessionModel} from "./session.js";
 import {ErrorMessageQueue} from "../../api/common.js";
 import {Identity_create_from_POD} from "../../api/identity.js";
-import {AccountType} from "../../api/accounttype.js";
+import {UserGroup} from "../../api/usergroup.js";
 
 
 var G_Session = new SessionModel();
@@ -33,7 +33,7 @@ function redirect_page_on(result) {
 
         // redirect according to account type.
         var record = identity.get_account_record();
-        var acc_type = new AccountType().get_string_from_account_type(record.get_account_type());
+        var acc_type = new UserGroup().get_string_from_user_group(record.user_group());
 
         switch (acc_type) {
         case "admin":

@@ -59,7 +59,7 @@ Template.tmplreg.events({"submit"(event) {
                 email:          $("#txb-email").val(),
                 password:       $("#txb-password").val(),
                 phone:          $("#txb-phone-number").val(),
-                account_type:   $("#sel-reg-as").val()
+                user_group:   $("#sel-reg-as").val()
         };
 
         console.log(form_content);

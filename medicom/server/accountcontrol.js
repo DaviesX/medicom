@@ -19,48 +19,48 @@ import {Profile} from "../api/profile.js";
 import {ErrorMessageQueue, MongoDB} from "../api/common.js";
 import {AdminRecord} from "../api/adminrecord.js";
 import {AccountInfo} from "../api/accountinfo.js";
-import * as M_AccountType from "../api/accounttype.js";
+import * as M_UserGroup from "../api/usergroup.js";
 
 var c_Account_Privilege = [];
-c_Account_Privilege[M_AccountType.c_Account_Type_Admin] = 100;
-c_Account_Privilege[M_AccountType.c_Account_Type_SuperIntendant] = 50;
-c_Account_Privilege[M_AccountType.c_Account_Type_Provider] = 50;
-c_Account_Privilege[M_AccountType.c_Account_Type_Patient] = 20;
+c_Account_Privilege[M_UserGroup.c_UserGroup_Admin] = 100;
+c_Account_Privilege[M_UserGroup.c_UserGroup_Assistant] = 50;
+c_Account_Privilege[M_UserGroup.c_UserGroup_Provider] = 50;
+c_Account_Privilege[M_UserGroup.c_UserGroup_Patient] = 20;
 
 export function AccountControl() {
         this.__c_Admin_Account_ID = -1;
         this.__c_Admin_Account_Password = "42f2d30a-f9fc-11e5-86aa-5e5517507c66";
         // Create a super user account
         G_DataModelContext.get_account_manager().create_account_with_id(
-                                                        M_AccountType.c_Account_Type_Admin,
+                                                        M_UserGroup.c_UserGroup_Admin,
                                                         this.__c_Admin_Account_ID,
                                                         this.__c_Admin_Account_Password,
                                                         new Profile("", "",  "", "", null, ""));
 
         // Public APIs
         this.get_registerable_account_types = function() {
-                return M_AccountType.c_Account_Type_Strings_Registerable;
+                return M_UserGroup.c_Account_Type_Strings_Registerable;
         }
 
         this.get_account_types = function(){
-                return M_AccountType.c_Account_Type_Strings;
+                return M_UserGroup.c_UserGroup_Strings;
         }
 
         // Return account info if successful, or otherwise null.
         this.register = function(saccount_type, email, name, phone, password, err) {
-                var account_type = new M_AccountType.AccountType().get_account_type_from_string(saccount_type);
-                switch (account_type) {
-                case M_AccountType.c_Account_Type_Admin:
+                var user_group = new M_UserGroup.UserGroup().get_user_group_from_string(saccount_type);
+                switch (user_group) {
+                case M_UserGroup.c_UserGroup_Admin:
                         err.log("Cannot register an admin account");
                         return null;
-                case M_AccountType.c_Account_Type_SuperIntendant:
+                case M_UserGroup.c_UserGroup_Assistant:
                         err.log("Cannot register a super intendant, but it can be made");
                         return null;
                 default:
                         // Build an initial profile.
                         var profile = new Profile(email, name, phone, null, "");
                         var record = G_DataModelContext.get_account_manager().create_account(
-                                                        account_type, password, profile);
+                                                        user_group, password, profile);
                         if (!record) {
                                 err.log("Cannot register, account " + email + " existed");
                                 return null;
@@ -74,12 +74,12 @@ export function AccountControl() {
         }
 
         this.make_account = function(identity, saccount_type, email, name, phone, password, err) {
-                var account_type = M_AccountType.c_String2Account_type[saccount_type];
+                var user_group = M_UserGroup.c_String2UserGroup[saccount_type];
 
                 // Build an initial profile.
                 var profile = new Profile(email, name, phone, null, "");
                 var record = G_DataModelContext.get_account_manager().create_account(
-                                                account_type, password, profile);
+                                                user_group, password, profile);
                 if (!record) {
                         err.log("Cannot register, account existed");
                         return null;
@@ -117,8 +117,8 @@ export function AccountControl() {
                                         err.log("Account ID: " + account_ids[i] + " is invalid");
                                         continue;
                                 }
-                                if (c_Account_Privilege[self_record.get_account_type()] <=
-                                    c_Account_Privilege[record.get_account_type()]) {
+                                if (c_Account_Privilege[self_record.user_group()] <=
+                                    c_Account_Privilege[record.user_group()]) {
                                         err.log("You don't have the privilege to obtain such account");
                                         continue;
                                 }
@@ -188,7 +188,7 @@ export function AccountControl() {
                         err.log("Your account is invalid");
                         return false;
                 }
-                if (record.get_account_type() !== M_AccountType.c_Account_Type_Admin) {
+                if (record.user_group() !== M_UserGroup.c_UserGroup_Admin) {
                         err.log("It needs to be the administrator to force activate an account");
                         return false;
                 }

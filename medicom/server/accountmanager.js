@@ -16,7 +16,7 @@ import {Meteor} from "meteor/meteor";
 import {AdminRecordModel} from "./adminrecordmodel.js";
 import {ProfileModel} from "./profilemodel.js";
 import {ProviderModel} from "./providermodel.js";
-import * as M_AccountType from "../api/accounttype.js";
+import * as M_UserGroup from "../api/usergroup.js";
 
 
 export function AccountManager(mongo,
@@ -47,14 +47,14 @@ AccountManager.prototype.__make_account_derivatives = function(registered, profi
                 return null;
         }
         // create account-type specific record.
-        switch (registered.get_account_type()) {
-        case M_AccountType.c_Account_Type_Provider:
+        switch (registered.user_group()) {
+        case M_UserGroup.c_UserGroup_Provider:
                 this.__provider_model.create_provider(registered.get_account_id());
                 break;
-        case M_AccountType.c_Account_Type_Patient:
+        case M_UserGroup.c_UserGroup_Patient:
                 this.__patient_model.create_patient(registered.get_account_id());
                 break;
-        case M_AccountType.c_Account_Type_SuperIntendant:
+        case M_UserGroup.c_UserGroup_Assistant:
                 throw "Unsupported Operation Exception";
                 break;
         }
@@ -62,17 +62,17 @@ AccountManager.prototype.__make_account_derivatives = function(registered, profi
 }
 
 // Return an AdminRecord if successful, or otherwise null.
-AccountManager.prototype.create_account_with_id = function(account_type, account_id, password, profile)
+AccountManager.prototype.create_account_with_id = function(user_group, account_id, password, profile)
 {
         if (this.__admin_record_model.has_record(account_id)) return null;
-        var registered = this.__admin_record_model.create_new_record_with_id(account_type, account_id, password);
+        var registered = this.__admin_record_model.create_new_record_with_id(user_group, account_id, password);
         return this.__make_account_derivatives(registered, profile);
 }
 
 // Return an AdminRecord if successful, or otherwise null.
-AccountManager.prototype.create_account = function(account_type, password, profile)
+AccountManager.prototype.create_account = function(user_group, password, profile)
 {
-        var registered = this.__admin_record_model.create_new_record(account_type, password);
+        var registered = this.__admin_record_model.create_new_record(user_group, password);
         return this.__make_account_derivatives(registered, profile);
 }
 
@@ -117,16 +117,16 @@ AccountManager.prototype.remove_account_by_id = function(account_id)
 {
         var record = this.__admin_record_model.get_record_by_id(account_id);
         if (record == null) return false;
-        var account_type = record.get_account_type();
+        var user_group = record.user_group();
 
-        switch (account_type) {
-        case M_AccountType.c_Account_Type_Provider:
+        switch (user_group) {
+        case M_UserGroup.c_UserGroup_Provider:
                 this.__provider_model.remove_provider_by_id(account_id);
                 break;
-        case M_AccountType.c_Account_Type_Patient:
+        case M_UserGroup.c_UserGroup_Patient:
                 this.__patient_model.remove_patient_by_id(account_id);
                 break;
-        case M_AccountType.c_Account_Type_SuperIntendant:
+        case M_UserGroup.c_UserGroup_Assistant:
                 throw "Unsupported Operation Exception";
                 break;
         }

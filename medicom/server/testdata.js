@@ -88,7 +88,7 @@ export function PrepareTestData(to_reset) {
         var patient_ids = [];
         for (var i = 0; i < patients_name.length; i ++) {
                 var result = c_Meteor_Methods.user_register_and_activate({
-                        account_type: "patient",
+                        user_group: "patient",
                         email: patients_email[i],
                         user_name: patients_name[i],
                         phone: "310-100-0248",
@@ -99,7 +99,7 @@ export function PrepareTestData(to_reset) {
         // Create provider's account
         for (var i = 0; i < providers_name.length; i ++) {
                 c_Meteor_Methods.user_register_and_activate({
-                        account_type: "provider",
+                        user_group: "provider",
                         email: providers_email[i],
                         user_name: providers_name[i],
                         phone: "310-100-0248",

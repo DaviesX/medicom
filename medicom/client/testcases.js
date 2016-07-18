@@ -15,7 +15,7 @@ import {Meteor} from "meteor/meteor";
 import {ValueTable} from "../api/valuetable.js";
 import {AdminRecord} from "../api/adminrecord.js";
 import {AccountInfo} from "../api/accountinfo.js";
-import {c_Account_Type_Strings, c_Account_Type_Strings_Registerable, AccountType} from "../api/accounttype.js";
+import {c_UserGroup_Strings, c_Account_Type_Strings_Registerable, UserGroup} from "../api/usergroup.js";
 import {ParticipatedSession} from "../api/participatedsession.js";
 import {Identity} from "../api/identity.js";
 import {Patient} from "../api/patient.js";
@@ -128,17 +128,17 @@ export function test_account_info() {
 
 
 export function test_account_type() {
-        var account_type = new AccountType();
+        var user_group = new UserGroup();
 
-        for (account in c_Account_Type_Strings) {
-                if (account_type.get_string_from_account_type(account_type.get_account_type_from_string(account) in ["admin", "provider", "patient", "super intendant"])) {
+        for (account in c_UserGroup_Strings) {
+                if (user_group.get_string_from_user_group(user_group.get_user_group_from_string(account) in ["admin", "provider", "patient", "super intendant"])) {
                         console.log(account);
                         throw "General account type fucked up";
                 }
         }
 
         for (account in c_Account_Type_Strings_Registerable) {
-                if (account_type.get_string_from_account_type(account_type.get_account_type_from_string(account) in ["provider", "patient", "super intendant"])) {
+                if (user_group.get_string_from_user_group(user_group.get_user_group_from_string(account) in ["provider", "patient", "super intendant"])) {
                         console.log(account);
                         throw "Registerable account type fucked up";
                 }

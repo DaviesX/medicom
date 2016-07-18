@@ -32,7 +32,6 @@
 			<Add option="-Wall" />
 		</Compiler>
 		<Unit filename="../../medicom/api/accountinfo.js" />
-		<Unit filename="../../medicom/api/accounttype.js" />
 		<Unit filename="../../medicom/api/adminrecord.js" />
 		<Unit filename="../../medicom/api/common.js" />
 		<Unit filename="../../medicom/api/identity.js" />
@@ -42,6 +41,7 @@
 		<Unit filename="../../medicom/api/profile.js" />
 		<Unit filename="../../medicom/api/provider.js" />
 		<Unit filename="../../medicom/api/symptomstable.js" />
+		<Unit filename="../../medicom/api/usergroup.js" />
 		<Unit filename="../../medicom/api/valuetable.js" />
 		<Unit filename="../../medicom/client/css/emotionless.css" />
 		<Unit filename="../../medicom/client/css/simplicity.css" />

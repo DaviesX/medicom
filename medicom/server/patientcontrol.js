@@ -13,14 +13,14 @@
  */
 import {Meteor} from "meteor/meteor";
 import {ErrorMessageQueue, MongoDB} from "../api/common.js";
-import {c_Account_Type_Patient} from "../api/accounttype.js";
+import {c_UserGroup_Patient} from "../api/usergroup.js";
 
 
 export function PatientControl() {
 
         this.__has_patient_identity = function(identity) {
                 return (G_DataModelContext.get_identity_model().verify_identity(identity)) &&
-                       (identity.get_account_record().get_account_type() == c_Account_Type_Patient);
+                       (identity.get_account_record().user_group() == c_UserGroup_Patient);
         }
 
         this.__get_patient_from_identity = function(identity) {

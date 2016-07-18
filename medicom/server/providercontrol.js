@@ -15,7 +15,7 @@ import {Meteor} from "meteor/meteor";
 import {DataModelContext, G_DataModelContext} from "./datamodelcontext.js";
 import {SessionUtils} from "./sessionutils.js";
 import {ErrorMessageQueue, MongoDB} from "../api/common.js";
-import {c_Account_Type_Provider} from "../api/accounttype.js";
+import {c_UserGroup_Provider} from "../api/usergroup.js";
 
 
 export function ProviderControl() {
@@ -26,7 +26,7 @@ export function ProviderControl() {
 
         this.__has_provider_identity = function(identity) {
                 return (this.__identity_model.verify_identity(identity)) &&
-                       (identity.get_account_record().get_account_type() == c_Account_Type_Provider);
+                       (identity.get_account_record().user_group() == c_UserGroup_Provider);
         }
 
         this.__get_provider_from_identity = function(identity) {

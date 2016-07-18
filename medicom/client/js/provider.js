@@ -13,7 +13,7 @@
  */
 import {Template} from "meteor/templating";
 import {ErrorMessageQueue} from "../../api/common.js";
-import {AccountType} from "../../api/accounttype.js";
+import {UserGroup} from "../../api/usergroup.js";
 import {Patient_Create_From_POD} from "../../api/patient.js";
 import {AccountInfo_Create_From_POD} from "../../api/accountinfo.js";
 import {ParticipatedSession_Create_From_POD} from "../../api/participatedsession.js";
@@ -23,7 +23,7 @@ import {G_UserBrowser} from "./userbrowser.js";
 import {G_DataBrowser} from "./databrowser.js";
 import {G_ActivityCenter} from "./activitycenter.js";
 
-var G_AccountType = new AccountType();
+var G_AccountType = new UserGroup();
 
 
 function user_browser_on_select(obj) {
@@ -44,8 +44,8 @@ Template.tmplprovider.onRendered(function () {
         console.log("provider template rendered");
 
         var identity = G_Session.get_identity_info();
-        var account_type = G_AccountType.get_string_from_account_type(identity.get_account_record().get_account_type());
-        if (identity == null || account_type != "provider") {
+        var user_group = G_AccountType.get_string_from_user_group(identity.get_account_record().user_group());
+        if (identity == null || user_group != "provider") {
                 G_ActivityCenter.print_error_text("You don't have the permission to visit this page");
         } else {
                 // Set up activity center.

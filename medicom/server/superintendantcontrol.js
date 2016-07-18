@@ -18,7 +18,7 @@ import {MeasurePillBottleCap} from "./measurepillbottlecap.js";
 import {MeasureSymptoms} from "./measuresymptoms.js";
 import {SessionUtils} from "./sessionutils.js";
 import {ErrorMessageQueue, MongoDB} from "../api/common.js";
-import * as M_AccountType from "../api/accounttype.js";
+import * as M_UserGroup from "../api/usergroup.js";
 import * as M_Measure from "./measure.js";
 
 export function SuperIndendantControl() {
