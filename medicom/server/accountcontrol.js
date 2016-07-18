@@ -19,6 +19,7 @@ import {Profile} from "../api/profile.js";
 import {ErrorMessageQueue, MongoDB} from "../api/common.js";
 import {AdminRecord} from "../api/adminrecord.js";
 import {AccountInfo} from "../api/accountinfo.js";
+import * as M_Privilege from "../api/privilege.js";
 import * as M_UserGroup from "../api/usergroup.js";
 
 var c_Account_Privilege = [];
@@ -27,175 +28,215 @@ c_Account_Privilege[M_UserGroup.c_UserGroup_Assistant] = 50;
 c_Account_Privilege[M_UserGroup.c_UserGroup_Provider] = 50;
 c_Account_Privilege[M_UserGroup.c_UserGroup_Patient] = 20;
 
-export function AccountControl() {
-        this.__c_Admin_Account_ID = -1;
-        this.__c_Admin_Account_Password = "42f2d30a-f9fc-11e5-86aa-5e5517507c66";
-        // Create a super user account
-        G_DataModelContext.get_account_manager().create_account_with_id(
-                                                        M_UserGroup.c_UserGroup_Admin,
-                                                        this.__c_Admin_Account_ID,
-                                                        this.__c_Admin_Account_Password,
-                                                        new Profile("", "",  "", "", null, ""));
+export function AccountControl()
+{
+        const c_Root_Account_ID = -1;
+        const c_Root_Password = "42f2d30a-f9fc-11e5-86aa-5e5517507c66";
 
-        // Public APIs
-        this.get_registerable_account_types = function() {
-                return M_UserGroup.c_Account_Type_Strings_Registerable;
+        this.__account_mgr = G_DataModelContext.get_account_manager();
+        this.__profile_model = G_DataModelContext.get_profile_model();
+        this.__identity_model = G_DataModelContext.get_identity_model();
+
+        // Create a root and default identity.
+        var root_record, default_record;
+        try {
+                root_record = this.__account_mgr.create_account_with_id(M_UserGroup.c_UserGroup_Root,
+                                                                        c_Root_Account_ID,
+                                                                        c_Root_Password);
+        } catch (error) {
+                console.log(error.toString());
+                root_record = this.__account_mgr.get_account_record_by_id(c_Root_Account_ID);
         }
+}
 
-        this.get_account_types = function(){
-                return M_UserGroup.c_UserGroup_Strings;
-        }
+// Public APIs
+AccountControl.prototype.get_registerable_account_types = function()
+{
+        return M_UserGroup.c_Account_Type_Strings_Registerable;
+}
 
-        // Return account info if successful, or otherwise null.
-        this.register = function(saccount_type, email, name, phone, password, err) {
-                var user_group = new M_UserGroup.UserGroup().get_user_group_from_string(saccount_type);
-                switch (user_group) {
-                case M_UserGroup.c_UserGroup_Admin:
-                        err.log("Cannot register an admin account");
-                        return null;
-                case M_UserGroup.c_UserGroup_Assistant:
-                        err.log("Cannot register a super intendant, but it can be made");
-                        return null;
-                default:
-                        // Build an initial profile.
-                        var profile = new Profile(email, name, phone, null, "");
-                        var record = G_DataModelContext.get_account_manager().create_account(
-                                                        user_group, password, profile);
-                        if (!record) {
-                                err.log("Cannot register, account " + email + " existed");
-                                return null;
-                        }
-                        var account_info = new AccountInfo(record,
-                                                           record.get_account_id(),
-                                                           profile.get_name(),
-                                                           profile.get_email());
-                        return account_info;
-                }
-        }
+AccountControl.prototype.get_account_types = function()
+{
+        return M_UserGroup.c_UserGroup_Strings;
+}
 
-        this.make_account = function(identity, saccount_type, email, name, phone, password, err) {
-                var user_group = M_UserGroup.c_String2UserGroup[saccount_type];
-
-                // Build an initial profile.
-                var profile = new Profile(email, name, phone, null, "");
-                var record = G_DataModelContext.get_account_manager().create_account(
-                                                user_group, password, profile);
-                if (!record) {
-                        err.log("Cannot register, account existed");
+// Return account info if successful, or otherwise null.
+AccountControl.prototype.register = function(s_user_group, email, name, phone, password, err)
+{
+        var user_group = new M_UserGroup.UserGroup().get_user_group_from_string(s_user_group);
+        switch (user_group) {
+        case M_UserGroup.c_UserGroup_Admin:
+                err.log("Cannot register an admin account");
+                return null;
+        case M_UserGroup.c_UserGroup_Assistant:
+                err.log("Cannot register a super intendant, but it can be made");
+                return null;
+        default:
+                // Create admin record.
+                var record;
+                try {
+                        record = this.__account_mgr.create_account(user_group, password, email);
+                } catch (error) {
+                        err.log(error.toString());
                         return null;
                 }
+                // Update profile.
+                var profile = this.__profile_model.get_profile_by_id(record.get_account_id());
+                profile.set_name(name);
+                profile.set_phone(phone);
+                this.__profile_model.update_profile(profile);
+                // Extract account info.
                 var account_info = new AccountInfo(record,
                                                    record.get_account_id(),
                                                    profile.get_name(),
                                                    profile.get_email());
                 return account_info;
         }
+}
 
-        this.get_all_account_infos = function(identity) {
+AccountControl.prototype.make_account = function(identity, s_user_group, email, name, phone, password, err)
+{
+        var user_group = new M_UserGroup.UserGroup().get_user_group_from_string(s_user_group);
+        // Create admin record.
+        var record;
+        try {
+                record = this.__account_mgr.create_account(user_group, password, email);
+        } catch (error) {
+                err.log(error.toString());
+                return null;
         }
+        // Update profile.
+        var profile = this.__profile_model.get_profile_by_id(record.get_account_id());
+        profile.set_name(name);
+        profile.set_phone(phone);
+        this.__profile_model.update_profile(profile);
+        // Extract account info.
+        var account_info = new AccountInfo(record,
+                                           record.get_account_id(),
+                                           profile.get_name(),
+                                           profile.get_email());
+        return account_info;
+}
 
-        this.remove_account = function(identity, account_id, err) {
+AccountControl.prototype.get_all_account_infos = function(identity)
+{
+}
+
+AccountControl.prototype.remove_account = function(identity, account_id, err)
+{
+}
+
+AccountControl.prototype.get_account_infos_by_ids = function(identity, account_ids, err)
+{
+        if (account_ids == null) {
+                err.log("Account IDs given are invalid");
+                return null;
         }
-
-        this.get_account_infos_by_ids = function(identity, account_ids, err) {
-                if (account_ids == null) {
-                        err.log("Account IDs given are invalid");
-                        return null;
-                }
-                if (!G_DataModelContext.get_identity_model().verify_identity(identity)) {
-                        err.log("Your identity is invalid");
-                        return null;
-                }
-                var self_record = identity.get_account_record();
-                var infos = [];
-                for (var i = 0; i < account_ids.length; i ++) {
-                        if (self_record.get_account_id() != account_ids[i]) {
-                                // Trying to obtain others information:
-                                var record = G_DataModelContext.get_account_manager().
-                                                        get_account_record_by_id(account_ids[i]);
-                                if (record == null) {
-                                        err.log("Account ID: " + account_ids[i] + " is invalid");
-                                        continue;
-                                }
-                                if (c_Account_Privilege[self_record.user_group()] <=
-                                    c_Account_Privilege[record.user_group()]) {
-                                        err.log("You don't have the privilege to obtain such account");
-                                        continue;
-                                }
+        if (!this.__identity_model.verify_identity(identity)) {
+                err.log("Your identity is invalid");
+                return null;
+        }
+        var self_record = identity.get_account_record();
+        var infos = [];
+        for (var i = 0; i < account_ids.length; i ++) {
+                if (self_record.get_account_id() != account_ids[i]) {
+                        // Trying to obtain others information:
+                        var record = this.__account_mgr.
+                                     get_account_record_by_id(account_ids[i]);
+                        if (record == null) {
+                                err.log("Account ID: " + account_ids[i] + " is invalid");
+                                continue;
                         }
-                        var profile = G_DataModelContext.get_profile_model().
-                                        get_profile_by_id(account_ids[i]);
-                        infos[i] = new AccountInfo(record, account_ids[i],
-                                                   profile.get_name(), profile.get_email());
+                        if (c_Account_Privilege[self_record.user_group()] <=
+                            c_Account_Privilege[record.user_group()]) {
+                                err.log("You don't have the privilege to obtain such account");
+                                continue;
+                        }
                 }
-                return infos;
+                var profile = this.__profile_model.
+                              get_profile_by_id(account_ids[i]);
+                infos[i] = new AccountInfo(record, account_ids[i],
+                                           profile.get_name(), profile.get_email());
         }
+        return infos;
+}
 
-        this.get_account_info_by_id = function(identity, account_id, err) {
-                if (account_id == null) {
-                        err.log("Account ID given is invalid");
-                        return null;
-                }
-                var infos = this.get_account_infos_by_ids(identity, [account_id], err);
-                return infos != null ? infos[0] : null;
+AccountControl.prototype.get_account_info_by_id = function(identity, account_id, err)
+{
+        if (account_id == null) {
+                err.log("Account ID given is invalid");
+                return null;
         }
+        var infos = this.get_account_infos_by_ids(identity, [account_id], err);
+        return infos != null ? infos[0] : null;
+}
 
-        // Return an identity if successful, or otherwise null.
-        this.login_by_email = function(email, password, err) {
-                var record = G_DataModelContext.get_account_manager().get_account_record_by_email(email);
-                var identity = G_DataModelContext.get_identity_model().login(record, password);
-                if (identity === null) {
-                        err.log("Invalid user name/password");
-                        return null;
-                }
-                return identity;
+// Return an identity if successful, or otherwise null.
+AccountControl.prototype.login_by_email = function(email, password, err)
+{
+        var record = this.__account_mgr.get_account_record_by_email(email);
+        if (record == null) {
+                err.log("Account with email: " + email + " doesn't exist");
+                return null;
         }
+        var identity;
+        try {
+                identity = this.__identity_model.login(record, password);
+        } catch (error) {
+                err.log(error.toString());
+                return null;
+        }
+        return identity;
+}
 
-        // Return an identity if successful, or otherwise null.
-        this.login_by_account_id = function(account_id, password, err) {
-                var record = G_DataModelContext.get_account_manager().get_account_record_by_id(account_id);
-                var identity = G_DataModelContext.get_identity_model().login(record, password);
-                if (identity === null) {
-                        err.log("Invalid user name/password");
-                        return null;
-                }
-                return identity;
+// Return an identity if successful, or otherwise null.
+AccountControl.prototype.login_by_account_id = function(account_id, password, err)
+{
+        var record = this.__account_mgr.get_account_record_by_id(account_id);
+        var identity = this.__identity_model.login(record, password);
+        if (identity === null) {
+                err.log("Invalid user name/password");
+                return null;
         }
+        return identity;
+}
 
-        this.logout = function(identity, err) {
-                if (!G_DataModelContext.get_identity_model().verify_identity(identity))
-                        err.log("The identity is invalid");
-                G_DataModelContext.get_identity_model().logout(identity);
-        }
+AccountControl.prototype.logout = function(identity, err)
+{
+        if (!this.__identity_model.verify_identity(identity))
+                err.log("The identity is invalid");
+        this.__identity_model.logout(identity);
+}
 
-        // Return true if the activation is successful, or otherwise false, error message is left in the ErrorMessageQueue.
-        this.activate = function(activator, err) {
-                var record = G_DataModelContext.get_account_manager().get_account_record_by_activator(activator);
-                if (!G_DataModelContext.get_account_manager().activate_account(record, activator)) {
-                        err.log("Failed to activate, possbily due to an invalid activator: " + activator);
-                        return false;
-                }
-                return true;
+// Return true if the activation is successful, or otherwise false, error message is left in the ErrorMessageQueue.
+AccountControl.prototype.activate = function(activator, err)
+{
+        var record = this.__account_mgr.get_account_record_by_activator(activator);
+        if (!this.__account_mgr.activate_account(record, activator)) {
+                err.log("Failed to activate, possbily due to an invalid activator: " + activator);
+                return false;
         }
+        return true;
+}
 
-        // Return true if the activation is successful, or otherwise false, error message is left in the ErrorMessageQueue.
-        this.force_activate = function(identity, account_id, err) {
-                if (!G_DataModelContext.get_identity_model().verify(identity)) {
-                        err.log("Your identity is invalid, please try to login");
-                }
-                var record = identity.get_account_record();
-                if (!record) {
-                        err.log("Your account is invalid");
-                        return false;
-                }
-                if (record.user_group() !== M_UserGroup.c_UserGroup_Admin) {
-                        err.log("It needs to be the administrator to force activate an account");
-                        return false;
-                }
-                if (!G_DataModelContext.get_account_manager().force_activate_account(record)) {
-                        err.log("No such account to activate");
-                        return false;
-                }
-                return true;
+// Return true if the activation is successful, or otherwise false, error message is left in the ErrorMessageQueue.
+AccountControl.prototype.force_activate = function(identity, account_id, err)
+{
+        if (!this.__identity_model.verify(identity)) {
+                err.log("Your identity is invalid, please try to login");
         }
+        var record = identity.get_account_record();
+        if (!record) {
+                err.log("Your account is invalid");
+                return false;
+        }
+        if (record.user_group() !== M_UserGroup.c_UserGroup_Admin) {
+                err.log("It needs to be the administrator to force activate an account");
+                return false;
+        }
+        if (!this.__account_mgr.force_activate_account(record)) {
+                err.log("No such account to activate");
+                return false;
+        }
+        return true;
 }

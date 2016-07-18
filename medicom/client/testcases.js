@@ -193,7 +193,12 @@ export function test_provider() {
 
 
 export function test_profile() {
-        var profile = new Profile("yijunw4@uci.edu", "Alex Thornton", 949-552-3234, "patient", "Alex likes boo.");
+        var profile = new Profile(5264);
+        profile.set_email("yijunw4@uci.edu");
+        profile.set_name("Alex Thornton");
+        profile.set_phone("949-552-3234");
+        profile.set_avatar("patient"),
+        profile.set_description("Alex likes boo.");
 
         if (profile.get_email() != "yijunw4@uci.edu" || profile.get_name() != "Alex Thornton"
             || profile.get_phone() != "949-552-3234"

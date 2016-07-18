@@ -17,7 +17,6 @@ import {AdminRecordModel} from "./adminrecordmodel.js";
 import {ProfileModel} from "./profilemodel.js";
 import {ProviderModel} from "./providermodel.js";
 import {PrivilegeNetwork} from "./privilegenetwork.js";
-import * as M_Privilege from "../api/privilege.js";
 import * as M_UserGroup from "../api/usergroup.js";
 
 
@@ -39,14 +38,15 @@ export function AccountManager(mongo,
 }
 
 // Public functions
-AccountManager.prototype.__make_account_derivatives = function(registered, profile, privi_ref)
+AccountManager.prototype.__make_account_derivatives = function(registered, email, privi_ref)
 {
         // Create profile.
         if (registered === null) return null;
-        if (this.__profile_model.create_new_profile(registered.get_account_id(), profile) == null) {
+        if (this.__profile_model.create_new_profile(registered.get_account_id(), email) == null) {
                 // failed to create the profile, need to remove the record_fetched.
                 this.__admin_record_model.remove_record_by_id(registered.get_account_id());
-                return null;
+                this.__priv_network.free(registered.get_privilege_ref());
+                throw Error("Profile with email " + email + " exists");
         }
         // Create a user group specific record and set up default user group privileges for it..
         switch (registered.user_group()) {
@@ -65,22 +65,22 @@ AccountManager.prototype.__make_account_derivatives = function(registered, profi
                 break;
         }
         }
-
         return registered;
 }
 
 // Return an AdminRecord if successful, or otherwise null.
-AccountManager.prototype.create_account_with_id = function(user_group, account_id, password, profile)
+AccountManager.prototype.create_account_with_id = function(user_group, account_id, password, email)
 {
+        if (this.__admin_record_model.has_record(account_id))
+                throw Error("Account with ID " + account_id + " exists");
         var privi_ref = this.__priv_network.allocate();
-        if (this.__admin_record_model.has_record(account_id)) return null;
         var registered = this.__admin_record_model.create_new_record_with_id(
                                         user_group, account_id, password, privi_ref);
         return this.__make_account_derivatives(registered, profile, privi_ref);
 }
 
 // Return an AdminRecord if successful, or otherwise null.
-AccountManager.prototype.create_account = function(user_group, password, profile)
+AccountManager.prototype.create_account = function(user_group, password, email)
 {
         var privi_ref = this.__priv_network.allocate();
         var registered = this.__admin_record_model.create_new_record(
