@@ -70,7 +70,7 @@ export function test_account_control() {
         // Login without activating the account.
         var identity = account_control.login_by_email("zhaonia@uci.edu", "lzn19940830haha", errmq);
         if (identity != null) {
-                if (identity.get_account_record().get_activator() == "-1") {
+                if (identity.get_account_record().is_active() == "-1") {
                         // The account was falsely activated when it shouldn't.
                         console.log(account_control);
                         throw "How could you log in by email without activating your account!?";
@@ -80,8 +80,7 @@ export function test_account_control() {
                 throw "Login should return a valid identity at any time";
         }
         // Login with an activated account.
-        var activator = account_info.get_record().get_activator();
-        account_control.activate(activator, errmq);
+        account_control.activate(errmq);
 
         if (account_control.login_by_email("zhaonias@uci.edu", "lzn19940830haha", errmq) == null) {
                 console.log(account_control);

@@ -94,6 +94,8 @@ export function PrepareTestData(to_reset) {
                         phone: "310-100-0248",
                         password: "111111"
                 });
+                if (result.error != "")
+                        throw Error(result.error.toString());
                 patient_ids[i] = result.account_info.get_record().get_account_id();
         }
         // Create provider's account
@@ -114,6 +116,7 @@ export function PrepareTestData(to_reset) {
                         password: "111111"
                 }).identity;
         }
+        console.log(identities);
         // Create sessions
         for (var j = 0; j < 4; j ++) {
                 for (var i = 0; i < providers_name.length; i ++) {

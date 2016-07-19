@@ -14,13 +14,14 @@
 import {Meteor} from 'meteor/meteor';
 
 
-export function AdminRecord(account_id, user_group, password, activator, privi_ref)
+export function AdminRecord(account_id, user_group, password, auth_code, privi_ref)
 {
         this.__account_id = account_id;
         this.__privilege_ref = privi_ref;
         this.__user_group = user_group;
         this.__internal_pass = password != null ? this.__hash33(password) : 0;
-        this.__activator = activator;
+        this.__is_active = false;
+        this.__auth_code = auth_code;
 }
 
 
@@ -49,9 +50,9 @@ AdminRecord.prototype.user_group = function()
         return this.__user_group;
 }
 
-AdminRecord.prototype.get_activator = function()
+AdminRecord.prototype.get_auth_code = function()
 {
-        return this.__activator;
+        return this.__auth_code;
 }
 
 AdminRecord.prototype.verify_password = function(password)
@@ -64,28 +65,29 @@ AdminRecord.prototype.verify_internal_pass = function(pass)
         return this.__internal_pass === pass;
 }
 
+AdminRecord.prototype.verify_auth_code = function(auth_code)
+{
+        return this.__auth_code === auth_code;
+}
+
 AdminRecord.prototype.get_internal_pass = function()
 {
         return this.__internal_pass;
 }
 
-AdminRecord.prototype.activate = function(activator)
+AdminRecord.prototype.activate = function()
 {
-        if (this.__activator === activator) {
-                this.__activator = "-1";
-                return true;
-        } else
-                return false;
+        this.__is_active = true;
 }
 
-AdminRecord.prototype.deactivate = function(activator)
+AdminRecord.prototype.deactivate = function()
 {
-        this.__activator = activator;
+        this.__is_active = false;
 }
 
-AdminRecord.prototype.force_activate = function()
+AdminRecord.prototype.is_active = function()
 {
-        this.__activator = "-1";
+        return this.__is_active;
 }
 
 AdminRecord.prototype.is_activated = function()
@@ -101,8 +103,10 @@ AdminRecord.prototype.get_privilege_ref = function()
 export function AdminRecord_create_from_POD(pod) {
         var obj = new AdminRecord();
         obj.__account_id = pod.__account_id;
+        obj.__privilege_ref = pod.__privilege_ref;
         obj.__user_group = pod.__user_group;
         obj.__internal_pass = pod.__internal_pass;
-        obj.__activator = pod.__activator;
+        obj.__is_active = pod.__is_active;
+        obj.__auth_code = pod.__auth_code;
         return obj;
 }

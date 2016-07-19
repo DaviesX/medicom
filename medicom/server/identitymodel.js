@@ -17,13 +17,17 @@ import {Identity, Identity_create_from_POD} from '../api/identity.js'
 
 export function IdentityModel(mongo, session_out_intv)
 {
-        this.__minute2milli = function(min) { return min*60*1000; }
         this.__mongo = mongo;
         this.__session_out_intv = this.__minute2milli(session_out_intv);
 
         // handle the collection
         this.c_Identity_Coll_Name = "IdentityCollection";
         this.__identities = new Mongo.Collection(this.c_Identity_Coll_Name);
+}
+
+IdentityModel.prototype.__minute2milli = function(min)
+{
+        return min*60*1000;
 }
 
 IdentityModel.prototype.verify_identity = function(identity)
@@ -53,13 +57,34 @@ IdentityModel.prototype.verify_identity = function(identity)
         return true;
 }
 
-IdentityModel.prototype.login = function(record, password)
+IdentityModel.prototype.create_identity = function(record)
+{
+        return new Identity(this.__mongo.get_string_uuid(), record);
+}
+
+IdentityModel.prototype.elevate_by_user_password = function(identity, record, password)
 {
         if (!record.verify_password(password))
                 throw Error("Invalid password");
-        var iden = new Identity(this.__mongo.get_string_uuid(), record);
-        this.__identities.insert(iden);
-        return iden;
+        identity.elevate(record);
+        this.__identities.insert(identity);
+        return identity;
+}
+
+IdentityModel.prototype.elevate_by_identity_auth_code = function(identity, auth_code, record)
+{
+        if (!identity.get_account_record().verify_auth_code(auth_code))
+                throw Error("Invalid auth code");
+        identity.elevate(record);
+        this.__identities.insert(identity);
+        return identity;
+}
+
+IdentityModel.prototype.descend = function(identity)
+{
+        identity.descend();
+        this.__identities.insert(identity);
+        return identity;
 }
 
 IdentityModel.prototype.logout = function(identity)

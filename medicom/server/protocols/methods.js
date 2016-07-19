@@ -78,9 +78,9 @@ function user_register(user_group, email, name, phone, password) {
         return { account_info: info, error: err.fetch_all() };
 }
 
-function user_activate(activator) {
+function user_activate(auth_code) {
         var err = new ErrorMessageQueue();
-        var info = g_account_ctrl.activate(activator);
+        var info = g_account_ctrl.activate(auth_code, err);
         return { account_info: info, error: err.fetch_all() };
 }
 
@@ -88,7 +88,7 @@ function user_register_and_activate(user_group, email, name, phone, password) {
         var err = new ErrorMessageQueue();
         var info = g_account_ctrl.register(user_group, email, name, phone, password, err);
         if (info != null) {
-                g_account_ctrl.activate(info.get_record().get_activator(), err);
+                g_account_ctrl.activate(info.get_record().get_auth_code(), err);
         }
         return { account_info: info, error: err.fetch_all() };
 }
@@ -407,11 +407,11 @@ user_register_and_activate: function(arg) {
 
 /**
  * Activate an account.
- * @param {String} An activator string
+ * @param {String} An authorization code in string.
  * @return {Boolean, String} return a {Boolean, ""} object if sucessful, or otherwise, {null, "..."}.
  */
 user_activate: function(arg) {
-                        return user_activate(arg.activator);
+                        return user_activate(arg.auth_code);
                 },
 
 /**

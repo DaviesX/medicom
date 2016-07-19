@@ -35,6 +35,33 @@ export function AccountManager(mongo,
         this.__patient_model = patient_model;
         this.__identity_model = identity_model;
         this.__priv_network = priv_network;
+
+        const c_Root_Account_ID = -1;
+        const c_Root_Password = "42f2d30a";
+
+        const c_Temp_Account_ID = -2;
+        const c_Temp_Password = "";
+
+        // Create a root and default identity.
+        this.__root_record = null;
+        this.__temp_record = null;
+        try {
+                this.__root_record = this.create_account_with_id(M_UserGroup.c_UserGroup_Root,
+                                                                 c_Root_Account_ID,
+                                                                 c_Root_Password, "##root##");
+        } catch (error) {
+                console.log(error.toString());
+                this.__root_record = this.get_account_record_by_id(c_Root_Account_ID);
+        }
+
+        try {
+                this.__temp_record = this.create_account_with_id(M_UserGroup.c_UserGroup_Temporary,
+                                                                 c_Temp_Account_ID,
+                                                                 c_Temp_Password, "##temp##");
+        } catch (error) {
+                console.log(error.toString());
+                this.__temp_record = this.get_account_record_by_id(c_Temp_Account_ID);
+        }
 }
 
 // Public functions
@@ -76,7 +103,7 @@ AccountManager.prototype.create_account_with_id = function(user_group, account_i
         var privi_ref = this.__priv_network.allocate();
         var registered = this.__admin_record_model.create_new_record_with_id(
                                         user_group, account_id, password, privi_ref);
-        return this.__make_account_derivatives(registered, profile, privi_ref);
+        return this.__make_account_derivatives(registered, email, privi_ref);
 }
 
 // Return an AdminRecord if successful, or otherwise null.
@@ -85,7 +112,7 @@ AccountManager.prototype.create_account = function(user_group, password, email)
         var privi_ref = this.__priv_network.allocate();
         var registered = this.__admin_record_model.create_new_record(
                                 user_group, password, privi_ref);
-        return this.__make_account_derivatives(registered, profile, privi_ref);
+        return this.__make_account_derivatives(registered, email, privi_ref);
 }
 
 // Return an AdminRecord if successful, or otherwise null.
@@ -95,9 +122,9 @@ AccountManager.prototype.get_account_record_by_id = function(account_id)
 }
 
 // Return an AdminRecord if successful, or otherwise null.
-AccountManager.prototype.get_account_record_by_activator = function(activator)
+AccountManager.prototype.get_account_record_by_auth_code = function(auth_code)
 {
-        return this.__admin_record_model.get_record_by_activator(activator);
+        return this.__admin_record_model.get_record_by_auth_code(auth_code);
 }
 
 // Return an AdminRecord if successful, or otherwise null.
@@ -109,18 +136,11 @@ AccountManager.prototype.get_account_record_by_email = function(email)
 }
 
 // Return true if the activation is successful, false when the record doesn't exist or the activator is invalid.
-AccountManager.prototype.activate_account = function(record, activator)
+AccountManager.prototype.activate_account = function(record)
 {
-        if (record === null || !record.activate(activator)) return false;
-        this.__admin_record_model.update_record(record);
-        return true;
-}
-
-// Return true if the activation is successful, false when the record doesn't exist
-AccountManager.prototype.force_activate_account = function(record)
-{
-        if (record === null) return false;
-        record.force_activate();
+        if (record === null)
+                return false;
+        record.activate();
         this.__admin_record_model.update_record(record);
         return true;
 }
@@ -147,6 +167,16 @@ AccountManager.prototype.remove_account_by_id = function(account_id)
         this.__priv_network.free(record.get_privilege_ref());
         this.__admin_record_model.remove_record_by_id(account_id);
         return true;
+}
+
+AccountManager.prototype.get_temporary_account_record = function()
+{
+        return this.__temp_record;
+}
+
+AccountManager.prototype.get_root_account_record = function()
+{
+        return this.__root_record;
 }
 
 // Reset all the account information.
