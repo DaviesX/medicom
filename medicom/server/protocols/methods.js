@@ -34,8 +34,8 @@ function server_print(arg) {
         console.log(arg);
 }
 
-function user_account_types() {
-        return g_account_ctrl.get_registerable_account_types();
+function get_registerable_user_groups() {
+        return g_account_ctrl.get_registerable_user_group_strings();
 }
 
 function user_account_info_by_id(identity, account_id) {
@@ -331,8 +331,8 @@ server_print: function(arg) {
  * Get a list of registerable account types.
  * @return An array of account types as strings.
  */
-user_account_types: function(arg) {
-                        return user_account_types();
+get_registerable_user_groups: function(arg) {
+                        return get_registerable_user_groups();
                 },
 
 /**

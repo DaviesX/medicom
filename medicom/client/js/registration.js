@@ -29,7 +29,7 @@ Template.tmplreg.onRendered(function () {
         $(".emo_central").fadeIn(800);
 
         // inject acccount types.
-        Meteor.call("user_account_types", null, function(error, result) {
+        Meteor.call("get_registerable_user_groups", null, function(error, result) {
                 for (var i = 0; i < result.length; i ++) {
                         $("#sel-reg-as").append(option_make(result[i], result[i]));
                 }

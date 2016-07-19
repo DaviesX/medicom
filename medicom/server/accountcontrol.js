@@ -50,12 +50,12 @@ export function AccountControl()
 }
 
 // Public APIs
-AccountControl.prototype.get_registerable_account_types = function()
+AccountControl.prototype.get_registerable_user_group_strings = function()
 {
-        return M_UserGroup.c_Account_Type_Strings_Registerable;
+        return M_UserGroup.get_registerable_user_group_strings;
 }
 
-AccountControl.prototype.get_account_types = function()
+AccountControl.prototype.get_user_groups = function()
 {
         return M_UserGroup.c_UserGroup_Strings;
 }

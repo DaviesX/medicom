@@ -15,6 +15,7 @@
 // User group actions
 export const c_Root_Actions = [
         {action: "register account",            scope: [-1], grant_option: true},
+        {action: "create account",              scope: [-1], grant_option: true},
         {action: "activate account",            scope: [-1], grant_option: true},
         {action: "deactivate account",          scope: [-1], grant_option: true},
         {action: "remove account",              scope: [-1], grant_option: true},
@@ -31,6 +32,7 @@ export const c_Root_Actions = [
 
 export const c_Admin_Actions = [
         {action: "register account",            scope: [-1], grant_option: true},
+        {action: "create account",              scope: [-1], grant_option: true},
         {action: "activate account",            scope: [-1], grant_option: true},
         {action: "deactivate account",          scope: [-1], grant_option: true},
         {action: "remove account",              scope: [-1], grant_option: true},
@@ -68,6 +70,11 @@ export const c_Patient_Actions = [
         {action: "update measure",              scope: [], grant_option: false},
         {action: "view measure",                scope: [], grant_option: false},
 ];
+
+export const c_Default_Actions = [
+        {action: "register account",            scope: [], grant_option: false},
+];
+
 
 // Privilege
 export function Privilege(actions)
