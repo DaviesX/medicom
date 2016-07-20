@@ -225,7 +225,7 @@ PrivilegeNode.prototype.grant_to = function(dst, action, scope_set, with_grant_o
 export function PrivilegeNetwork()
 {
         this.__storage = new Mongo.Collection("PrivilegeNetworkCollection");
-        this.__nodes = [null];  // ref 0 is reserved.
+        this.__nodes = [new PrivilegeNode()];  // ref 0 is reserved.for the root.
         this.__recycled = [];
 }
 
@@ -262,9 +262,8 @@ PrivilegeNetwork.prototype.reset = function()
         this.__recycled = [];
 }
 
-PrivilegeNetwork.prototype.allocate_root = function(account_id, agent)
+PrivilegeNetwork.prototype.allocate_root = function()
 {
-        this.__nodes[0] = new PrivilegeNode(0, account_id, agent);
         return 0;
 }
 
@@ -294,10 +293,15 @@ PrivilegeNetwork.prototype.__dfs_remove_depended_nodes = function(node_ref, indi
 
 PrivilegeNetwork.prototype.free = function(node_ref)
 {
-        if (this.__nodes[node_ref] == null) return false;
+        if (this.__nodes[node_ref] == null)
+                return false;
 
         var indi_set = new Set();
         this.__dfs_remove_depended_nodes(node_ref, indi_set);
+
+        if (node_ref == 0)
+                // Root is always none empty.
+                this.allocate_root();
 
         this.__store();
         return true;
