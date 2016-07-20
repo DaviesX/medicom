@@ -63,7 +63,9 @@ IdentityModel.prototype.create_identity = function(record)
 {
         if (record == null)
                 throw new Error("Logic error: creating an identity with null record");
-        return new Identity(this.__mongo.get_string_uuid(), record);
+        var identity = new Identity(this.__mongo.get_string_uuid(), record);
+        this.__identities.insert(identity);
+        return identity;
 }
 
 IdentityModel.prototype.__elevate = function(identity, record)
