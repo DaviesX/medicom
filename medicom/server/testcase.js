@@ -18,15 +18,16 @@ import {MeasureBP} from "./measurebp.js";
 import {AccountControl} from "./accountcontrol.js";
 import {ErrorMessageQueue} from "../api/common.js";
 import {Privilege,
-        c_Root_Actions,
-        c_Admin_Actions,
-        c_Assistant_Actions,
-        c_Provider_Actions,
-        c_Patient_Actions} from "../api/privilege.js";
+               c_Root_Actions,
+               c_Admin_Actions,
+               c_Assistant_Actions,
+               c_Provider_Actions,
+               c_Patient_Actions} from "../api/privilege.js";
 import {G_DataModelContext} from "./datamodelcontext.js";
 
 
-export function test_MongoDB() {
+export function test_MongoDB()
+{
         var db = G_DataModelContext.get_mongodb();
 
         temp_set = new Set();
@@ -42,7 +43,8 @@ export function test_MongoDB() {
 }
 
 
-export function test_measure() {
+export function test_measure()
+{
         var measure = new Measure(1);
 
         measure.set_session_id(123);
@@ -56,49 +58,59 @@ export function test_measure() {
 }
 
 
-export function test_account_control() {
-        var account_control = new AccountControl();
+export function test_account_control()
+{
         var errmq = new ErrorMessageQueue();
-        // zhaonias@uci.edu does not work!
-        // @todo#davis: This error could be reproduced. Need more work on the controller layer in order to resolve the issue.
+
+        var account_control = new AccountControl();
+
+        account_control.remove_account_by_email(account_control.get_root_identity(), "zhaonias@uci.edu", errmq);
+        var error = errmq.fetch_all();
+        if (error != "" && error[0] != "No such account zhaonias@uci.edu exists") {
+                console.log(error);
+                throw Error("Failed to remove an existing account");
+        }
+        errmq.clear();
+
         var account_info = account_control.register(
-                        "provider", "zhaonias@uci.edu", "tomasds", "9495628820", "lzn19940830haha", errmq);
+                                   "provider", "zhaonias@uci.edu", "tomasds", "9495628820", "lzn19940830haha", errmq);
         if (account_info == null) {
                 console.log(errmq.fetch_all());
-                throw "account_info fucked up";
+                throw Error("account_info fucked up");
         }
         // Login without activating the account.
-        var identity = account_control.login_by_email("zhaonia@uci.edu", "lzn19940830haha", errmq);
+        var identity = account_control.login_by_email("zhaonias@uci.edu", "lzn19940830haha", errmq);
         if (identity != null) {
                 if (identity.get_account_record().is_active() == "-1") {
                         // The account was falsely activated when it shouldn't.
                         console.log(account_control);
-                        throw "How could you log in by email without activating your account!?";
+                        throw Error("How could you log in by email without activating your account!?");
                 }
         } else {
                 console.log(errmq.fetch_all());
-                throw "Login should return a valid identity at any time";
+                throw Error("Login should return a valid identity at any time");
         }
         // Login with an activated account.
-        account_control.activate(errmq);
+        account_control.activate(account_info.get_record().get_auth_code(), errmq);
 
         if (account_control.login_by_email("zhaonias@uci.edu", "lzn19940830haha", errmq) == null) {
                 console.log(account_control);
-                throw "test_account_control fucked up";
+                throw Error("test_account_control fucked up");
         }
         console.log("test_account_control passed");
 
 }
 
 
-export function test_privilege_network() {
+export function test_privilege_network()
+{
         var priv_network = G_DataModelContext.get_privilege_network();
         priv_network.reset();
-        var root = priv_network.allocate_root(-1, "root");
-        var bob = priv_network.allocate(123, "system");
-        var amy = priv_network.allocate(124, "system");
-        var janet = priv_network.allocate(125, "system");
-        var paul = priv_network.allocate(126, "system");
+        var root = priv_network.allocate_root();
+        var bob = priv_network.allocate();
+        var amy = priv_network.allocate();
+        var janet = priv_network.allocate();
+        var paul = priv_network.allocate();
         // Assign root actions.
         for (var i = 0; i < c_Root_Actions.length; i ++)
                 if (!priv_network.add_root_action(c_Root_Actions[i].action)) {
