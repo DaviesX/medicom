@@ -61,7 +61,7 @@ export function DataModelContext() {
                 this.__account_mgr.reset();
                 this.__session_model.reset();
                 this.__measure_model.reset();
-                this.__priv_network.reset();
+                // this.__priv_network.reset();
         }
 }
 
