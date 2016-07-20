@@ -93,6 +93,7 @@
 		<Unit filename="../../medicom/server/main.js" />
 		<Unit filename="../../medicom/server/measure.js" />
 		<Unit filename="../../medicom/server/measurebp.js" />
+		<Unit filename="../../medicom/server/measurecontrol.js" />
 		<Unit filename="../../medicom/server/measurefitbit.js" />
 		<Unit filename="../../medicom/server/measuremodel.js" />
 		<Unit filename="../../medicom/server/measurepillbottlecap.js" />
@@ -107,7 +108,6 @@
 		<Unit filename="../../medicom/server/providermodel.js" />
 		<Unit filename="../../medicom/server/sessionmodel.js" />
 		<Unit filename="../../medicom/server/sessionutils.js" />
-		<Unit filename="../../medicom/server/superintendantcontrol.js" />
 		<Unit filename="../../medicom/server/testcase.js" />
 		<Unit filename="../../medicom/server/testdata.js" />
 		<Extensions>

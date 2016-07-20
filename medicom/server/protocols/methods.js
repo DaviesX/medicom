@@ -20,7 +20,7 @@ import {Identity_create_from_POD} from "../../api/identity.js";
 import {AccountControl} from "../accountcontrol.js";
 import {ProviderControl} from "../providercontrol.js";
 import {PatientControl} from "../patientcontrol.js";
-import {SuperIndendantControl} from "../superintendantcontrol.js";
+import {MeasureControl} from "../measurecontrol.js";
 import {DataModelContext, G_DataModelContext} from "../datamodelcontext.js";
 import * as TestData from "../testdata.js";
 import * as TestCase from "../testcase.js";
@@ -28,7 +28,7 @@ import * as TestCase from "../testcase.js";
 var g_account_ctrl = new AccountControl();
 var g_provider_ctrl = new ProviderControl();
 var g_patient_ctrl = new PatientControl();
-var g_superinten_ctrl = new SuperIndendantControl();
+var g_measure_ctrl = new MeasureControl();
 
 export function system_init()
 {
@@ -190,7 +190,7 @@ function user_get_patient_bp_table(identity, session_id, start_date, end_date, n
 {
         identity = Identity_create_from_POD(identity);
         var err = new ErrorMessageQueue();
-        var measures = g_superinten_ctrl.get_bp_measures(
+        var measures = g_measure_ctrl.get_bp_measures(
                                identity, start_date, end_date, num_samples, session_id, err);
         var bptable = new ValueTable();
         if (measures != null) {
@@ -215,7 +215,7 @@ function patient_super_update_bp_from_table(identity, session_id, table)
         }
         table = ValueTable_create_from_POD(table);
         identity = Identity_create_from_POD(identity);
-        if (!g_superinten_ctrl.update_bp_measures(identity, session_id, table, err)) {
+        if (!g_measure_ctrl.update_bp_measures(identity, session_id, table, err)) {
                 err.log("failed to update bp data");
         }
         return {error: err.fetch_all()};
@@ -242,7 +242,7 @@ function update_pbc_record(identity, session_id, pbctable)
         }
         pbctable = ValueTable_create_from_POD(pbctable);
         identity = Identity_create_from_POD(identity);
-        g_superinten_ctrl.update_pbc_measures(identity, session_id, pbctable, err);
+        g_measure_ctrl.update_pbc_measures(identity, session_id, pbctable, err);
         return {error: err.fetch_all()};
 }
 
@@ -254,7 +254,7 @@ function get_pbc_record(identity, session_id, start_date, end_date, num_samples)
                 return {pbctable: null, error: err.fetch_all()};
         }
         identity = Identity_create_from_POD(identity);
-        var measures = g_superinten_ctrl.get_pbc_measures(identity, start_date, end_date, num_samples, session_id, err);
+        var measures = g_measure_ctrl.get_pbc_measures(identity, start_date, end_date, num_samples, session_id, err);
         var pbctable = new ValueTable();
         if (measures != null) {
                 for (var i = 0; i < measures.length; i ++) {
@@ -272,7 +272,7 @@ function user_get_symptom(identity, session_id, start_date, end_date, num_items)
                 return {sym_table: null, error: err.fetch_all()};
         }
         identity = Identity_create_from_POD(identity);
-        var measures = g_superinten_ctrl.get_symptom_measures(identity, start_date, end_date, session_id, err);
+        var measures = g_measure_ctrl.get_symptom_measures(identity, start_date, end_date, session_id, err);
         var sym_table = new ValueTable();
         if (measures != null) {
                 var n = Math.min(measures.length, num_items == null ? measures.length : num_items);
@@ -295,7 +295,7 @@ function user_update_symptom(identity, session_id, sym_table)
         }
         identity = Identity_create_from_POD(identity);
         sym_table = ValueTable_create_from_POD(sym_table);
-        if (!g_superinten_ctrl.update_symptom_measures(identity, session_id, sym_table, err)) {
+        if (!g_measure_ctrl.update_symptom_measures(identity, session_id, sym_table, err)) {
                 err.log("failed to update symptom measures");
                 return {result: false, error: err.fetch_all()};
         }
@@ -306,7 +306,7 @@ function user_get_session_notes(identity, session_id)
 {
         identity = Identity_create_from_POD(identity);
         var err = new ErrorMessageQueue();
-        var notes = g_superinten_ctrl.get_session_notes(identity, session_id, err);
+        var notes = g_measure_ctrl.get_session_notes(identity, session_id, err);
         return {notes: notes, error: err.fetch_all()};
 }
 

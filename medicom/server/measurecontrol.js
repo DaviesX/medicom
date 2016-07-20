@@ -21,7 +21,7 @@ import {ErrorMessageQueue, MongoDB} from "../api/common.js";
 import * as M_UserGroup from "../api/usergroup.js";
 import * as M_Measure from "./measure.js";
 
-export function SuperIndendantControl() {
+export function MeasureControl() {
         this.__measure_model = G_DataModelContext.get_measure_model();
         this.__identity_model = G_DataModelContext.get_identity_model();
         this.__session_model = G_DataModelContext.get_session_model();
