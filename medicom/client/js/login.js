@@ -33,9 +33,9 @@ function redirect_page_on(result) {
 
         // redirect according to account type.
         var record = identity.get_account_record();
-        var acc_type = new UserGroup().get_string_from_user_group(record.user_group());
+        var user_group = new UserGroup().get_string_from_user_group(record.user_group());
 
-        switch (acc_type) {
+        switch (user_group) {
         case "admin":
                 Router.go("/admin");
                 break;
