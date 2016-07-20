@@ -71,7 +71,7 @@ export const c_Patient_Actions = [
         {action: "view measure",                scope: [], grant_option: false},
 ];
 
-export const c_Default_Actions = [
+export const c_Temporary_Actions = [
         {action: "register account",            scope: [], grant_option: false},
 ];
 
