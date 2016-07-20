@@ -21,6 +21,7 @@ import {AccountControl} from "../accountcontrol.js";
 import {ProviderControl} from "../providercontrol.js";
 import {PatientControl} from "../patientcontrol.js";
 import {SuperIndendantControl} from "../superintendantcontrol.js";
+import {DataModelContext, G_DataModelContext} from "../datamodelcontext.js";
 import * as TestData from "../testdata.js";
 import * as TestCase from "../testcase.js";
 
@@ -32,6 +33,16 @@ var g_superinten_ctrl = new SuperIndendantControl();
 export function system_init()
 {
         g_account_ctrl.system_init();
+}
+
+export function system_reset()
+{
+        console.log("Performing system reset...");
+        console.log("Reset database");
+        G_DataModelContext.reset_all();
+        console.log("Reinitialize the system");
+        system_init();
+        console.log("All set and ready to go");
 }
 
 function server_print(arg)

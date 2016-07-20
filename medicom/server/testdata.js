@@ -12,6 +12,7 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 import {ErrorMessageQueue, MongoDB} from "../api/common.js";
+import * as M_Methods from "./protocols/methods";
 import {AdminRecord} from "../api/adminrecord.js";
 import {Profile} from "../api/profile.js";
 import {AccountManager} from "./accountmanager.js"
@@ -77,12 +78,10 @@ const providers_email = [
         "veronica@live.com"
 ];
 
-export function PrepareTestData(to_reset) {
+export function PrepareTestData() {
         console.log("TestPrepareSampleData - begins");
 
-        if (!to_reset) return;
-        console.log("TestPrepareSampleData - reset database");
-        G_DataModelContext.reset_all();
+        M_Methods.system_reset();
 
         // Create patient's account
         var patient_ids = [];
@@ -116,7 +115,6 @@ export function PrepareTestData(to_reset) {
                         password: "111111"
                 }).identity;
         }
-        console.log(identities);
         // Create sessions
         for (var j = 0; j < 4; j ++) {
                 for (var i = 0; i < providers_name.length; i ++) {

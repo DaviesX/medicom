@@ -35,7 +35,7 @@ export function DataModelContext() {
                                                 this.__profile_model,
                                                 this.__provider_model,
                                                 this.__patient_model,
-                                                this.__account_mgr,
+                                                this.__identity_model,
                                                 this.__priv_network);
         this.__session_model = new SessionModel(this.__mongodb,
                                                 this.__provider_model,
@@ -61,7 +61,7 @@ export function DataModelContext() {
                 this.__account_mgr.reset();
                 this.__session_model.reset();
                 this.__measure_model.reset();
-                // this.__priv_network.reset();
+                this.__priv_network.reset();
         }
 }
 
