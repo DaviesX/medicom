@@ -49,9 +49,9 @@ AdminRecordModel.prototype.get_record_by_id = function(account_id)
         return result.count() > 0 ? AdminRecord_create_from_POD(result.fetch()[0]) : null;
 }
 
-AdminRecordModel.prototype.get_record_by_activator = function(activator)
+AdminRecordModel.prototype.get_record_by_auth_code = function(auth_code)
 {
-        var result = this.__admin_records.find({__activator : activator});
+        var result = this.__admin_records.find({__auth_code : auth_code});
         return result.count() > 0 ? AdminRecord_create_from_POD(result.fetch()[0]) : null;
 }
 

@@ -35,9 +35,9 @@ AdminRecord.prototype.__hash33 = function(s)
         return h >>> 0;
 }
 
-AdminRecord.prototype.set_activator = function(activator)
+AdminRecord.prototype.set_auth_code = function(auth_code)
 {
-        this.__activator = activator;
+        this.__auth_code = auth_code;
 }
 
 AdminRecord.prototype.get_account_id = function()
@@ -88,11 +88,6 @@ AdminRecord.prototype.deactivate = function()
 AdminRecord.prototype.is_active = function()
 {
         return this.__is_active;
-}
-
-AdminRecord.prototype.is_activated = function()
-{
-        return this.__activator === "-1";
 }
 
 AdminRecord.prototype.get_privilege_ref = function()
