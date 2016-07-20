@@ -36,31 +36,38 @@ export function AccountManager(mongo,
         this.__identity_model = identity_model;
         this.__priv_network = priv_network;
 
-        const c_Root_Account_ID = -1;
-        const c_Root_Password = "42f2d30a";
+        this.__c_Root_Account_ID = -1;
+        this.__c_Root_Password = "42f2d30a";
 
-        const c_Temp_Account_ID = -2;
-        const c_Temp_Password = "";
+        this.__c_Temp_Account_ID = -2;
+        this.__c_Temp_Password = "";
 
-        // Create a root and default identity.
         this.__root_record = null;
         this.__temp_record = null;
+
+}
+
+AccountManager.prototype.system_init = function()
+{
+        // Create a root and default identity.
         try {
                 this.__root_record = this.create_account_with_id(M_UserGroup.c_UserGroup_Root,
-                                                                 c_Root_Account_ID,
-                                                                 c_Root_Password, "##root##");
+                                                                 this.__c_Root_Account_ID,
+                                                                 this.__c_Root_Password, "##root##");
+                this.activate_account(this.__root_record);
         } catch (error) {
                 console.log(error.toString());
-                this.__root_record = this.get_account_record_by_id(c_Root_Account_ID);
+                this.__root_record = this.get_account_record_by_id(this.__c_Root_Account_ID);
         }
 
         try {
                 this.__temp_record = this.create_account_with_id(M_UserGroup.c_UserGroup_Temporary,
-                                                                 c_Temp_Account_ID,
-                                                                 c_Temp_Password, "##temp##");
+                                                                 this.__c_Temp_Account_ID,
+                                                                 this.__c_Temp_Password, "##temp##");
+                this.activate_account(this.__temp_record);
         } catch (error) {
                 console.log(error.toString());
-                this.__temp_record = this.get_account_record_by_id(c_Temp_Account_ID);
+                this.__temp_record = this.get_account_record_by_id(this.__c_Temp_Account_ID);
         }
 }
 
@@ -91,6 +98,13 @@ AccountManager.prototype.__make_account_derivatives = function(registered, email
         case M_UserGroup.c_UserGroup_Assistant: {
                 break;
         }
+        case M_UserGroup.c_UserGroup_Root: {
+                break;
+        }
+        default:
+        case M_UserGroup.c_UserGroup_Temporary: {
+                break;
+        }
         }
         return registered;
 }
@@ -100,7 +114,9 @@ AccountManager.prototype.create_account_with_id = function(user_group, account_i
 {
         if (this.__admin_record_model.has_record(account_id))
                 throw Error("Account with ID " + account_id + " exists");
-        var privi_ref = this.__priv_network.allocate();
+        var privi_ref = user_group == M_UserGroup.c_UserGroup_Root ?
+                                this.__priv_network.allocate_root() :
+                                this.__priv_network.allocate();
         var registered = this.__admin_record_model.create_new_record_with_id(
                                         user_group, account_id, password, privi_ref);
         return this.__make_account_derivatives(registered, email, privi_ref);
@@ -145,6 +161,15 @@ AccountManager.prototype.activate_account = function(record)
         return true;
 }
 
+AccountManager.prototype.update_account_auth_code = function(record)
+{
+        if (record === null)
+                return false;
+        record.set_auth_code(this.__mongo.get_string_uuid());
+        this.__admin_record_model.update_record(record);
+        return true;
+}
+
 AccountManager.prototype.remove_account_by_id = function(account_id)
 {
         var record = this.__admin_record_model.get_record_by_id(account_id);
@@ -171,11 +196,16 @@ AccountManager.prototype.remove_account_by_id = function(account_id)
 
 AccountManager.prototype.get_temporary_account_record = function()
 {
+        if (this.__temp_record == null)
+                throw Error("Logic error: temporary account record doesn't exist. It should be set up properly during system init");
         return this.__temp_record;
 }
 
 AccountManager.prototype.get_root_account_record = function()
 {
+        if (this.__root_record == null)
+                throw Error("Logic error: root account record doesn't exist. It should be set up properly during system init");
+
         return this.__root_record;
 }
 
