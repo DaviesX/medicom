@@ -133,11 +133,36 @@ AccountControl.prototype.create_account = function(identity, s_user_group, email
         return account_info;
 }
 
+AccountControl.prototype.get_root_identity = function()
+{
+        return this.__identity_model.create_identity(this.__account_mgr.get_root_account_record());
+}
+
+AccountControl.prototype.get_temporary_identity = function()
+{
+        return this.__identity_model.create_identity(this.__account_mgr.get_temporary_account_record());
+}
+
 AccountControl.prototype.get_all_account_infos = function(identity)
 {
 }
 
-AccountControl.prototype.remove_account = function(identity, account_id, err)
+AccountControl.prototype.__remove_account = function(identity, record, err)
+{
+        if (!this.__priv_network.has_action(identity.get_account_record().get_privilege_ref(),
+                                             "remove account",
+                                             [record.get_privilege_ref()]) &&
+             !this.__priv_network.has_action(identity.get_account_record().get_privilege_ref(),
+                                             "remove account",
+                                             [record.user_group()])) {
+                err.log("You don't have the permission to remove this account.");
+                return false;
+        }
+        this.__account_mgr.remove_account_by_id(record.get_account_id());
+        return true;
+}
+
+AccountControl.prototype.remove_account_by_id = function(identity, account_id, err)
 {
         if (account_id == null) {
                 err.log("Account ID given is invalid");
@@ -152,17 +177,25 @@ AccountControl.prototype.remove_account = function(identity, account_id, err)
                 err.log("No such account id " + account_id + " exists")
                 return false;
         }
-        if (!this.__priv_network.has_action(identity.get_account_record().get_privilege_ref(),
-                                             "remove account",
-                                             [record.get_privilege_ref()]) &&
-             !this.__priv_network.has_action(identity.get_account_record().get_privilege_ref(),
-                                             "remove account",
-                                             [record.user_group()])) {
-                err.log("You don't have the permission to remove this account.");
+        return this.__remove_account(identity, record, err);
+}
+
+AccountControl.prototype.remove_account_by_email = function(identity, email, err)
+{
+        if (email == null) {
+                err.log("Email given is invalid");
                 return false;
         }
-        this.__account_mgr.remove_account_by_id(record.get_account_id());
-        return true;
+        if (!this.__identity_model.verify_identity(identity)) {
+                err.log("Your identity is invalid");
+                return false;
+        }
+        var record = this.__account_mgr.get_account_record_by_email(email);
+        if (record == null) {
+                err.log("No such account " + email + " exists")
+                return false;
+        }
+        return this.__remove_account(identity, record, err);
 }
 
 AccountControl.prototype.get_account_infos_by_ids = function(identity, account_ids, err)
@@ -214,7 +247,7 @@ AccountControl.prototype.login_by_email = function(email, password, err)
                 err.log("Account with email: " + email + " doesn't exist");
                 return null;
         }
-        var identity = this.__identity_model.create_identity(this.__account_mgr.get_temporary_account_record());
+        var identity = this.get_temporary_identity();
         try {
                 identity = this.__identity_model.elevate_by_user_password(identity, record, password);
         } catch (error) {
@@ -228,7 +261,7 @@ AccountControl.prototype.login_by_email = function(email, password, err)
 AccountControl.prototype.login_by_account_id = function(account_id, password, err)
 {
         var record = this.__account_mgr.get_account_record_by_id(account_id);
-        var identity = this.__identity_model.create_identity(this.__account_mgr.get_temporary_account_record());
+        var identity = this.get_temporary_identity();
         try {
                 identity = this.__identity_model.elevate_by_user_password(identity, record, password);
         } catch (error) {
