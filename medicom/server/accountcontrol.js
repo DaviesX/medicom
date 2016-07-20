@@ -91,23 +91,23 @@ AccountControl.prototype.create_account = function(identity, s_user_group, email
         // Update privilege settings.
         var user_group_actions;
         switch (user_group) {
-        case M_Privilege.c_UserGroup_Admin: {
+        case M_UserGroup.c_UserGroup_Admin: {
                 user_group_actions = M_Privilege.c_Admin_Actions;
                 break;
         }
-        case M_Privilege.c_UserGroup_Assistant: {
+        case M_UserGroup.c_UserGroup_Assistant: {
                 user_group_actions = M_Privilege.c_Assistant_Actions;
                 break;
         }
-        case M_Privilege.c_UserGroup_Provider: {
+        case M_UserGroup.c_UserGroup_Provider: {
                 user_group_actions = M_Privilege.c_Provider_Actions;
                 break;
         }
-        case M_Privilege.c_UserGroup_Patient: {
+        case M_UserGroup.c_UserGroup_Patient: {
                 user_group_actions = M_Privilege.c_Patient_Actions;
                 break;
         }
-        case M_Privilege.c_UserGroup_Temporary:
+        case M_UserGroup.c_UserGroup_Temporary:
         default: {
                 user_group_actions = M_Privilege.c_Temporary_Actions;
                 break;
@@ -139,6 +139,30 @@ AccountControl.prototype.get_all_account_infos = function(identity)
 
 AccountControl.prototype.remove_account = function(identity, account_id, err)
 {
+        if (account_id == null) {
+                err.log("Account ID given is invalid");
+                return false;
+        }
+        if (!this.__identity_model.verify_identity(identity)) {
+                err.log("Your identity is invalid");
+                return false;
+        }
+        var record = this.__account_mgr.get_account_record_by_id(account_id);
+        if (record == null) {
+                err.log("No such account id " + account_id + " exists")
+                return false;
+        }
+        if (!this.__priv_network.has_action(identity.get_account_record().get_privilege_ref(),
+                                             "remove account",
+                                             [record.get_privilege_ref()]) &&
+             !this.__priv_network.has_action(identity.get_account_record().get_privilege_ref(),
+                                             "remove account",
+                                             [record.user_group()])) {
+                err.log("You don't have the permission to remove this account.");
+                return false;
+        }
+        this.__account_mgr.remove_account_by_id(record.get_account_id());
+        return true;
 }
 
 AccountControl.prototype.get_account_infos_by_ids = function(identity, account_ids, err)
@@ -154,24 +178,20 @@ AccountControl.prototype.get_account_infos_by_ids = function(identity, account_i
         var self_record = identity.get_account_record();
         var infos = [];
         for (var i = 0; i < account_ids.length; i ++) {
-                if (self_record.get_account_id() != account_ids[i]) {
-                        // Trying to obtain others information:
-                        var record = this.__account_mgr.
-                                     get_account_record_by_id(account_ids[i]);
-                        if (record == null) {
-                                err.log("Account ID: " + account_ids[i] + " is invalid");
-                                continue;
-                        }
-                        if (c_Account_Privilege[self_record.user_group()] <=
-                            c_Account_Privilege[record.user_group()]) {
-                                err.log("You don't have the privilege to obtain such account");
-                                continue;
-                        }
+                var record = this.__account_mgr.get_account_record_by_id(account_ids[i]);
+                if (record == null ||
+                    (!this.__priv_network.has_action(identity.get_account_record().get_privilege_ref(),
+                                            "search account",
+                                            [record.get_privilege_ref()]) &&
+                    !this.__priv_network.has_action(identity.get_account_record().get_privilege_ref(),
+                                            "search account",
+                                            [record.user_group()]))) {
+                        // Don't have the permission to search this account.
+                        continue;
                 }
-                var profile = this.__profile_model.
-                              get_profile_by_id(account_ids[i]);
-                infos[i] = new AccountInfo(record, account_ids[i],
-                                           profile.get_name(), profile.get_email());
+                var profile = this.__profile_model.get_profile_by_id(account_ids[i]);
+                infos.push(new AccountInfo(record, account_ids[i],
+                                           profile.get_name(), profile.get_email()));
         }
         return infos;
 }
@@ -227,10 +247,9 @@ AccountControl.prototype.logout = function(identity, err)
 
 AccountControl.prototype.__activate = function(identity, record, err)
 {
-        console.log(identity);
         if (!this.__priv_network.has_action(identity.get_account_record().get_privilege_ref(),
                                             "activate account",
-                                            [record.get_account_id()]))
+                                            [record.get_privilege_ref()]))
                 throw Error("You don't have the permission to force activate the account: " + record.get_account_id());
         this.__account_mgr.activate_account(record);
 }
@@ -247,7 +266,6 @@ AccountControl.prototype.activate = function(auth_code, err)
         // Elevate to root.
         var identity = this.__identity_model.create_identity(record);
         var root_record = this.__account_mgr.get_root_account_record();
-        console.log(root_record);
         try {
                 identity = this.__identity_model.elevate_by_identity_auth_code(identity, auth_code, root_record);
         } catch (error) {

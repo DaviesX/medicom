@@ -15,11 +15,22 @@ import {Meteor} from "meteor/meteor";
 import {Privilege} from "../api/privilege.js";
 
 // PrivilegeAction
-export function PrivilegeAction(action, scope_set, with_grant_option)
+export function PrivilegeAction(node_ref, action, scope_set, with_grant_option)
 {
         this.__action = action;
         this.__scope_set = scope_set;
         this.__with_grant_option = with_grant_option;
+
+        if (scope_set != null)
+                this.__replace_special_scope(this.__scope_set, node_ref);
+}
+
+// Parse special scopes.
+PrivilegeAction.prototype.__replace_special_scope = function(scope_set, node_ref)
+{
+        for (var i = 0; i < scope_set.length; i ++)
+                if (scope_set[i] == -2)
+                        scope_set[i] = node_ref;
 }
 
 PrivilegeAction.prototype.get_action = function()
@@ -42,8 +53,10 @@ PrivilegeAction.prototype.has_grant_option = function()
         return this.__with_grant_option;
 }
 
-PrivilegeAction.prototype.add_scope = function(scope)
+PrivilegeAction.prototype.add_scope = function(scope, node_ref)
 {
+        this.__replace_special_scope(scope, node_ref);
+
         if (this.is_in_scope(scope))
                 return false;
         this.__scope_set.push(scope);
@@ -87,6 +100,15 @@ PrivilegeAction.prototype.is_action_compatible = function(action)
         return this.__action == action;
 }
 
+export function PrivilegeAction_create_from_POD(pod)
+{
+        var obj = new PrivilegeAction();
+        obj.__action = pod.__action;
+        obj.__scope_set = pod.__scope_set;
+        obj.__with_grant_option = pod.__with_grant_option;
+        return obj;
+}
+
 // PrivilegeEdge
 function PrivilegeEdge(src, dst, action)
 {
@@ -95,12 +117,19 @@ function PrivilegeEdge(src, dst, action)
         this.__action = action;
 }
 
+function PrivilegeEdge_create_from_POD(pod)
+{
+        var obj = new PrivilegeEdge();
+        obj.__src = obj.__src;
+        obj.__dst = obj.__dst;
+        obj.__action = PrivilegeAction_create_from_POD(pod.__action);
+        return obj;
+}
+
 // PrivilegeNode
-function PrivilegeNode(node_ref, account_id, agent)
+function PrivilegeNode(node_ref)
 {
         this.__node_ref = node_ref;
-        this.__account_id = account_id;
-        this.__agent = agent;
         this.__in_edges = [];
         this.__out_edges = [];
 }
@@ -157,10 +186,12 @@ PrivilegeNode.prototype.__add_action = function(edge_set, src, dst, action, scop
 {
         var priv_action = this.__get_action_with(edge_set, src, dst, action);
         if (priv_action == null)
-                edge_set.push(new PrivilegeEdge(src, dst, new PrivilegeAction(action, scope_set, with_grant_option)));
+                edge_set.push(new PrivilegeEdge(src, dst,
+                                                new PrivilegeAction(this.__node_ref,
+                                                                    action, scope_set, with_grant_option)));
         else {
                 for (var i = 0; i < scope_set.length; i ++)
-                        priv_action.add_scope(scope_set[i]);
+                        priv_action.add_scope(scope_set[i], this.__node_ref);
                 priv_action.set_grant_option(with_grant_option);
         }
 }
@@ -221,16 +252,29 @@ PrivilegeNode.prototype.grant_to = function(dst, action, scope_set, with_grant_o
                           action, scope_set, with_grant_option);
 }
 
+function PrivilegeNode_create_from_POD(pod)
+{
+        var obj = new PrivilegeNode();
+        obj.__node_ref = pod.__node_ref;
+        obj.__in_edges = pod.__in_edges;
+        obj.__out_edges = pod.__out_edges;
+
+        for (var i = 0; i < obj.__in_edges.length; i ++)
+                obj.__in_edges[i] = PrivilegeEdge_create_from_POD(obj.__in_edges[i]);
+
+        for (var i = 0; i < obj.__out_edges.length; i ++)
+                obj.__out_edges[i] = PrivilegeEdge_create_from_POD(obj.__out_edges[i]);
+
+        return obj;
+}
+
 // PrivilegeNetwork
 export function PrivilegeNetwork()
 {
         this.__storage = new Mongo.Collection("PrivilegeNetworkCollection");
-        this.__nodes = [new PrivilegeNode()];  // ref 0 is reserved.for the root.
+        this.__nodes = [];              // ref 0 is reserved.for the root.
         this.__recycled = [];
-}
 
-PrivilegeNetwork.constructor = function()
-{
         this.__restore();
 }
 
@@ -241,10 +285,11 @@ PrivilegeNetwork.prototype.__restore = function()
                 var mem = result.fetch()[0];
                 this.__recycled = mem.recycled;
                 for (var i = 0; i < mem.nodes.length; i ++)
-                        this.__nodes[i] = mem.nodes[i];
+                        this.__nodes[i] = PrivilegeNode_create_from_POD(mem.nodes[i]);
         } else {
                 this.__recycled = [];
                 this.__nodes = [];
+                this.allocate_root();
         }
 }
 
@@ -264,17 +309,21 @@ PrivilegeNetwork.prototype.reset = function()
 
 PrivilegeNetwork.prototype.allocate_root = function()
 {
+        if (this.__nodes[0] == null) {
+                this.__nodes[0] = new PrivilegeNode(0);
+                this.__store();
+        }
         return 0;
 }
 
-PrivilegeNetwork.prototype.allocate = function(account_id, agent)
+PrivilegeNetwork.prototype.allocate = function()
 {
         var allocated;
         if (this.__recycled.length == 0)
                 allocated = this.__nodes.length;
         else
                 allocated = this.__recycled.pop();
-        this.__nodes[allocated] = new PrivilegeNode(allocated, account_id, agent);
+        this.__nodes[allocated] = new PrivilegeNode(allocated);
         this.__store();
         return allocated;
 }

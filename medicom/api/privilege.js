@@ -12,6 +12,13 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+import {c_UserGroup_Root,
+        c_UserGroup_Admin,
+        c_UserGroup_Provider,
+        c_UserGroup_Patient,
+        c_UserGroup_Assistant,
+        c_UserGroup_Temporary} from "./usergroup.js";
+
 // User group actions
 export const c_Root_Actions = [
         {action: "register account",            scope: [-1], grant_option: true},
@@ -41,38 +48,38 @@ export const c_Admin_Actions = [
 ];
 
 export const c_Assistant_Actions = [
-        {action: "register account",            scope: [], grant_option: false},
-        {action: "activate account",            scope: [], grant_option: false},
-        {action: "search account",              scope: [], grant_option: false},
-        {action: "view profile",                scope: [], grant_option: false},
-        {action: "view association",            scope: [], grant_option: false},
-        {action: "update measure",              scope: [], grant_option: false},
-        {action: "view measure",                scope: [], grant_option: false},
+        {action: "register account",            scope: [-2, c_UserGroup_Patient], grant_option: false},
+        {action: "activate account",            scope: [-2, c_UserGroup_Patient], grant_option: false},
+        {action: "search account",              scope: [-2], grant_option: false},
+        {action: "view profile",                scope: [-2], grant_option: false},
+        {action: "view association",            scope: [-2], grant_option: false},
+        {action: "update measure",              scope: [-2], grant_option: false},
+        {action: "view measure",                scope: [-2], grant_option: false},
 ];
 
 export const c_Provider_Actions = [
-        {action: "register account",            scope: [], grant_option: false},
-        {action: "activate account",            scope: [], grant_option: false},
-        {action: "search account",              scope: [], grant_option: false},
-        {action: "view profile",                scope: [], grant_option: false},
-        {action: "activate association",        scope: [], grant_option: false},
-        {action: "deactivate association",      scope: [], grant_option: false},
-        {action: "view association",            scope: [], grant_option: false},
-        {action: "update measure",              scope: [], grant_option: false},
-        {action: "remove measure",              scope: [], grant_option: false},
-        {action: "view measure",                scope: [], grant_option: false},
+        {action: "register account",            scope: [-2, c_UserGroup_Patient], grant_option: false},
+        {action: "activate account",            scope: [-2, c_UserGroup_Patient], grant_option: false},
+        {action: "search account",              scope: [-2, c_UserGroup_Patient], grant_option: false},
+        {action: "view profile",                scope: [-2], grant_option: false},
+        {action: "activate association",        scope: [-2], grant_option: false},
+        {action: "deactivate association",      scope: [-2], grant_option: false},
+        {action: "view association",            scope: [-2], grant_option: true},
+        {action: "update measure",              scope: [-2], grant_option: true},
+        {action: "remove measure",              scope: [-2], grant_option: true},
+        {action: "view measure",                scope: [-2], grant_option: true},
 ];
 
 export const c_Patient_Actions = [
-        {action: "register account",            scope: [], grant_option: false},
-        {action: "view profile",                scope: [], grant_option: false},
-        {action: "view association",            scope: [], grant_option: false},
-        {action: "update measure",              scope: [], grant_option: false},
-        {action: "view measure",                scope: [], grant_option: false},
+        {action: "register account",            scope: [-2], grant_option: false},
+        {action: "view profile",                scope: [-2], grant_option: false},
+        {action: "view association",            scope: [-2], grant_option: false},
+        {action: "update measure",              scope: [-2], grant_option: false},
+        {action: "view measure",                scope: [-2], grant_option: false},
 ];
 
 export const c_Temporary_Actions = [
-        {action: "register account",            scope: [], grant_option: false},
+        {action: "register account",            scope: [-2], grant_option: false},
 ];
 
 
