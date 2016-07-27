@@ -14,6 +14,9 @@
 import { Template } from "meteor/templating";
 import * as TestCase from "./testcases.js";
 
+Router.route("/test-admin-record-model", function() {
+             TestCase.test_admin_record_model();
+             });
 
 Router.route("/inject-test-data", function() {
              TestCase.inject_test_data();

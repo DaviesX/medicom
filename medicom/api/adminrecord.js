@@ -24,6 +24,18 @@ export function AdminRecord(account_id, user_group, password, auth_code, privi_r
         this.__auth_code = auth_code;
 }
 
+AdminRecord.prototype.is_equal = function(other)
+{
+        if (other.__account_id == this.__account_id &&
+            other.__privilege_ref == this.__privilege_ref &&
+            other.__user_group == this.__user_group &&
+            other.__internal_pass == this.__internal_pass &&
+            other.__is_active == this.__is_active &&
+            other.__auth_code == this.__auth_code) {
+                return true;
+        }
+        return false;
+}
 
 AdminRecord.prototype.__hash33 = function(s)
 {

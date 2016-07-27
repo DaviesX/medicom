@@ -23,7 +23,9 @@ import {Provider} from "../api/provider.js";
 import {Profile} from "../api/profile.js";
 import {ErrorMessageQueue} from "../api/common.js";
 
-
+export function test_admin_record_model() {
+        Meteor.call("test_admin_record_model");
+}
 
 export function test_value_table() {
         var has_passed = true;
@@ -250,3 +252,5 @@ export function test_privilege_network() {
 export function inject_test_data() {
         Meteor.call("inject_test_data");
 }
+
+

@@ -704,4 +704,15 @@ provider_set_session_notes:
         {
                 return provider_set_session_notes(arg.identity, arg.session_id, arg.notes);
         },
+
+        /**
+         * Unit test on the AdminRecordModel.
+         * @return {null}
+         */
+test_admin_record_model:
+        function(arg)
+        {
+            TestCase.test_admin_record_model();
+        },
 };
+
