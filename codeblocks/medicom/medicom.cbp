@@ -33,9 +33,10 @@
 		</Compiler>
 		<Unit filename="../../medicom/api/accountinfo.js" />
 		<Unit filename="../../medicom/api/adminrecord.js" />
+		<Unit filename="../../medicom/api/association.js" />
 		<Unit filename="../../medicom/api/common.js" />
 		<Unit filename="../../medicom/api/identity.js" />
-		<Unit filename="../../medicom/api/participatedsession.js" />
+		<Unit filename="../../medicom/api/medicalsession.js" />
 		<Unit filename="../../medicom/api/patient.js" />
 		<Unit filename="../../medicom/api/privilege.js" />
 		<Unit filename="../../medicom/api/profile.js" />
@@ -87,7 +88,10 @@
 		<Unit filename="../../medicom/client/testcases.js" />
 		<Unit filename="../../medicom/server/accountcontrol.js" />
 		<Unit filename="../../medicom/server/accountmanager.js" />
+		<Unit filename="../../medicom/server/admincontrol.js" />
 		<Unit filename="../../medicom/server/adminrecordmodel.js" />
+		<Unit filename="../../medicom/server/assistantcontrol.js" />
+		<Unit filename="../../medicom/server/associationmodel.js" />
 		<Unit filename="../../medicom/server/datamodelcontext.js" />
 		<Unit filename="../../medicom/server/identitymodel.js" />
 		<Unit filename="../../medicom/server/main.js" />
@@ -101,11 +105,14 @@
 		<Unit filename="../../medicom/server/patientcontrol.js" />
 		<Unit filename="../../medicom/server/patientmodel.js" />
 		<Unit filename="../../medicom/server/privilegenetwork.js" />
+		<Unit filename="../../medicom/server/profilecontrol.js" />
 		<Unit filename="../../medicom/server/profilemodel.js" />
 		<Unit filename="../../medicom/server/protocols/httpprotocols.js" />
 		<Unit filename="../../medicom/server/protocols/methods.js" />
 		<Unit filename="../../medicom/server/providercontrol.js" />
 		<Unit filename="../../medicom/server/providermodel.js" />
+		<Unit filename="../../medicom/server/sessioncontrol.js" />
+		<Unit filename="../../medicom/server/sessionmanager.js" />
 		<Unit filename="../../medicom/server/sessionmodel.js" />
 		<Unit filename="../../medicom/server/sessionutils.js" />
 		<Unit filename="../../medicom/server/testcase.js" />
