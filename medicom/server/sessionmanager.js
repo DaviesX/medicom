@@ -41,7 +41,7 @@ SessionManager.prototype.add_new_session = function(user_pair)
 
 SessionManager.prototype.recover_session = function(session_id)
 {
-        var session = this.__session_model.get_session_by_id(session_id);
+        var session = this.__session_model.get_session(session_id);
         if (session == null)
                 return false;
         session.activate();
@@ -51,7 +51,7 @@ SessionManager.prototype.recover_session = function(session_id)
 
 SessionManager.prototype.deactivate_session = function(session_id)
 {
-        var session = this.__session_model.get_session_by_id(session_id);
+        var session = this.__session_model.get_session(session_id);
         if (session == null)
                 return false;
         session.deactivate();
@@ -61,7 +61,7 @@ SessionManager.prototype.deactivate_session = function(session_id)
 
 SessionManager.prototype.set_session_comment = function(session_id, comment)
 {
-        var session = this.__session_model.get_session_by_id(session_id);
+        var session = this.__session_model.get_session(session_id);
         if (session == null)
                 return false;
         session.set_comments(comment);
@@ -76,4 +76,18 @@ SessionManager.prototype.remove_session = function(session_id)
 
 SessionManager.prototype.get_associated_sessions = function(user_pair)
 {
+        var assocs = this.__assoc_model.get_associations(user_pair);
+        if (assocs == null)
+                return null;
+        var sessions = [];
+        for (var i = 0; i < assocs.length; i ++) {
+                if (null == assocs[i].get_session_id())
+                        continue;
+                var session = this.__session_model.get_session(assocs[i].get_session_id());
+                if (session == null)
+                        throw Error("Logical error: session_id: " + assocs[i].get_session_id() +
+                                    " doesn't exist in session model but exists in association model");
+                sessions.push(session);
+        }
+        return sessions;
 }
