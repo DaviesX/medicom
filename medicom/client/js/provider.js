@@ -16,7 +16,7 @@ import {ErrorMessageQueue} from "../../api/common.js";
 import {UserGroup} from "../../api/usergroup.js";
 import {Patient_Create_From_POD} from "../../api/patient.js";
 import {AccountInfo_Create_From_POD} from "../../api/accountinfo.js";
-import {ParticipatedSession_Create_From_POD} from "../../api/participatedsession.js";
+import {MedicalSession_Create_From_POD} from "../../api/medicalsession.js";
 import {G_Session} from "./session.js";
 import {G_SessionBrowser} from "./sessionbrowser.js";
 import {G_UserBrowser} from "./userbrowser.js";

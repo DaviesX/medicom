@@ -16,7 +16,7 @@ import {ValueTable} from "../api/valuetable.js";
 import {AdminRecord} from "../api/adminrecord.js";
 import {AccountInfo} from "../api/accountinfo.js";
 import {c_UserGroup_Strings, c_Account_Type_Strings_Registerable, UserGroup} from "../api/usergroup.js";
-import {ParticipatedSession} from "../api/participatedsession.js";
+import {MedicalSession} from "../api/medicalsession.js";
 import {Identity} from "../api/identity.js";
 import {Patient} from "../api/patient.js";
 import {Provider} from "../api/provider.js";
@@ -148,7 +148,7 @@ export function test_account_type() {
 
 
 export function test_participated_session() {
-        var participated_session = new ParticipatedSession(4, 8, 24);
+        var participated_session = new MedicalSession(4, 8, 24);
 
         if (participated_session.get_session_id() != 4 || participated_session.get_provider_id() != 8 || participated_session.get_patient_id() != 24) {
                 console.log(participated_session);
