@@ -21,6 +21,7 @@ import {AccountControl} from "../accountcontrol.js";
 import {ProviderControl} from "../providercontrol.js";
 import {PatientControl} from "../patientcontrol.js";
 import {MeasureControl} from "../measurecontrol.js";
+import {SessionControl} from "../sessioncontrol.js";
 import {DataModelContext, G_DataModelContext} from "../datamodelcontext.js";
 import * as TestData from "../testdata.js";
 import * as TestCase from "../testcase.js";
@@ -28,11 +29,13 @@ import * as TestCase from "../testcase.js";
 var g_account_ctrl = new AccountControl();
 var g_provider_ctrl = new ProviderControl();
 var g_patient_ctrl = new PatientControl();
+var g_session_ctrl = new SessionControl();
 var g_measure_ctrl = new MeasureControl();
 
 export function system_init()
 {
         g_account_ctrl.system_init();
+        g_session_ctrl.system_init();
 }
 
 export function system_reset()
