@@ -29,7 +29,7 @@ SessionModel.prototype.create_session = function()
         return session;
 }
 
-SessionModel.prototype.get_session_by_id = function(session_id)
+SessionModel.prototype.get_session = function(session_id)
 {
         var result = this.__sessions.findOne({__session_id : session_id});
         return result != null ? MedicalSession_Create_From_POD(result) : null;

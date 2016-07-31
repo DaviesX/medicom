@@ -88,7 +88,7 @@ export function ProviderControl() {
         }
 
         this.__get_session_by_id = function(provider_id, session_id, err) {
-                var session = this.__session_model.get_session_by_id(session_id);
+                var session = this.__session_model.get_session(session_id);
                 if (session == null) {
                         err.log("Session: " + session_id + " doesn't exists");
                         return null;

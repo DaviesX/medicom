@@ -106,7 +106,7 @@ export function MeasureControl() {
                         err.log("You don't have a valid identity");
                         return null;
                 }
-                var session = this.__session_model.get_session_by_id(session_id);
+                var session = this.__session_model.get_session(session_id);
                 if (session == null) {
                         err.log("Session: " + session_id + " doesn't exists");
                         return null;

@@ -68,7 +68,7 @@ export function SessionUtils() {
 
         this.end_session = function(session_id, err) {
                 var session = G_DataModelContext.get_session_model().
-                                        get_session_by_id(session_id);
+                                        get_session(session_id);
                 if (session == null) {
                         err.log("Failed to recover session. The ID provided: " + session_id + " may be invalid");
                         return null;
@@ -80,7 +80,7 @@ export function SessionUtils() {
 
         this.recover_session = function(session_id, err) {
                 var session = G_DataModelContext.get_session_model().
-                                        get_session_by_id(session_id);
+                                        get_session(session_id);
                 if (session == null) {
                         err.log("Failed to recover session. The ID provided: " + session_id + " may be invalid");
                         return null;
