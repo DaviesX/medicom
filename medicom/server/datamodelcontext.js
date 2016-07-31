@@ -19,6 +19,8 @@ import {IdentityModel} from "./identitymodel.js";
 import {ProviderModel} from "./providermodel.js";
 import {PatientModel} from "./patientmodel.js";
 import {SessionModel} from "./sessionmodel.js";
+import {AssociationModel} from "./associationmodel.js";
+import {SessionManager} from "./sessionmanager.js";
 import {MeasureModel} from "./measuremodel.js";
 import {PrivilegeNetwork} from "./privilegenetwork.js";
 
@@ -37,9 +39,10 @@ export function DataModelContext() {
                                                 this.__patient_model,
                                                 this.__identity_model,
                                                 this.__priv_network);
-        this.__session_model = new SessionModel(this.__mongodb,
-                                                this.__provider_model,
-                                                this.__patient_model);
+        this.__association_model = new AssociationModel();
+        this.__session_model = new SessionModel(this.__mongodb);
+        this.__session_mgr = new SessionManager(this.__session_model,
+                                                this.__association_model);
         this.__measure_model = new MeasureModel(this.__mongodb);
 
         this.get_mongodb = function() { return this.__mongodb; }
@@ -50,7 +53,9 @@ export function DataModelContext() {
         this.get_provider_model = function() { return this.__provider_model; }
         this.get_patient_model = function() { return this.__patient_model; }
         this.get_measure_model = function() { return this.__measure_model; }
+        this.get_association_model = function() { return this.__association_model; }
         this.get_session_model = function() { return this.__session_model; }
+        this.get_session_manager = function() { return this.__session_mgr; }
         this.get_privilege_network = function() { return this.__priv_network; }
         this.reset_all = function() {
                 this.__profile_model.reset();
@@ -59,6 +64,7 @@ export function DataModelContext() {
                 this.__admin_record_model.reset();
                 this.__identity_model.reset();
                 this.__account_mgr.reset();
+                this.__association_model.reset();
                 this.__session_model.reset();
                 this.__measure_model.reset();
                 this.__priv_network.reset();
