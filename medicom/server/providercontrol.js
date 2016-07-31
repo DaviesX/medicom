@@ -93,10 +93,6 @@ export function ProviderControl() {
                         err.log("Session: " + session_id + " doesn't exists");
                         return null;
                 }
-                if (session.get_provider_id() != provider_id) {
-                        err.log("Your are not in this session");
-                        return null;
-                }
                 return session;
         }
 

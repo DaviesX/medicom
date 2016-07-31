@@ -112,10 +112,6 @@ export function MeasureControl() {
                         return null;
                 }
                 var id = identity.get_account_record().get_account_id();
-                if (session.get_provider_id() != id && session.get_patient_id() != id) {
-                        err.log("Your are not in this session");
-                        return null;
-                }
                 return session;
         }
 
