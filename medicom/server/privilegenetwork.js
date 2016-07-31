@@ -201,6 +201,14 @@ PrivilegeNode.prototype.get_granted = function(action)
         return this.__get_action(this.__in_edges, action);
 }
 
+PrivilegeNode.prototype.get_granted_from = function(src_ref, action)
+{
+        return this.__get_action_with(this.__in_edges,
+                                      src_ref,
+                                      this.__node_ref,
+                                      action);
+}
+
 PrivilegeNode.prototype.get_granting = function(action)
 {
         return this.__get_action(this.__out_edges, action);
@@ -298,7 +306,6 @@ PrivilegeNetwork.prototype.__store = function()
         this.__storage.remove({});
         this.__storage.insert({nodes: this.__nodes, recycled: this.__recycled});
 }
-
 
 PrivilegeNetwork.prototype.reset = function()
 {
@@ -429,6 +436,17 @@ PrivilegeNetwork.prototype.has_action = function(node_ref, action, scope_set)
                priv_action.is_inclusive_scope_set(scope_set);
 }
 
+PrivilegeNetwork.prototype.has_action_from = function(src_ref, dst_ref, action, scope_set)
+{
+        if (this.__nodes[src_ref] == null ||
+            this.__nodes[dst_ref] == null)
+                return false;
+        var priv_action = this.__nodes[dst_ref].get_granted_from(src_ref, action);
+        return priv_action != null &&
+               priv_action.is_action_compatible(action) &&
+               priv_action.is_inclusive_scope_set(scope_set);
+}
+
 PrivilegeNetwork.prototype.has_action_with_grant_option = function(node_ref, action, scope_set)
 {
         if (this.__nodes[node_ref] == null)
@@ -475,11 +493,19 @@ PrivilegeNetwork.prototype.modify_scope_on = function(src_ref, dst_ref, action, 
         return this.derive_action_from(src_ref, dst_ref, action, scope_set, with_grant_option);
 }
 
-PrivilegeNetwork.prototype.get_action = function(node_ref, action)
+//PrivilegeNetwork.prototype.get_action = function(node_ref, action)
+//{
+//        if (this.__nodes[node_ref] == null)
+//                return null;
+//        return this.__nodes[node_ref].get_granted(action);
+//}
+
+PrivilegeNetwork.prototype.get_action_from = function(src_ref, dst_ref, action)
 {
-        if (this.__nodes[node_ref] == null)
+        if (this.__nodes[src_ref] == null ||
+            this.__nodes[dst_ref] == null)
                 return null;
-        return this.__nodes[node_ref].get_granted(action);
+        return this.__nodes[dst_ref].get_granted_from(src_ref, action);
 }
 
 PrivilegeNetwork.prototype.get_all_actions = function(node_ref)
