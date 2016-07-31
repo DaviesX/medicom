@@ -24,6 +24,30 @@ import {Privilege,
                c_Provider_Actions,
                c_Patient_Actions} from "../api/privilege.js";
 import {G_DataModelContext} from "./datamodelcontext.js";
+import {AdminRecordModel} from "./adminrecordmodel.js";
+import {AdminRecord} from "../api/adminrecord.js";
+
+
+export function test_admin_record_model()
+{
+        G_DataModelContext.reset_all();
+        var admin_record_model = G_DataModelContext.get_admin_record_model();
+        var admin_record = admin_record_model.create_new_record_with_id(5, 48844835, "lzn19940830", 4);
+        var admin_record_by_id = admin_record_model.get_record_by_id(48844835);
+        if (!admin_record.is_equal(admin_record_by_id)) {
+                console.log(admin_record_by_id);
+                console.log(admin_record);
+                throw new Error("test_AdminRecordModel fucked up");
+        }
+        admin_record_model.remove_record_by_id(48844835);
+        if (admin_record_model.get_record_by_id(48844835)) {
+            console.log(admin_record_model);
+                throw new Error("test_AminRecordModel fucked up");
+        }
+        console.log("test_AdminRecordModel passed");
+        
+}
+
 
 
 export function test_MongoDB()
