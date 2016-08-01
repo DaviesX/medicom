@@ -39,7 +39,7 @@ SessionManager.prototype.add_new_session = function(user_pair)
         return {session: session, association: assoc};
 }
 
-SessionManager.prototype.recover_session = function(session_id)
+SessionManager.prototype.recover_session = function(user_pair, session_id)
 {
         var session = this.__session_model.get_session(session_id);
         if (session == null)
@@ -49,7 +49,7 @@ SessionManager.prototype.recover_session = function(session_id)
         return true;
 }
 
-SessionManager.prototype.deactivate_session = function(session_id)
+SessionManager.prototype.deactivate_session = function(user_pair, session_id)
 {
         var session = this.__session_model.get_session(session_id);
         if (session == null)
@@ -89,5 +89,12 @@ SessionManager.prototype.get_associated_sessions = function(user_pair)
                                     " doesn't exist in session model but exists in association model");
                 sessions.push(session);
         }
+        // Sort (is_active, date).
+        sessions.sort(function (x, y) {
+                var primary = y.is_active() - x.is_active();
+                if (primary == 0)
+                        primary = y.get_start_date() - x.get_start_date();
+                return primary;
+        });
         return sessions;
 }
