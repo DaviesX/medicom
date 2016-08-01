@@ -31,12 +31,12 @@ MedicalSession.prototype.get_session_id = function()
 
 MedicalSession.prototype.activate = function()
 {
-        this.__is_active = 0;
+        this.__is_active = true;
 }
 
 MedicalSession.prototype.deactivate = function()
 {
-        this.__is_active = -1;
+        this.__is_active = false;
 }
 
 MedicalSession.prototype.end_session = function()
@@ -46,12 +46,7 @@ MedicalSession.prototype.end_session = function()
 
 MedicalSession.prototype.is_active = function()
 {
-        return this.__is_active == 0;
-}
-
-MedicalSession.prototype.set_pending = function(pending_id)
-{
-        this.__is_active = pending_id;
+        return this.__is_active;
 }
 
 MedicalSession.prototype.set_comments = function(comments)
