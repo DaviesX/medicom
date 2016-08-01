@@ -22,10 +22,10 @@ export function ValueTable() {
         this.__c_LineDelim = "\r";
         // A dirty flag to show whether the data set is sorted or not.
         this.__is_sorted = true;
-        
+
         this.__parse_bpcsv_date = function(date_str) {
                 var parts = date_str.split(" ");
-                var ymd = parts[1].toString(); 
+                var ymd = parts[1].toString();
                 var hms = parts[2].toString();
 
                 var ymd_parts = ymd.split("-");
@@ -37,7 +37,7 @@ export function ValueTable() {
                 var hour = hms_parts[0].toString();
                 var minute = hms_parts[1].toString();
                 var second = hms_parts[2].toString();
-                
+
                 var date = new Date(year, month, day, hour, minute, second);
                 return date;
         }
@@ -58,7 +58,7 @@ export function ValueTable() {
 
                         var timestamp = parts[0];
                         var bpvalue = parts[1];
-                        
+
                         this.add_row(this.__parse_bpcsv_date(timestamp),
                                      {systolic: parseFloat(bpvalue, 10), diastolic: 0, bpm: 0});
                 }
@@ -122,7 +122,7 @@ export function ValueTable() {
                         month = 12;
                         break;
                 }
-                var day = parseInt(s_day);  
+                var day = parseInt(s_day);
                 var year = parseInt(s_year);
                 var hour = parseInt(s_time.split(":")[0]);
                 var min = parseInt(s_time.split(":")[1]);
@@ -134,7 +134,7 @@ export function ValueTable() {
                 var bpm = s.slice(1, -5);
                 return parseInt(bpm);
         }
-        
+
         this.construct_from_bp2csv_stream = function(stream) {
                 stream = stream.toString();
                 var lines = stream.split(this.__c_LineDelim);
@@ -155,12 +155,12 @@ export function ValueTable() {
                 }
                 for (var i = 0; i < bps_values.length; i ++) {
                         this.add_row(this.__parse_bp2csv_date(bps_values[i].timestamp),
-                                     {systolic: this.__parse_bp2csv_sys(bps_values[i].bp_values), 
+                                     {systolic: this.__parse_bp2csv_sys(bps_values[i].bp_values),
                                       diastolic:this.__parse_bp2csv_dia(bps_values[i].bp_values),
                                       bpm: this.__parse_bp2csv_bpm(bpm_values[i].bpm)});
                 }
         }
-        
+
         this.construct_from_pbccsv_stream = function(stream) {
                 stream = stream.toString();
                 var lines = stream.split(this.__c_LineDelim);
@@ -196,7 +196,7 @@ export function ValueTable() {
                 this.__is_sorted = false;
                 return this.__pairs[i];
         }
-        
+
         this.__find_pairs = function(pairs, pair, f_Is_Date_Equal) {
                 var l = 0, h = pairs.length - 1;
                 while (l <= h) {
@@ -221,7 +221,7 @@ export function ValueTable() {
                         }
                         return null;
                 } else {
-                        return this.__find_pairs(this.__pairs, {date: date}, 
+                        return this.__find_pairs(this.__pairs, {date: date},
                                                  function(a, b) {
                                                         return a.getTime() === b.getTime();
                                                  });
@@ -231,7 +231,7 @@ export function ValueTable() {
         this.get_pairs = function() {
                 return this.__pairs;
         }
-        
+
         this.__min_pair = function(i, j, method) {
                 var m = this.__pairs[i];
                 for (var k = i + 1; k <= j; k ++) {
@@ -240,7 +240,7 @@ export function ValueTable() {
                 }
                 return m;
         }
-        
+
         this.__max_pair = function(i, j, method) {
                 var m = this.__pairs[i];
                 for (var k = i + 1; k <= j; k ++) {
@@ -249,7 +249,7 @@ export function ValueTable() {
                 }
                 return m;
         }
-        
+
         this.__avg_pair = function(i, j, method) {
                 var sum = this.__pairs[i].value;
                 for (var k = i + 1; k <= j; k ++) {
@@ -257,17 +257,17 @@ export function ValueTable() {
                 }
                 return {date: this.__pairs[i].date, value: method.scale(1/(j - i + 1), sum)};
         }
-        
+
         this.merge_adjacent_data = function(method, f_Time_Eval) {
                 var new_table = new ValueTable();
                 if (this.__pairs.length == 0 || method.name == "plain") {
                         new_table.construct_from_pairs(this.__pairs.slice(0));
                         return new_table;
                 }
-                
+
                 var last = 0;
                 for (var i = 0; i < this.__pairs.length; i ++) {
-                        if (i + 1 == this.__pairs.length || 
+                        if (i + 1 == this.__pairs.length ||
                             !f_Time_Eval(this.__pairs[i].date, this.__pairs[i + 1].date)) {
                                 var new_spot = new_table.__pairs.length;
                                 switch (method.name) {
@@ -282,7 +282,7 @@ export function ValueTable() {
                                         break;
                                 case "first":
                                         new_table.__pairs[new_spot] = this.__pairs[last];
-                                        break;                                        
+                                        break;
                                 }
                                 new_table.__pairs[new_spot].num_insts = i - last + 1;
                                 last = i + 1;
@@ -291,7 +291,7 @@ export function ValueTable() {
                 new_table.__is_sorted = this.__is_sorted;
                 return new_table;
         }
-        
+
         this.__union_value = function(v0, v1) {
                 var v = {};
                 for (var prop in v0)
@@ -300,17 +300,17 @@ export function ValueTable() {
                         v[prop] = v1[prop];
                 return v;
         }
-        
+
         this.intersect_with = function(value_table, f_Is_Date_Equal, is_return_new) {
                 var new_table = new ValueTable();
-                
+
                 // Find intersection on date. Sort the data first, then apply a series of binary search.
                 // O(nlogn) + O(mlogm) + O(MIN(m, n)*log(MAX(m, n))) = O(nlogn).
                 if (this.__is_sorted == false)
                         this.sort_pairs(false, this.__pairs);
                 if (value_table.__is_sorted == false)
                         value_table.sort_pairs(false, value_table.__pairs);
-                        
+
                 if (this.__pairs.length < value_table.__pairs.length) {
                         for (var i = 0; i < this.__pairs.length; i ++) {
                                 var other = this.__find_pairs(value_table.__pairs, this.__pairs[i], f_Is_Date_Equal);
@@ -330,7 +330,7 @@ export function ValueTable() {
                                 }
                         }
                 }
-                
+
                 if (is_return_new)
                         return new_table;
                 else {
@@ -339,25 +339,23 @@ export function ValueTable() {
                         return this;
                 }
         }
-        
+
         this.sort_pairs = function(desc, pairs) {
                 if (desc) {
                         pairs.sort(function (x, y) {
-                                return x.date.getTime() > y.date.getTime() ? -1 : 
-                                      (x.date.getTime() < y.date.getTime() ? 1 : 0);
+                                return y.date.getTime() - x.date.getTime();
                         });
                 } else {
                         pairs.sort(function (x, y) {
-                                return x.date.getTime() < y.date.getTime() ? -1 : 
-                                      (x.date.getTime() > y.date.getTime() ? 1 : 0);
+                                return x.date.getTime() - y.date.getTime();
                         });
                 }
                 return pairs;
         }
-        
+
         this.sort_data = function(desc) {
                 var new_pairs = this.sort_pairs(desc, this.__pairs.slice(0));
-                
+
                 var new_table = new ValueTable();
                 new_table.construct_from_pairs(new_pairs);
                 if (desc === false)
@@ -369,10 +367,10 @@ export function ValueTable() {
 
         this.sample = function(start_date, end_date, num_samples) {
                 var pairs = this.__pairs;
-        
+
                 var s = start_date == null ? Number.MIN_VALUE : start_date.getTime();
                 var e = end_date == null ? Number.MAX_VALUE : end_date.getTime();
-                
+
                 var valid_indices = [];
                 for (var i = 0, j = 0; j < pairs.length; j ++) {
                         var millidate = pairs[j].date.getTime();
@@ -380,10 +378,10 @@ export function ValueTable() {
                                 continue;
                         valid_indices[i ++] = j;
                 }
-        
+
                 var new_pairs = [];
-                num_samples = num_samples != null ? 
-                        Math.min(valid_indices.length, Math.max(1, num_samples)) : valid_indices.length;   
+                num_samples = num_samples != null ?
+                        Math.min(valid_indices.length, Math.max(1, num_samples)) : valid_indices.length;
                 var interval = valid_indices.length/num_samples;
                 for (var i = 0, j = 0; j < num_samples; i += interval, j ++) {
                         new_pairs[j] = pairs[valid_indices[Math.floor(i)]];
@@ -399,7 +397,7 @@ export function ValueTable() {
 export function ValueTable_create_from_POD(pod) {
         var obj = new ValueTable();
         obj.__pairs = pod.__pairs;
-        obj.__c_Delimiter = pod.__c_Delimiter; 
+        obj.__c_Delimiter = pod.__c_Delimiter;
         obj.__c_LineDelim = pod.__c_LineDelim;
         return obj;
 }
