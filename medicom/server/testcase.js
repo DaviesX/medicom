@@ -16,17 +16,92 @@ import {MongoDB} from "../api/common.js";
 import {Measure} from "./measure.js";
 import {MeasureBP} from "./measurebp.js";
 import {AccountControl} from "./accountcontrol.js";
+import {SessionCOntrol} from "./sessioncontrol.js";
 import {ErrorMessageQueue} from "../api/common.js";
 import {Privilege,
-               c_Root_Actions,
-               c_Admin_Actions,
-               c_Assistant_Actions,
-               c_Provider_Actions,
-               c_Patient_Actions} from "../api/privilege.js";
+        c_Root_Actions,
+        c_Admin_Actions,
+        c_Assistant_Actions,
+        c_Provider_Actions,
+        c_Patient_Actions} from "../api/privilege.js";
+import {c_UserGroup_Root,
+        c_UserGroup_Admin,
+        c_UserGroup_Provider,
+        c_UserGroup_Patient,
+        c_UserGroup_Assistant,
+        c_UserGroup_Temporary} from "../api/usergroup.js";
 import {G_DataModelContext} from "./datamodelcontext.js";
 import {AdminRecordModel} from "./adminrecordmodel.js";
 import {AdminRecord} from "../api/adminrecord.js";
 
+
+// Helper functions.
+function remove_test_accounts()
+{
+        var err = new ErrorMessageQueue();
+        var account_ctrl = new AccountControl();
+        account_ctrl.remove_account_by_email(account_ctrl.get_root_identity(), "bob", err);
+        account_ctrl.remove_account_by_email(account_ctrl.get_root_identity(), "amy", err);
+        account_ctrl.remove_account_by_email(account_ctrl.get_root_identity(), "janet", err);
+        account_ctrl.remove_account_by_email(account_ctrl.get_root_identity(), "jack", err);
+}
+
+function prepare_test_accounts()
+{
+        remove_test_accounts();
+
+        var err = new ErrorMessageQueue();
+        var account_ctrl = new AccountControl();
+        var bob = account_ctrl.register("provider", "bob", "bob", "", "", err);
+        var amy = account_ctrl.register("patient", "amy", "amy", "", "", err);
+        var amy = account_ctrl.register("patient", "janet", "janet", "", "", err);
+        var jack = account_ctrl.register("assistant", "jack", "jack", "", "", err);
+
+        var bob_id = account_ctrl.login_by_email("bob", "", err);
+        var amy_id = account_ctrl.login_by_email("amy", "", err);
+        var janet_id = account_ctrl.login_by_email("janet", "", err);
+        var jack_id = account_ctrl.login_by_email("jack", "", err);
+
+        var result =  {bob: bob, bob_id: bob_id,
+                       amy: amy, amy_id: amy_id,
+                       janet: janet, janet_id: janet_id,
+                       jack: jack, jack_id: jack_id};
+        if (err.fetch_all() != "") {
+                console.log(result);
+                throw new Error("Failed to create test accounts");
+        }
+}
+
+function compare_all_props(x, y)
+{
+        for (prop in x) {
+                if (x.prop != y.prop)
+                        return false;
+        }
+        return true;
+}
+
+function find_object(x, array)
+{
+        for (var j = 0; j < y.length; j ++) {
+                if (compare_all_props(x, array[j]))
+                        return array[j];
+        }
+        return null;
+}
+
+function compare_object_array(x, y)
+{
+        for (var i = 0; i < x.length; i ++) {
+                if (null == find_object(x[i], y))
+                        return false;
+        }
+        for (var i = 0; i < y.length; i ++) {
+                if (null == find_object(y[i], x))
+                        return false;
+        }
+        return true;
+}
 
 export function test_admin_record_model()
 {
@@ -45,10 +120,8 @@ export function test_admin_record_model()
                 throw new Error("test_AminRecordModel fucked up");
         }
         console.log("test_AdminRecordModel passed");
-        
+
 }
-
-
 
 export function test_MongoDB()
 {
@@ -66,7 +139,6 @@ export function test_MongoDB()
         console.log("test_MongoDB passed");
 }
 
-
 export function test_measure()
 {
         var measure = new Measure(1);
@@ -80,7 +152,6 @@ export function test_measure()
         }
         console.log("test_measure passed");
 }
-
 
 export function test_account_control()
 {
@@ -124,7 +195,6 @@ export function test_account_control()
         console.log("test_account_control passed");
 
 }
-
 
 export function test_privilege_network()
 {
@@ -221,4 +291,144 @@ export function test_privilege_network()
         }
         console.log(priv_network);
         console.log("test_privilege_network passed");
+}
+
+export function test_session_control()
+{
+        var err = new ErrorMessageQueue();
+        var session_ctrl = new SessionControl();
+
+        // Prepare identities.
+        var test_accounts = prepare_test_accounts();
+
+        // Create association between bob and amy.
+        session_ctrl.create_association(test_accounts.bob_id,
+                                        test_accounts.amy.get_record().get_account_id(),
+                                        err);
+        if (err.fetch_all() != "") {
+                console.log(test_accounts);
+                throw new Error("Failed to create assocation for bob and amy. Cause: " + err.fetch_all());
+        }
+        // Add 5 sessions and create comments for each session.
+        var sessions_0 = [];
+        for (var i = 0; i < 5; i ++) {
+                var session = session_ctrl.create_session(test_accounts.bob_id,
+                                                          test_accounts.amy.get_record().get_account_id(),
+                                                          err);
+                if (err.fetch_all() != "") {
+                        console.log(session);
+                        throw new Error("Failed to create session for bob and amy. Cause: " + err.fetch_all());
+                }
+                session_ctrl.set_session_notes(test_accounts.bob_id,
+                                               session.get_session_id(),
+                                               "Session notes amy, " + i,
+                                               err);
+                if (err.fetch_all() != "") {
+                        console.log(session);
+                        throw new Error("Failed to add session note for bob and may. Cause: " + err.fetch_all());
+                }
+                sessions_0.push(session);
+        }
+        // Get all the sessions from this association. It should succeed.
+        var sessions_0_v = session_ctrl.get_associated_session(test_accounts.bob_id,
+                                                               test_accounts.amy.get_record().get_account_id(),
+                                                               err);
+        if (err.fetch_all() != "") {
+                console.log(sessions_0_v);
+                throw new Error("Failed to get associated session subjected to bob and amy. Cause: " + err.fetch_all());
+        }
+        if (!compare_object_array(sessoins_0, sessions_0_v)) {
+                console.log(sessions_0);
+                console.log(sessions_0_v);
+                throw new Error("Session fetched aren't the same");
+        }
+        // Create association between bob and janet.
+        session_ctrl.create_association(test_accounts.bob_id,
+                                        test_accounts.janet.get_record().get_account_id(),
+                                        err);
+        if (err.fetch_all() != "") {
+                console.log(test_accounts);
+                throw new Error("Failed to create assocation for bob and janet. Cause: " + err.fetch_all());
+        }
+        // Add 3 sesssions.
+        var sessions_1 = [];
+        for (var i = 0; i < 5; i ++) {
+                var session = session_ctrl.create_session(test_accounts.bob_id,
+                                                          test_accounts.janet.get_record().get_account_id(),
+                                                          err);
+                if (err.fetch_all() != "") {
+                        console.log(session);
+                        throw new Error("Failed to create session for bob and janet. Cause: " + err.fetch_all());
+                }
+                session_ctrl.set_session_notes(test_accounts.bob_id,
+                                               session.get_session_id(),
+                                               "Session notes janet, " + i,
+                                               err);
+                if (err.fetch_all() != "") {
+                        console.log(session);
+                        throw new Error("Failed to add session note for bob and may. Cause: " + err.fetch_all());
+                }
+                sessions_1.push(session);
+        }
+        // Get all the sessions from this association. It should succeed.
+        var sessions_1_v = session_ctrl.get_associated_session(test_accounts.bob_id,
+                                                               test_accounts.janet.get_record().get_account_id(),
+                                                               err);
+        if (err.fetch_all() != "") {
+                console.log(sessions_0_v);
+                throw new Error("Failed to get associated session subjected to bob and janet. Cause: " + err.fetch_all());
+        }
+        if (!compare_object_array(sessoins_1, sessions_1_v)) {
+                console.log(sessoins_1);
+                console.log(sessions_1_v);
+                throw new Error("Session fetched aren't the same");
+        }
+        // Create association between jack and amy.
+        session_ctrl.create_association(test_accounts.jack_id,
+                                        test_accounts.amy.get_record().get_account_id(),
+                                        err);
+        if (err.fetch_all() != "") {
+                console.log(test_accounts);
+                throw new Error("Failed to create assocation for jack and amy. Cause: " + err.fetch_all());
+        }
+        // Add the sessions bob created with amy, expected to fail.
+        for (var i = 0; i < 5; i ++) {
+                var session = session_ctrl.add_session(test_accounts.jack_id,
+                                                       sessions_0[i].get_session_id(),
+                                                       err);
+                if (err.fetch_all() == "") {
+                        console.log(session);
+                        throw new Error("Add amy's session to jack when it shouldn't. Cause: " + err.fetch_all());
+                }
+        }
+        // Now bob share the first set of sessions with jack.
+        for (var i = 0; i < 5; i ++) {
+                var session = session_ctrl.share_session(test_accounts.bob_id,
+                                                         test_accounts.jack.get_record().get_account_id(),
+                                                         sessions_0[i].get_session_id(),
+                                                         err);
+                if (err.fetch_all() != "") {
+                        console.log(session);
+                        throw new Error("Failed to add amy's session to jack. Cause: " + err.fetch_all());
+                }
+        }
+        // Add the sessions bob created. It should succeed.
+        for (var i = 0; i < 5; i ++) {
+                var session = session_ctrl.add_session(test_accounts.jack_id,
+                                                       sessions_0[i].get_session_id(),
+                                                       err);
+                if (err.fetch_all() != "") {
+                        console.log(session);
+                        throw new Error("Failed to add amy's session to jack. Cause: " + err.fetch_all());
+                }
+        }
+        // Bob deactivate and then recover the first session with amy. It should change according to the operation.
+        if (!session_ctrl.deactivate_session(test_accounts.bob_id, sessions_0[0].get_session_id(), err))
+                throw new Error("Failed to deactivate session " + sessions_0[0] + " Cause: " + err.fetch_all());
+        if (!session_ctrl.activate_session(test_accounts.bob_id, sessions_0[0].get_session_id(), err))
+                throw new Error("Failed to activate session " + sessions_0[0] + " Cause: " + err.fetch_all());
+        // Jack deactivate the first session with amy, expected to fail.
+        if (session_ctrl.deactivate_session(test_accounts.jack_id, sessions_0[0].get_session_id(), err))
+                throw new Error("Session " + sessions_0[0] + " is deactivated when it shouldn't");
+        remove_test_accounts();
 }
