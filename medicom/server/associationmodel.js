@@ -33,10 +33,9 @@ AssociationModel.prototype.create_association = function(user_pair)
         return assoc;
 }
 
-AssociationModel.prototype.get_association = function(user_pair, session_id)
+AssociationModel.prototype.has_associated_session = function(user_pair, session_id)
 {
-        return Association_create_from_POD(
-                this.__associations.findOne({__user0: user_pair[0], __user1: user_pair[1], __session_id: session_id}));
+        return null != this.__associations.findOne({__user0: user_pair[0], __user1: user_pair[1], __session_id: session_id});
 }
 
 AssociationModel.prototype.add_association = function(user_pair, session_id)
