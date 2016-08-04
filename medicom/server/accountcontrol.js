@@ -60,8 +60,7 @@ AccountControl.prototype.get_user_groups = function()
 AccountControl.prototype.register = function(s_user_group, email, name, phone, password, err)
 {
         return this.create_account(
-                        this.__identity_model.create_identity(
-                                        this.__account_mgr.get_temporary_account_record()),
+                        this.get_temporary_identity(),
                         s_user_group, email, name, phone, password, err);
 }
 
