@@ -15,12 +15,11 @@
 import {G_DataModelContext} from "./datamodelcontext.js";
 import {c_UserGroup_Provider,
         c_UserGroup_Patient} from "../api/usergroup.js";
-import {SessionUtils} from "./sessionutils.js";
 
 export function SessionControl()
 {
-        this.__session_utils = new SessionUtils();
         this.__admin_model = G_DataModelContext.get_admin_record_model();
+        this.__session_mgr = G_DataModelContext.get_session_manager();
         this.__identity_model = G_DataModelContext.get_identity_model();
         this.__session_model = G_DataModelContext.get_session_model();
         this.__priv_network = G_DataModelContext.get_privilege_network();
@@ -115,82 +114,51 @@ SessionControl.prototype.create_association = function(identity, user_id, err)
 {
         var pair = this.__make_assocation_pair(identity, user_id, err);
         if (pair == null)
-                return null;
-        var priv_ref = identity.get_account_record().get_privilege_ref();
-        if (this.__check_identity(identity, err) &&
-            this.__priv_network.has_action_from(this.__root_ref, priv_ref, "create association", [user_id])) {
-                var session;
-                if (null == (session = this.__session_model.add_relation(pair[0], pair[1], err)))
-                        return null;
-                else {
-                        // Change identity's action scope.
-                        try {
-                                this.__add_scope_for(priv_ref, session.get_session_id(), "assign association");
-                                this.__add_scope_for(priv_ref, session.get_session_id(), "activate association");
-                                this.__add_scope_for(priv_ref, session.get_session_id(), "deactivate association");
-                                this.__add_scope_for(priv_ref, session.get_session_id(), "view association");
-                                this.__add_scope_for(priv_ref, session.get_session_id(), "update association");
-                                this.__add_scope_for(priv_ref, session.get_session_id(), "update measure");
-                                this.__add_scope_for(priv_ref, session.get_session_id(), "remove measure");
-                                this.__add_scope_for(priv_ref, session.get_session_id(), "view measure");
-                        } catch (error) {
-                                err.log(error.toString());
-                                return null;
-                        }
-                        return session;
-                }
-        } else {
-                err.log("Your don't have the permission to create an association");
-                return null;
-        }
-}
-
-SessionControl.prototype.assign_association = function(identity, user_id, session_id, err)
-{
-        var pair = this.__make_assignment_pair(identity, user_id, err);
-        if (pair == null)
                 return false;
         var priv_ref = identity.get_account_record().get_privilege_ref();
         if (this.__check_identity(identity, err) &&
-            this.__priv_network.has_action_from(this.__root_ref, priv_ref, "assign association", [session_id])) {
-                var target_ref = pair[2].get_privilege_ref();
-                try {
-                        this.__add_action_for(priv_ref, target_ref, session.get_session_id(), "view association");
-                        this.__add_action_for(priv_ref, target_ref, session.get_session_id(), "search association");
-                        this.__add_action_for(priv_ref, target_ref, session.get_session_id(), "update measure");
-                        this.__add_action_for(priv_ref, target_ref, session.get_session_id(), "remove measure");
-                        this.__add_action_for(priv_ref, target_ref, session.get_session_id(), "view measure");
-                } catch (error) {
-                        err.log(error.toString())
+            this.__priv_network.has_action(priv_ref, "create association", [pair[2].user_group()])) {
+                if (null == this.__session_mgr.create_association(pair)) {
+                        err.log("The association exists already");
                         return false;
+                } else
+                        return true;
+                err.log("Your don't have the permission to create an association");
+                return false;
+        }
+}
+
+SessionControl.prototype.get_associated_users = function(identity, err)
+{
+        if (this.__check_identity(identity, err) &&
+            this.__priv_network.has_action(priv_ref, "search association", [])) {
+                var record = identity.get_account_record();
+                var priv_ref = record.get_privilege_ref();
+                var assocs;
+                var which_user;
+                if (record.user_group == c_UserGroup_Patient) {
+                        assocs = this.__assoc_model.get_associations_by_second(record.get_account_id(), err);
+                        which_user = 0;
+                } else {
+                        assocs = this.__assoc_model.get_associations_by_first(record.get_account_id(), err);
+                        which_user = 1;
                 }
-                return true;
+                if (assocs == null) {
+                        err.log("Association doesn't exists");
+                        return null;
+                }
+                var user_infos = [];
+                for (var i = 0; i < assocs.length; i ++) {
+                        var record = this.__admin_model.get_record_by_id(assocs.get_pair()[which_user]);
+                        var info = new AccountInfo(record,
+                                                   record.get_account_id(),
+                                                   record.get_name(),
+                                                   record.get_email());
+                        user_infos.push(info);
+                }
+                return user_infos;
         } else {
-                err.log("You don't have the permission to assign an association");
-                return null;
-        }
-}
-
-SessionControl.prototype.activate_association = function(identity, session_id, err)
-{
-        if (this.__check_identity(identity, err) &&
-            this.__priv_network.has_action(identity.get_account_record().get_privilege_ref(),
-                                           "activate association", [session_id]))
-                return this.__session_utils.recover_session(session_id, err);
-        else {
-                err.log("You don't have the permission to activate an association");
-                return null;
-        }
-}
-
-SessionControl.prototype.deactivate_association = function(identity, session_id, err)
-{
-        if (this.__check_identity(identity, err) &&
-            this.__priv_network.has_action(identity.get_account_record().get_privilege_ref(),
-                                           "deactivate association", [session_id]))
-                return this.__session_utils.end_session_with(session_id, err);
-        else {
-                err.log("You don't have the permission to deactivate an association");
+                err.log("Your don't have the permission to search association");
                 return null;
         }
 }
@@ -203,8 +171,8 @@ SessionControl.prototype.remove_association = function(identity, user_id, err)
         var priv_ref = identity.get_account_record().get_privilege_ref();
         if (this.__check_identity(identity, err) &&
             this.__priv_network.has_action(identity.get_account_record().get_privilege_ref(),
-                                           "remove association", [user_id])) {
-                this.__session_utils.remove_relation(pair[0], pair[1], err);
+                                           "remove association", [])) {
+                this.__session_mgr.remove_associations(pair);
                 return true;
         } else {
                 err.log("You don't have the permission to remove an association");
@@ -212,39 +180,130 @@ SessionControl.prototype.remove_association = function(identity, user_id, err)
         }
 }
 
-SessionControl.prototype.get_participated_user_ids = function(identity, err)
+SessionControl.prototype.create_session = function(identity, user_id, err)
 {
-        if (this.__check_identity(identity, err))
+        var pair = this.__make_assignment_pair(identity, user_id, err);
+        if (pair == null)
+                return false;
+        if (this.__check_identity(identity, err) &&
+            this.__priv_network.has_action(identity.get_account_record().get_privilege_ref(),
+                                           "create session", [])) {
+                var result = this.__session_mgr.create_new_session(pair);
+                if (result == null) {
+                        err.log("Failed to create session: " + pair);
+                        return null;
+                } else {
+                        var priv_ref = identity.get_account_record().get_privilege_ref();
+                        var session_id = result.session.get_session_id();
+                        try {
+                                this.__add_scope_for(priv_ref, session_id, "share session");
+                                this.__add_scope_for(priv_ref, session_id, "add session");
+                                this.__add_scope_for(priv_ref, session_id, "activate session");
+                                this.__add_scope_for(priv_ref, session_id, "deactivate session");
+                        } catch (error) {
+                                err.log(error.toString());
+                                this.__session_mgr.remove_session(pair, session_id);
+                                return null;
+                        }
+                        return result.session;
+                }
+        } else {
+                err.log("You don't have the permission to create a session");
                 return null;
-        var ids = [];
-        var record = identity.get_account_record();
-        if (record.user_group() == c_UserGroup_Provider)
-                ids = this.__session_utils.get_participated_patient_ids(record.get_account_id(), err);
-        else if (record.user_group() == c_UserGroup_Patient)
-                ids = this.__session_utils.get_participated_provider_ids(record.get_account_id(), err);
-        // @fixme: lack an AssociationModel..
-        return ids;
+        }
 }
 
-SessionControl.prototype.get_associations = function(identity, user_id, err)
+SessionControl.prototype.add_session = function(identity, user_id, session_id, err)
 {
-        var pair = this.__make_assocation_pair(identity, user_id, err);
+        var pair = this.__make_assignment_pair(identity, user_id, err);
         if (pair == null)
-                return null;
-        var priv_ref = identity.get_account_record().get_privilege_ref();
-        if (this.__check_identity(identity, err)) {
-                obtained = this.__session_utils.get_sessions(pair[0], pair[1], err);
-                for (var i = 0; i < obtained.length; i ++)
-                        if (!this.__priv_network.has_action(priv_ref,
-                                                            "view association",
-                                                            [obtained[i].get_session_id()])) {
-                                err.log("Your don't have the permission to search association");
-                                return false;
-                        }
-                        return obtained;
-        } else {
-                err.log("Your don't have the permission to search association");
                 return false;
+        if (this.__check_identity(identity, err) &&
+            this.__priv_network.has_action(identity.get_account_record().get_privilege_ref(),
+                                           "add session", [session_id])) {
+                var result = this.__session_mgr.add_session(pair, session_id);
+                if (result == null) {
+                        err.log("Failed to create session: " + pair + ", " + session_id);
+                        return null;
+                } else
+                        return result.session;
+        } else {
+                err.log("You don't have the permission to add session " + session_id);
+                return null;
+        }
+}
+
+SessionControl.prototype.remove_session = function(identity, uesr_id, session_id, err)
+{
+        var pair = this.__make_assignment_pair(identity, user_id, err);
+        if (pair == null)
+                return false;
+        if (this.__check_identity(identity, err) &&
+            this.__priv_network.has_action(identity.get_account_record().get_privilege_ref(),
+                                           "remove session", [])) {
+                var result = this.__session_mgr.remove_session(pair, session_id);
+                if (result == false) {
+                        err.log("Failed to remove session: " + pair + " Such association doesn't exist");
+                        return null;
+                } else
+                        return result.session;
+        } else {
+                err.log("You don't have the permission to remove a session");
+                return null;
+        }
+}
+
+SessionControl.prototype.share_session = function(identity, user_id, session_id, err)
+{
+        var pair = this.__make_assignment_pair(identity, user_id, err);
+        if (pair == null)
+                return false;
+        var priv_ref = identity.get_account_record().get_privilege_ref();
+        if (this.__check_identity(identity, err) &&
+            this.__priv_network.has_action(priv_ref, "share session", [session_id])) {
+                var target_ref = pair[2].get_privilege_ref();
+                try {
+                        this.__add_action_for(priv_ref, target_ref, session.get_session_id(), "add session");
+                } catch (error) {
+                        err.log(error.toString())
+                        return false;
+                }
+                return true;
+        } else {
+                err.log("You don't have the permission to share session " + session_id);
+                return null;
+        }
+}
+
+SessionControl.prototype.activate_association = function(identity, session_id, err)
+{
+        if (this.__check_identity(identity, err) &&
+            this.__priv_network.has_action(identity.get_account_record().get_privilege_ref(),
+                                           "activate session", [session_id]))
+                if (!this.__session_mgr.activate_session(session_id)) {
+                        err.log("Session " + session_id + " doesn't exists");
+                        return false;
+                } else
+                        return true;
+        else {
+                err.log("You don't have the permission to activate an association");
+                return null;
+        }
+}
+
+SessionControl.prototype.deactivate_association = function(identity, session_id, err)
+{
+        if (this.__check_identity(identity, err) &&
+            this.__priv_network.has_action(identity.get_account_record().get_privilege_ref(),
+                                           "deactivate association", [session_id]))
+                if (!this.__session_mgr.deactivate_session(session_id)) {
+                        err.log("Session " + session_id + " doesn't exist");
+                        return false;
+                } else
+                        return true;
+        else {
+                err.log("You don't have the permission to deactivate an association");
+                return null;
         }
 }
 
@@ -252,8 +311,8 @@ SessionControl.prototype.set_session_notes = function(identity, session_id, note
 {
         if (this.__check_identity(identity, err) &&
             this.__priv_network.has_action(identity.get_account_record().get_privilege_ref(),
-                                           "update association", [session_id])) {
-                var session = this.__session_model.__get_session_by_id(session_id);
+                                           "update session", [])) {
+                var session = this.__session_model.get_session(session_id);
                 if (session == null) {
                         err.log("No such session " + session_id + " exists");
                         return false;
@@ -264,5 +323,20 @@ SessionControl.prototype.set_session_notes = function(identity, session_id, note
         } else {
                 err.log("You don't have the permission to change session notes");
                 return false;
+        }
+}
+
+SessionControl.prototype.get_session_notes = function(identity, session_id, err)
+{
+        if (this.__check_identity(identity, err) &&
+            this.__priv_network.has_action(identity.get_account_record().get_privilege_ref(),
+                                           "view session", [])) {
+                var session = this.__session_model.get_session(session_id);
+                if (session == null)
+                        return null;
+                return session.get_notes();
+        } else {
+                err.log("You don't have the permission to read session notes");
+                return null;
         }
 }
