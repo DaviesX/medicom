@@ -30,6 +30,10 @@ Router.route("/test-account-control", function() {
              TestCase.test_account_control();
              });
 
+Router.route("/test-session-control", function() {
+             TestCase.test_session_control();
+             });
+
 Router.route("/test-measure", function() {
              TestCase.test_measure();
              });

@@ -114,7 +114,6 @@
 		<Unit filename="../../medicom/server/sessioncontrol.js" />
 		<Unit filename="../../medicom/server/sessionmanager.js" />
 		<Unit filename="../../medicom/server/sessionmodel.js" />
-		<Unit filename="../../medicom/server/sessionutils.js" />
 		<Unit filename="../../medicom/server/testcase.js" />
 		<Unit filename="../../medicom/server/testdata.js" />
 		<Extensions>

@@ -16,7 +16,7 @@ import {MongoDB} from "../api/common.js";
 import {Measure} from "./measure.js";
 import {MeasureBP} from "./measurebp.js";
 import {AccountControl} from "./accountcontrol.js";
-import {SessionCOntrol} from "./sessioncontrol.js";
+import {SessionControl} from "./sessioncontrol.js";
 import {ErrorMessageQueue} from "../api/common.js";
 import {Privilege,
         c_Root_Actions,
@@ -54,8 +54,17 @@ function prepare_test_accounts()
         var account_ctrl = new AccountControl();
         var bob = account_ctrl.register("provider", "bob", "bob", "", "", err);
         var amy = account_ctrl.register("patient", "amy", "amy", "", "", err);
-        var amy = account_ctrl.register("patient", "janet", "janet", "", "", err);
+        var janet = account_ctrl.register("patient", "janet", "janet", "", "", err);
         var jack = account_ctrl.register("assistant", "jack", "jack", "", "", err);
+        var root_id = account_ctrl.get_root_identity();
+        account_ctrl.activate(bob.get_record().get_auth_code(), err);
+        account_ctrl.activate(amy.get_record().get_auth_code(), err);
+        account_ctrl.activate(janet.get_record().get_auth_code(), err);
+        account_ctrl.activate(jack.get_record().get_auth_code(), err);
+        bob = account_ctrl.get_account_info_by_id(root_id, bob.get_record().get_account_id(), err);
+        amy = account_ctrl.get_account_info_by_id(root_id, amy.get_record().get_account_id(), err);
+        jack = account_ctrl.get_account_info_by_id(root_id, jack.get_record().get_account_id(), err);
+        janet = account_ctrl.get_account_info_by_id(root_id, janet.get_record().get_account_id(), err);
 
         var bob_id = account_ctrl.login_by_email("bob", "", err);
         var amy_id = account_ctrl.login_by_email("amy", "", err);
@@ -70,7 +79,9 @@ function prepare_test_accounts()
                 console.log(result);
                 throw new Error("Failed to create test accounts");
         }
+        return result;
 }
+
 
 function compare_all_props(x, y)
 {

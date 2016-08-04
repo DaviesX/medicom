@@ -373,6 +373,15 @@ test_account_control:
                 TestCase.test_account_control();
         },
         /**
+         * Unit test on the SessionControl.
+         * @return {null}
+         */
+test_session_control:
+        function(arg)
+        {
+                TestCase.test_session_control();
+        },
+        /**
          * Print a message on server side.
          * @param {String} The message string.
          * @return {null}
