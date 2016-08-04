@@ -28,18 +28,36 @@ SessionManager.prototype.remove_association = function(user_pair)
         this.__assoc_model.remove_assocations(user_pair);
 }
 
-SessionManager.prototype.add_new_session = function(user_pair)
+SessionManager.prototype.has_association = function(user_pair)
 {
-        var session = this.__session_model.create_session();
+        return this.__assoc_model.has_association(user_pair);
+}
+
+SessionManager.prototype.add_session = function(user_pair, session_id)
+{
+        var session = this.__session_model.get_session(session_id);
         if (session == null)
                 return null;
-        var assoc = this.__assoc_model.add_association(user_pair, session.get_session_id());
+        var assoc = this.__assoc_model.add_association(user_pair, session_id);
         if (assoc == null)
                 return null;
         return {session: session, association: assoc};
 }
 
-SessionManager.prototype.recover_session = function(user_pair, session_id)
+SessionManager.prototype.create_new_session = function(user_pair)
+{
+        var session = this.__session_model.create_session();
+        if (session == null)
+                return null;
+        var assoc = this.__assoc_model.add_association(user_pair, session.get_session_id());
+        if (assoc == null) {
+                this.__session_model.remove_session(session.get_session_id());
+                return null;
+        }
+        return {session: session, association: assoc};
+}
+
+SessionManager.prototype.activate_session = function(session_id)
 {
         var session = this.__session_model.get_session(session_id);
         if (session == null)
@@ -49,7 +67,7 @@ SessionManager.prototype.recover_session = function(user_pair, session_id)
         return true;
 }
 
-SessionManager.prototype.deactivate_session = function(user_pair, session_id)
+SessionManager.prototype.deactivate_session = function(session_id)
 {
         var session = this.__session_model.get_session(session_id);
         if (session == null)
@@ -59,19 +77,18 @@ SessionManager.prototype.deactivate_session = function(user_pair, session_id)
         return true;
 }
 
-SessionManager.prototype.set_session_comment = function(session_id, comment)
+SessionManager.prototype.remove_session = function(user_pair, session_id)
 {
-        var session = this.__session_model.get_session(session_id);
-        if (session == null)
+        if (!this.__has_association(user_pair))
                 return false;
-        session.set_comments(comment);
-        this.__session_model.update_session(session0);
+        this.__assoc_model.remove_associations_by_session_id(session_id);
+        this.__session_model.remove_session_by_id(session_id);
         return true;
 }
 
-SessionManager.prototype.remove_session = function(session_id)
+SessionManager.prototype.has_associated_session = function(user_pair, session_id)
 {
-        this.__session_model.remove_session_by_id(session_id);
+        return this.__assoc_model.has_associated_session(user_pair, session_id);
 }
 
 SessionManager.prototype.get_associated_sessions = function(user_pair)
