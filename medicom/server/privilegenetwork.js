@@ -293,12 +293,14 @@ PrivilegeNetwork.prototype.__restore = function()
                 var mem = result.fetch()[0];
                 this.__recycled = mem.recycled;
                 for (var i = 0; i < mem.nodes.length; i ++)
-                        this.__nodes[i] = PrivilegeNode_create_from_POD(mem.nodes[i]);
+                        if (mem.nodes[i] != null)
+                                this.__nodes[i] = PrivilegeNode_create_from_POD(mem.nodes[i]);
         } else {
                 this.__recycled = [];
                 this.__nodes = [];
                 this.allocate_root();
         }
+        this.__store();
 }
 
 PrivilegeNetwork.prototype.__store = function()
