@@ -73,7 +73,7 @@ IdentityModel.prototype.__elevate = function(identity, record)
         if (record == null)
                 throw Error("Logic error: elevating to a null record");
         identity.elevate(record);
-        this.__identities.insert(identity);
+        this.__identities.update({__session_id: identity.get_session_id()}, identity);
         return identity;
 }
 
@@ -94,7 +94,7 @@ IdentityModel.prototype.elevate_by_identity_auth_code = function(identity, auth_
 IdentityModel.prototype.descend = function(identity)
 {
         identity.descend();
-        this.__identities.insert(identity);
+        this.__identities.update({__session_id: identity.get_session_id()}, identity);
         return identity;
 }
 
