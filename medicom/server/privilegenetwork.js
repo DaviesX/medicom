@@ -120,8 +120,8 @@ function PrivilegeEdge(src, dst, action)
 function PrivilegeEdge_create_from_POD(pod)
 {
         var obj = new PrivilegeEdge();
-        obj.__src = obj.__src;
-        obj.__dst = obj.__dst;
+        obj.__src = pod.__src;
+        obj.__dst = pod.__dst;
         obj.__action = PrivilegeAction_create_from_POD(pod.__action);
         return obj;
 }
