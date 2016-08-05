@@ -13,6 +13,7 @@
  */
 
 import {G_DataModelContext} from "./datamodelcontext.js";
+import {AccountInfo} from "../api/accountinfo.js";
 import {c_UserGroup_Provider,
         c_UserGroup_Assistant,
         c_UserGroup_Patient} from "../api/usergroup.js";
@@ -20,8 +21,10 @@ import {c_UserGroup_Provider,
 export function SessionControl()
 {
         this.__admin_model = G_DataModelContext.get_admin_record_model();
+        this.__profile_model = G_DataModelContext.get_profile_model();
         this.__session_mgr = G_DataModelContext.get_session_manager();
         this.__identity_model = G_DataModelContext.get_identity_model();
+        this.__assoc_model = G_DataModelContext.get_association_model();
         this.__session_model = G_DataModelContext.get_session_model();
         this.__priv_network = G_DataModelContext.get_privilege_network();
 
@@ -120,10 +123,11 @@ SessionControl.prototype.create_association = function(identity, user_id, err)
         var pair = this.__make_association_pair(identity, user_id, err);
         if (pair == null)
                 return false;
-        var priv_ref = identity.get_account_record().get_privilege_ref();
 
         if (this.__check_identity(identity, err) &&
-            this.__priv_network.has_action(priv_ref, "create association", [pair[2].user_group()])) {
+            this.__priv_network.has_action(identity.get_account_record().get_privilege_ref(),
+                                           "create association",
+                                           [pair[2].user_group()])) {
                 if (null == this.__session_mgr.create_association(pair)) {
                         err.log("The association exists already");
                         return false;
@@ -137,9 +141,9 @@ SessionControl.prototype.create_association = function(identity, user_id, err)
 SessionControl.prototype.get_associated_users = function(identity, err)
 {
         if (this.__check_identity(identity, err) &&
-            this.__priv_network.has_action(priv_ref, "search association", [])) {
+            this.__priv_network.has_action(identity.get_account_record().get_privilege_ref(),
+                                           "search association", [])) {
                 var record = identity.get_account_record();
-                var priv_ref = record.get_privilege_ref();
                 var assocs;
                 var which_user;
                 if (record.user_group == c_UserGroup_Patient) {
@@ -155,16 +159,18 @@ SessionControl.prototype.get_associated_users = function(identity, err)
                 }
                 var user_infos = [];
                 for (var i = 0; i < assocs.length; i ++) {
-                        var record = this.__admin_model.get_record_by_id(assocs.get_pair()[which_user]);
+                        var record = this.__admin_model.get_record_by_id(assocs[i].get_user_pair()[which_user]);
+                        var profile = this.__profile_model.get_profile_by_id(assocs[i].get_user_pair()[which_user]);
                         var info = new AccountInfo(record,
                                                    record.get_account_id(),
-                                                   record.get_name(),
-                                                   record.get_email());
+                                                   profile.get_name(),
+                                                   profile.get_email());
                         user_infos.push(info);
                 }
                 return user_infos;
         } else {
-                err.log("Your don't have the permission to search association");
+                err.log("You don't have the permission to search association. ");
+                err.log(identity);
                 return null;
         }
 }
@@ -174,7 +180,6 @@ SessionControl.prototype.remove_association = function(identity, user_id, err)
         var pair = this.__make_association_pair(identity, user_id, err);
         if (pair == null)
                 return null;
-        var priv_ref = identity.get_account_record().get_privilege_ref();
         if (this.__check_identity(identity, err) &&
             this.__priv_network.has_action(identity.get_account_record().get_privilege_ref(),
                                            "remove association", [])) {
@@ -295,9 +300,11 @@ SessionControl.prototype.share_session = function(identity, user_id, session_id,
                 err.log("Session " + session_id + " doesn't exist");
                 return false;
         }
-        var priv_ref = identity.get_account_record().get_privilege_ref();
         if (this.__check_identity(identity, err) &&
-            this.__priv_network.has_action(priv_ref, "share session", [session_id])) {
+            this.__priv_network.has_action(identity.get_account_record().get_privilege_ref(),
+                                           "share session",
+                                           [session_id])) {
+                var priv_ref = identity.get_account_record().get_privilege_ref();
                 var target_ref = user_record.get_privilege_ref();
                 try {
                         this.__add_action_for(priv_ref, target_ref, session_id, "add session");
@@ -371,7 +378,7 @@ SessionControl.prototype.get_session_notes = function(identity, session_id, err)
                 var session = this.__session_model.get_session(session_id);
                 if (session == null)
                         return null;
-                return session.get_notes();
+                return session.get_comments();
         } else {
                 err.log("You don't have the permission to read session notes");
                 return null;

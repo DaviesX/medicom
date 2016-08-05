@@ -150,7 +150,7 @@ export function UserBrowser() {
                                 clazz.__user_list_holder.empty();
                                 for (var i = 0; i < result.account_infos.length; i ++) {
                                         var account_info = AccountInfo_Create_From_POD(result.account_infos[i]);
-                                        var user_id = account_info.get_record().get_account_id();
+                                        var user_id = account_info.get_account_id();
                                         var ui = clazz.__make_user_ui(user_id, account_info.get_name());
                                         clazz.__user_list_holder.append(ui);
                                         clazz.__users[user_id] = account_info;

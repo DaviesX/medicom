@@ -174,7 +174,7 @@ function add_medical_session(identity, user_id, session_id)
         return {session: session, error: err.fetch_all()};
 }
 
-function activate_medical_session(identity, session_id)
+function activate_medical_session(identity, user_id, session_id)
 {
         var err = new ErrorMessageQueue();
         identity = Identity_create_from_POD(identity);
@@ -182,7 +182,7 @@ function activate_medical_session(identity, session_id)
         return {result: result, error: err.fetch_all()};
 }
 
-function deactivate_medical_session(identity, session_id)
+function deactivate_medical_session(identity, user_id, session_id)
 {
         var err = new ErrorMessageQueue();
         identity = Identity_create_from_POD(identity);
@@ -576,7 +576,7 @@ create_medical_session:
 deactivate_medical_session:
         function(arg)
         {
-                return deactivate_medical_session(arg.identity, arg.session_id);
+                return deactivate_medical_session(arg.identity, arg.id, arg.session_id);
         },
 
         /**
@@ -588,7 +588,7 @@ deactivate_medical_session:
 activate_medical_session:
         function(arg)
         {
-                return activate_medical_session(arg.identity, arg.session_id);
+                return activate_medical_session(arg.identity, arg.id, arg.session_id);
         },
 
         /**
