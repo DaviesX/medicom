@@ -14,6 +14,7 @@
 
 import {G_DataModelContext} from "./datamodelcontext.js";
 import {c_UserGroup_Provider,
+        c_UserGroup_Assistant,
         c_UserGroup_Patient} from "../api/usergroup.js";
 
 export function SessionControl()
@@ -44,7 +45,7 @@ SessionControl.prototype.__check_identity = function(identity, err)
         return true;
 }
 
-SessionControl.prototype.__make_assocation_pair = function(identity, user_id, err)
+SessionControl.prototype.__make_association_pair = function(identity, user_id, err)
 {
         if (identity == null) {
                 err.log("Empty identity");
@@ -55,12 +56,14 @@ SessionControl.prototype.__make_assocation_pair = function(identity, user_id, er
                 err.log("User ID " + user_id + " to be associated is invalid");
                 return null;
         }
-        if (identity.get_account_record().user_group() == c_UserGroup_Provider &&
+        if ((identity.get_account_record().user_group() == c_UserGroup_Provider ||
+             identity.get_account_record().user_group() == c_UserGroup_Assistant) &&
             user_record.user_group() == c_UserGroup_Patient)
-                return [identity.get_account_record().get_account_id(), user_id];
-        else if (user_record.user_group() == c_UserGroup_Provider &&
+                return [identity.get_account_record().get_account_id(), user_id, user_record];
+        else if ((user_record.user_group() == c_UserGroup_Provider ||
+                  user_record.user_group() == c_UserGroup_Assistant) &&
                    identity.get_account_record().user_group() == c_UserGroup_Patient)
-                return [user_id, identity.get_account_record().get_account_id()];
+                return [user_id, identity.get_account_record().get_account_id(), user_record];
         else {
                 err.log("Couldn't match association pattern from user_group pair " +
                         [identity.get_account_record().user_group(), user_record.user_group()]);
@@ -79,8 +82,10 @@ SessionControl.prototype.__make_assignment_pair = function(identity, user_id, er
                 err.log("User ID " + user_id + " to be assigned is invalid");
                 return null;
         }
-        if (identity.get_account_record().user_group() == c_UserGroup_Provider &&
-            user_record.user_group() == c_UserGroup_Provider)
+        if ((identity.get_account_record().user_group() == c_UserGroup_Provider &&
+             user_record.user_group() == c_UserGroup_Provider) ||
+            (identity.get_account_record().user_group() == c_UserGroup_Provider &&
+             user_record.user_group() == c_UserGroup_Assistant))
                 return [identity.get_account_record().get_account_id(), user_id, user_record];
         else {
                 err.log("Couldn't match assignment pattern from user_group pair " +
@@ -112,10 +117,11 @@ SessionControl.prototype.__add_action_for = function(src_ref, dst_ref, session_i
 
 SessionControl.prototype.create_association = function(identity, user_id, err)
 {
-        var pair = this.__make_assocation_pair(identity, user_id, err);
+        var pair = this.__make_association_pair(identity, user_id, err);
         if (pair == null)
                 return false;
         var priv_ref = identity.get_account_record().get_privilege_ref();
+
         if (this.__check_identity(identity, err) &&
             this.__priv_network.has_action(priv_ref, "create association", [pair[2].user_group()])) {
                 if (null == this.__session_mgr.create_association(pair)) {
@@ -165,7 +171,7 @@ SessionControl.prototype.get_associated_users = function(identity, err)
 
 SessionControl.prototype.remove_association = function(identity, user_id, err)
 {
-        var pair = this.__make_assocation_pair(identity, user_id, err);
+        var pair = this.__make_association_pair(identity, user_id, err);
         if (pair == null)
                 return null;
         var priv_ref = identity.get_account_record().get_privilege_ref();
@@ -182,7 +188,7 @@ SessionControl.prototype.remove_association = function(identity, user_id, err)
 
 SessionControl.prototype.create_session = function(identity, user_id, err)
 {
-        var pair = this.__make_assignment_pair(identity, user_id, err);
+        var pair = this.__make_association_pair(identity, user_id, err);
         if (pair == null)
                 return false;
         if (this.__check_identity(identity, err) &&
@@ -215,9 +221,10 @@ SessionControl.prototype.create_session = function(identity, user_id, err)
 
 SessionControl.prototype.add_session = function(identity, user_id, session_id, err)
 {
-        var pair = this.__make_assignment_pair(identity, user_id, err);
+        var pair = this.__make_association_pair(identity, user_id, err);
         if (pair == null)
                 return false;
+debugger;
         if (this.__check_identity(identity, err) &&
             this.__priv_network.has_action(identity.get_account_record().get_privilege_ref(),
                                            "add session", [session_id])) {
@@ -233,9 +240,31 @@ SessionControl.prototype.add_session = function(identity, user_id, session_id, e
         }
 }
 
+SessionControl.prototype.get_associated_session = function(identity, user_id, err)
+{
+        var pair = this.__make_association_pair(identity, user_id, err);
+        if (pair == null)
+                return false;
+        if (this.__check_identity(identity, err) &&
+            this.__priv_network.has_action(identity.get_account_record().get_privilege_ref(),
+                                           "search session", [])) {
+                var sessions;
+                try {
+                        sessions = this.__session_mgr.get_associated_sessions(pair);
+                } catch (error) {
+                        err.log(error.toString());
+                        return null;
+                }
+                return sessions;
+        } else {
+                err.log("You don't have the permission to add session " + session_id);
+                return null;
+        }
+}
+
 SessionControl.prototype.remove_session = function(identity, uesr_id, session_id, err)
 {
-        var pair = this.__make_assignment_pair(identity, user_id, err);
+        var pair = this.__make_association_pair(identity, user_id, err);
         if (pair == null)
                 return false;
         if (this.__check_identity(identity, err) &&
@@ -255,15 +284,23 @@ SessionControl.prototype.remove_session = function(identity, uesr_id, session_id
 
 SessionControl.prototype.share_session = function(identity, user_id, session_id, err)
 {
-        var pair = this.__make_assignment_pair(identity, user_id, err);
-        if (pair == null)
+        if (null == this.__make_assignment_pair(identity, user_id, err))
                 return false;
+        var user_record = this.__admin_model.get_record_by_id(user_id);
+        if (user_record == null) {
+                err.log("User " + user_id + " doesn't exist");
+                return false;
+        }
+        if (!this.__session_model.has_session(session_id)) {
+                err.log("Session " + session_id + " doesn't exist");
+                return false;
+        }
         var priv_ref = identity.get_account_record().get_privilege_ref();
         if (this.__check_identity(identity, err) &&
             this.__priv_network.has_action(priv_ref, "share session", [session_id])) {
-                var target_ref = pair[2].get_privilege_ref();
+                var target_ref = user_record.get_privilege_ref();
                 try {
-                        this.__add_action_for(priv_ref, target_ref, session.get_session_id(), "add session");
+                        this.__add_action_for(priv_ref, target_ref, session_id, "add session");
                 } catch (error) {
                         err.log(error.toString())
                         return false;
@@ -271,11 +308,11 @@ SessionControl.prototype.share_session = function(identity, user_id, session_id,
                 return true;
         } else {
                 err.log("You don't have the permission to share session " + session_id);
-                return null;
+                return false;
         }
 }
 
-SessionControl.prototype.activate_association = function(identity, session_id, err)
+SessionControl.prototype.activate_session = function(identity, session_id, err)
 {
         if (this.__check_identity(identity, err) &&
             this.__priv_network.has_action(identity.get_account_record().get_privilege_ref(),
@@ -286,23 +323,23 @@ SessionControl.prototype.activate_association = function(identity, session_id, e
                 } else
                         return true;
         else {
-                err.log("You don't have the permission to activate an association");
+                err.log("You don't have the permission to activate an session");
                 return null;
         }
 }
 
-SessionControl.prototype.deactivate_association = function(identity, session_id, err)
+SessionControl.prototype.deactivate_session = function(identity, session_id, err)
 {
         if (this.__check_identity(identity, err) &&
             this.__priv_network.has_action(identity.get_account_record().get_privilege_ref(),
-                                           "deactivate association", [session_id]))
+                                           "deactivate session", [session_id]))
                 if (!this.__session_mgr.deactivate_session(session_id)) {
                         err.log("Session " + session_id + " doesn't exist");
                         return false;
                 } else
                         return true;
         else {
-                err.log("You don't have the permission to deactivate an association");
+                err.log("You don't have the permission to deactivate an session");
                 return null;
         }
 }
@@ -317,7 +354,7 @@ SessionControl.prototype.set_session_notes = function(identity, session_id, note
                         err.log("No such session " + session_id + " exists");
                         return false;
                 }
-                session.set_notes(notes);
+                session.set_comments(notes);
                 this.__session_model.update_session(session);
                 return true;
         } else {

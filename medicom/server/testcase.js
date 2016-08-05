@@ -44,6 +44,8 @@ function remove_test_accounts()
         account_ctrl.remove_account_by_email(account_ctrl.get_root_identity(), "amy", err);
         account_ctrl.remove_account_by_email(account_ctrl.get_root_identity(), "janet", err);
         account_ctrl.remove_account_by_email(account_ctrl.get_root_identity(), "jack", err);
+        if (err.fetch_all() != "")
+                console.log("Failed to remove test accounts. Cause: " + err.fetch_all());
 }
 
 function prepare_test_accounts()
@@ -77,7 +79,7 @@ function prepare_test_accounts()
                        jack: jack, jack_id: jack_id};
         if (err.fetch_all() != "") {
                 console.log(result);
-                throw new Error("Failed to create test accounts");
+                throw new Error("Failed to create test accounts. Cause: " + err.fetch_all());
         }
         return result;
 }
@@ -94,7 +96,7 @@ function compare_all_props(x, y)
 
 function find_object(x, array)
 {
-        for (var j = 0; j < y.length; j ++) {
+        for (var j = 0; j < array.length; j ++) {
                 if (compare_all_props(x, array[j]))
                         return array[j];
         }
@@ -169,6 +171,7 @@ export function test_account_control()
         var errmq = new ErrorMessageQueue();
 
         var account_control = new AccountControl();
+        account_control.system_init();
 
         account_control.remove_account_by_email(account_control.get_root_identity(), "zhaonias@uci.edu", errmq);
         var error = errmq.fetch_all();
@@ -308,6 +311,7 @@ export function test_session_control()
 {
         var err = new ErrorMessageQueue();
         var session_ctrl = new SessionControl();
+        session_ctrl.system_init();
 
         // Prepare identities.
         var test_accounts = prepare_test_accounts();
@@ -348,7 +352,7 @@ export function test_session_control()
                 console.log(sessions_0_v);
                 throw new Error("Failed to get associated session subjected to bob and amy. Cause: " + err.fetch_all());
         }
-        if (!compare_object_array(sessoins_0, sessions_0_v)) {
+        if (!compare_object_array(sessions_0, sessions_0_v)) {
                 console.log(sessions_0);
                 console.log(sessions_0_v);
                 throw new Error("Session fetched aren't the same");
@@ -389,8 +393,8 @@ export function test_session_control()
                 console.log(sessions_0_v);
                 throw new Error("Failed to get associated session subjected to bob and janet. Cause: " + err.fetch_all());
         }
-        if (!compare_object_array(sessoins_1, sessions_1_v)) {
-                console.log(sessoins_1);
+        if (!compare_object_array(sessions_1, sessions_1_v)) {
+                console.log(sessions_1);
                 console.log(sessions_1_v);
                 throw new Error("Session fetched aren't the same");
         }
@@ -405,6 +409,7 @@ export function test_session_control()
         // Add the sessions bob created with amy, expected to fail.
         for (var i = 0; i < 5; i ++) {
                 var session = session_ctrl.add_session(test_accounts.jack_id,
+                                                       test_accounts.amy.get_record().get_account_id(),
                                                        sessions_0[i].get_session_id(),
                                                        err);
                 if (err.fetch_all() == "") {
@@ -413,6 +418,7 @@ export function test_session_control()
                 }
         }
         // Now bob share the first set of sessions with jack.
+        err.clear();
         for (var i = 0; i < 5; i ++) {
                 var session = session_ctrl.share_session(test_accounts.bob_id,
                                                          test_accounts.jack.get_record().get_account_id(),
@@ -420,12 +426,13 @@ export function test_session_control()
                                                          err);
                 if (err.fetch_all() != "") {
                         console.log(session);
-                        throw new Error("Failed to add amy's session to jack. Cause: " + err.fetch_all());
+                        throw new Error("Failed to share amy's session to jack. Cause: " + err.fetch_all());
                 }
         }
         // Add the sessions bob created. It should succeed.
         for (var i = 0; i < 5; i ++) {
                 var session = session_ctrl.add_session(test_accounts.jack_id,
+                                                       test_accounts.amy.get_record().get_account_id(),
                                                        sessions_0[i].get_session_id(),
                                                        err);
                 if (err.fetch_all() != "") {
@@ -442,4 +449,6 @@ export function test_session_control()
         if (session_ctrl.deactivate_session(test_accounts.jack_id, sessions_0[0].get_session_id(), err))
                 throw new Error("Session " + sessions_0[0] + " is deactivated when it shouldn't");
         remove_test_accounts();
+
+        console.log("test_session_control passed");
 }
