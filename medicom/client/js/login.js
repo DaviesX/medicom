@@ -63,9 +63,9 @@ Template.tmpllogin.events({"submit"(event) {
                 password: password
         };
         console.log("logging in...");
-        Meteor.call("user_login_by_email", form_content, function(error, result) {
+        Meteor.call("login_by_email", form_content, function(error, result) {
                 if (result.error != "") {
-                        Meteor.call("user_login_by_id", form_content, function(error, result) {
+                        Meteor.call("login_by_id", form_content, function(error, result) {
                                 if (result.error != "") {
                                         console.log(result.error);
                                         regerror.log(result.error);

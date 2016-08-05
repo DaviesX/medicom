@@ -63,7 +63,7 @@ Template.tmplreg.events({"submit"(event) {
         };
 
         console.log(form_content);
-        Meteor.call("user_register_and_activate", form_content, function(error, result) {
+        Meteor.call("register_and_activate", form_content, function(error, result) {
                 console.log(result.account_info);
                 console.log(result.error);
                 if (result.error != "") {

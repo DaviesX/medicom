@@ -17,31 +17,31 @@ export function SymptomsDisplay() {
         this.__identity = null;
         this.__browsing_user = null;
         this.__session = null;
-        
+
         this.__i_page = 1;
-        this.__num_items = 5;     
+        this.__num_items = 5;
         this.__sym_table = null;
         this.__start_date = null;
         this.__end_date = null;
-        
+
         this.__sym_record_holder = null;
         this.__charting_area = null;
-        
+
         this.set_access_info = function(identity, browsing_user, session) {
                 this.__identity = identity
                 this.__browsing_user = browsing_user;
                 this.__session = session;
         }
-        
+
         this.set_charting_area = function(charting_area) {
                 this.__charting_area = charting_area;
         }
-        
+
         this.set_holders = function(sym_record_area, next_page, prev_page, page_num, num_items, start_date, end_date) {
                 this.__sym_record_holder = sym_record_area;
                 var clazz = this;
                 next_page.on("click", function(e) {
-                        var max_page_num = clazz.__sym_table != null ? 
+                        var max_page_num = clazz.__sym_table != null ?
                                            Math.ceil(clazz.__sym_table.get_pairs().length/clazz.__num_items) :
                                            1;
                         clazz.__i_page = Math.min(clazz.__i_page + 1, max_page_num);
@@ -68,7 +68,7 @@ export function SymptomsDisplay() {
                         clazz.update();
                 });
         }
-        
+
         this.__make_symptom_ui = function(date, description) {
                 const max_len = 100;
                 var desc_str;
@@ -86,17 +86,17 @@ export function SymptomsDisplay() {
                                 + date.getTime() + "'>"
                                 + date.toDateString() + ': ' + desc_str + '</div>';
         }
-        
+
         this.get_processed_table = function(start_date, end_date) {
                 if (this.__sym_table == null)
                         return null;
-                        
+
                 var sym_table = this.__sym_table;
                 sym_table = sym_table.sort_data(true);
                 sym_table = sym_table.sample(start_date, end_date, null);
                 return sym_table;
         }
-        
+
         this.render_local_data = function(start_date, end_date, i_page, num_items, target) {
                 var table = this.get_processed_table(start_date, end_date);
                 if (table == null || table.get_pairs().length == 0) {
@@ -123,7 +123,7 @@ export function SymptomsDisplay() {
                                                         No Symptom Records Are Found</div>");
                 } else {
                         var pairs = table.get_pairs();
-                        
+
                         // Render chart.
                         var x = ["x"];
                         var y = ["general feeling"];
@@ -164,23 +164,23 @@ export function SymptomsDisplay() {
                         }
                 }
         }
-        
+
         this.clear_local_data = function() {
                 this.__sym_table = null;
         }
-        
+
         this.set_local_data_from_remote_server = function(start_date, end_date, f_On_Complete) {
                 this.clear_local_data();
-                
+
                 var params = {
-                        identity: this.__identity, 
-                        session_id: this.__session.get_session_id(), 
+                        identity: this.__identity,
+                        session_id: this.__session.get_session_id(),
                         start_date: start_date,
                         end_date: end_date,
-                        num_items: null, 
+                        num_items: null,
                 };
                 var clazz = this;
-                Meteor.call("user_get_sypmtom", params, function(error, result) {
+                Meteor.call("get_measure_symptom", params, function(error, result) {
                         if (result.error != "") {
                                 console.log("failed to obtain symptom records from patient: " + JSON.stringify(params));
                         } else {
@@ -190,14 +190,14 @@ export function SymptomsDisplay() {
                         }
                 });
         }
-        
+
         this.update = function() {
                 var clazz = this;
                 this.set_local_data_from_remote_server(this.__start_date, this.__end_date, function(obj) {
                         clazz.render_local_data(clazz.__start_date,
-                                                clazz.__end_date, 
+                                                clazz.__end_date,
                                                 clazz.__i_page,
-                                                clazz.__num_items, 
+                                                clazz.__num_items,
                                                 clazz.__charting_area);
                 });
         }

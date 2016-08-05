@@ -143,7 +143,7 @@ export function SessionBrowser() {
         this.update_user = function() {
                 var clazz = this;
 
-                Meteor.call("user_account_info_by_id",
+                Meteor.call("get_account_info_by_id",
                             {identity: clazz.__identity, id: clazz.__account_id}, function(error, result) {
                         if (result.error != "") {
                                 console.log(result.error);

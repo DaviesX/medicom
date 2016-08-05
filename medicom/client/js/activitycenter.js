@@ -20,17 +20,17 @@ export function ActivityCenter() {
         this.__welcome_holder = null;
         this.__logout_holder = null;
         this.__redir_path = null;
-        
+
         this.set_welcome_text_holder = function(holder) {
                 this.__welcome_holder = holder;
         }
-        
+
         this.set_logout_text_holder = function(holder) {
                 this.__logout_holder = holder;
                 var clazz = this;
-                
+
                 holder.click(function (event) {
-                        Meteor.call("user_logout", {identity: clazz.__identity}, 
+                        Meteor.call("logout", {identity: clazz.__identity},
                                     function(error, result) {
                                 if (result.error != "") {
                                         alert(result.error);
@@ -40,25 +40,25 @@ export function ActivityCenter() {
                         });
                 });
         }
-        
+
         this.set_identity = function(identity) {
                 this.__identity = identity;
         }
-        
+
         this.set_redirection_path = function(path) {
                 this.__redir_path = path;
         }
-        
+
         this.update_welcome_text = function() {
                 if (this.__identity == null) {
                         this.__welcome_holder.html("You haven't login yet");
                         return;
                 }
-        
+
                 var account_id = this.__identity.get_account_record().get_account_id();
                 var clazz = this;
-                
-                Meteor.call("user_account_info_by_id", 
+
+                Meteor.call("get_account_info_by_id",
                             {identity: this.__identity, id: account_id}, function(error, result) {
                         if (result.error != "") {
                                 clazz.__welcome_holder.html("error: " + result.error);
@@ -70,7 +70,7 @@ export function ActivityCenter() {
                         }
                 });
         }
-        
+
         this.print_error_text = function(error_text) {
                 this.__welcome_holder.html(error_text);
         }
@@ -85,15 +85,15 @@ Template.tmplactivitycenter.onRendered(function () {
         G_ActivityCenter.set_logout_text_holder($("#a-logout"));
 });
 
-Template.tmplactivitycenter.helpers({ 
+Template.tmplactivitycenter.helpers({
         use_default() {
                 return G_Session.get_browsing_mode() == "default browser";
         },
-        
+
         use_session_browser() {
                 return G_Session.get_browsing_mode() == "session browser";
         },
-        
+
         use_data_browser() {
                 return G_Session.get_browsing_mode() == "data browser";
         }

@@ -86,7 +86,7 @@ export function PrepareTestData() {
         // Create patient's account
         var patient_ids = [];
         for (var i = 0; i < patients_name.length; i ++) {
-                var result = c_Meteor_Methods.user_register_and_activate({
+                var result = c_Meteor_Methods.register_and_activate({
                         user_group: "patient",
                         email: patients_email[i],
                         user_name: patients_name[i],
@@ -99,7 +99,7 @@ export function PrepareTestData() {
         }
         // Create provider's account
         for (var i = 0; i < providers_name.length; i ++) {
-                c_Meteor_Methods.user_register_and_activate({
+                c_Meteor_Methods.register_and_activate({
                         user_group: "provider",
                         email: providers_email[i],
                         user_name: providers_name[i],
@@ -110,7 +110,7 @@ export function PrepareTestData() {
         // Login all providers
         var identities = [];
         for (var i = 0; i < providers_name.length; i ++) {
-                identities[i] = c_Meteor_Methods.user_login_by_email({
+                identities[i] = c_Meteor_Methods.login_by_email({
                         email: providers_email[i],
                         password: "111111"
                 }).identity;
@@ -118,7 +118,7 @@ export function PrepareTestData() {
         // Create sessions
         for (var j = 0; j < 4; j ++) {
                 for (var i = 0; i < providers_name.length; i ++) {
-                        c_Meteor_Methods.provider_add_patient_by_id({
+                        c_Meteor_Methods.create_user_association({
                                 identity: identities[i],
                                 id: patient_ids[(Math.random()*patient_ids.length) | 0]
                         });
@@ -127,7 +127,7 @@ export function PrepareTestData() {
         var session_ids = new Set();
         for (var j = 0; j < 20; j ++) {
                 for (var i = 0; i < providers_name.length; i ++) {
-                        var result = c_Meteor_Methods.provider_start_new_session_with({
+                        var result = c_Meteor_Methods.create_medical_session({
                                 identity: identities[i],
                                 id: patient_ids[(Math.random()*patient_ids.length) | 0]
                         });
@@ -163,7 +163,7 @@ export function PrepareTestData() {
         });
         session_ids.forEach(function (session_id, junk, set) {
                 for (var k = 0; k < identities.length; k ++) {
-                        var result = c_Meteor_Methods.user_update_symptom({
+                        var result = c_Meteor_Methods.update_measure_symptom({
                                 identity: identities[k],
                                 session_id: session_id,
                                 sym_table: sym_measures

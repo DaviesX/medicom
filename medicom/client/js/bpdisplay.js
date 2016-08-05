@@ -17,14 +17,14 @@ export function BloodPressureDisplay() {
         this.__identity = null;
         this.__browsing_user = null;
         this.__session = null;
-        
+
         this.__charting_area = null;
         this.__start_date = null;
         this.__end_date = null;
         this.__sample_count = null;
         this.__filtering = "plain";
         this.__file = null;
-        
+
         this.__local_bptable = null;
 
         this.set_access_info = function(identity, browsing_user, session) {
@@ -32,15 +32,15 @@ export function BloodPressureDisplay() {
                 this.__browsing_user = browsing_user;
                 this.__session = session;
         }
-        
+
         this.__get_file_from_file_select = function(holder) {
                 var files = holder.prop("files");
-                if (files == null || files.length == 0) 
+                if (files == null || files.length == 0)
                         return null;
                 else
                         return files[0];
         }
-        
+
         // Holders
         this.set_file_select_holder = function(holder, disconnector, filepath_holder) {
                 filepath_holder.html("No file is connected");
@@ -49,7 +49,7 @@ export function BloodPressureDisplay() {
 
                 holder.on("change", function (event) {
                         var file = clazz.__get_file_from_file_select(holder);
-                        if (file == null) 
+                        if (file == null)
                                 return;
                         filepath_holder.html(file.name);
                         clazz.__file = file;
@@ -63,10 +63,10 @@ export function BloodPressureDisplay() {
                         clazz.update();
                 });
         }
-        
+
         this.set_date_holder = function(start, end) {
                 var clazz = this;
-                
+
                 start.datepicker().on("change", function (e) {
                         clazz.__start_date = new Date(e.target.value);
                         clazz.update();
@@ -80,25 +80,25 @@ export function BloodPressureDisplay() {
         this.set_charting_area = function(holder) {
                 this.__charting_area = holder;
         }
-        
+
         this.set_filter_holder = function(holder) {
                 var clazz = this;
-                
+
                 holder.on("change", function(e) {
                         clazz.__filtering = e.target.value;
                         clazz.update();
                 });
         }
-        
+
         this.set_sample_count_holder = function(holder) {
                 var clazz = this;
-                
+
                 holder.on("change", function(e) {
                         clazz.__sample_count = e.target.value == "" ? null : parseInt(e.target.value);
                         clazz.update();
                 });
         }
-        
+
         // Data.
         this.get_processed_table = function(start_date, end_date, num_samples, filter) {
                 if (this.__local_bptable == null)
@@ -110,7 +110,7 @@ export function BloodPressureDisplay() {
                 // merge the data from the same day.
                 bptable = bptable.merge_adjacent_data(
                         {
-                                name: filter, 
+                                name: filter,
                                 scalar: function(v) { return (v.systolic + v.diastolic)/2; },
                                 add: function(r, s) { return {systolic: r.systolic + s.systolic,
                                                               diastolic: r.diastolic + s.diastolic}; },
@@ -118,15 +118,15 @@ export function BloodPressureDisplay() {
                                                                 diastolic: k*v.diastolic}; },
                         },
                         function (a, b) {
-                                return a.getYear() == b.getYear() && 
-                                       a.getMonth() == b.getMonth() && 
+                                return a.getYear() == b.getYear() &&
+                                       a.getMonth() == b.getMonth() &&
                                        a.getDate() == b.getDate();
                         }
                 );
                 bptable = bptable.sample(start_date, end_date, num_samples);
                 return bptable;
         }
-        
+
         this.generate_bp_renderable = function(bptable, target) {
                 var x = ["x"];
                 var y = ["systolic blood pressure"];
@@ -137,7 +137,7 @@ export function BloodPressureDisplay() {
                         y[i + 1] = pairs[i].value.systolic.toFixed(1);
                         z[i + 1] = pairs[i].value.diastolic.toFixed(1);
                 }
-                
+
                 return {
                         bindto: target,
                         data: {
@@ -154,7 +154,7 @@ export function BloodPressureDisplay() {
                         }
                 };
         }
-        
+
         this.set_local_data_from_file_stream = function(file, f_On_Complete) {
                 var fr = new FileReader();
                 var clazz = this;
@@ -168,25 +168,25 @@ export function BloodPressureDisplay() {
                         var bptable = new ValueTable();
                         bptable.construct_from_stream(suffix, stream);
                         clazz.__local_bptable = bptable;
-                        
+
                         if(f_On_Complete != null)
                                 f_On_Complete(clazz);
                 }
                 fr.readAsText(file);
         }
-        
+
         this.set_local_data_from_remote_server = function(start_date, end_date, num_samples, f_On_Complete) {
                 this.clear_local_data();
-                
+
                 var params = {
-                        identity: this.__identity, 
-                        session_id: this.__session.get_session_id(), 
+                        identity: this.__identity,
+                        session_id: this.__session.get_session_id(),
                         start_date: start_date,
                         end_date: end_date,
-                        num_samples: null, 
+                        num_samples: null,
                 };
                 var clazz = this;
-                Meteor.call("user_get_patient_bp_table", params, function(error, result) {
+                Meteor.call("get_measure_bp_table", params, function(error, result) {
                         if (result.error != "") {
                                 console.log("failed to obtain bptable from patient: " + JSON.stringify(params));
                         } else {
@@ -207,20 +207,20 @@ export function BloodPressureDisplay() {
                         c3.generate(this.generate_bp_renderable(bptable, target));
                 }
         }
-        
+
         this.update = function() {
                 var clazz = this;
                 if (this.__file != null) {
                         this.set_local_data_from_file_stream(this.__file, function(obj) {
-                                clazz.render_local_data(clazz.__start_date, clazz.__end_date, 
-                                                        clazz.__filtering, clazz.__sample_count, 
+                                clazz.render_local_data(clazz.__start_date, clazz.__end_date,
+                                                        clazz.__filtering, clazz.__sample_count,
                                                         clazz.__charting_area);
                         });
                 } else {
-                        this.set_local_data_from_remote_server(this.__start_date, this.__end_date, 
+                        this.set_local_data_from_remote_server(this.__start_date, this.__end_date,
                                                                this.__sample_count, function(obj) {
-                                clazz.render_local_data(clazz.__start_date, clazz.__end_date, 
-                                                        clazz.__filtering, clazz.__sample_count, 
+                                clazz.render_local_data(clazz.__start_date, clazz.__end_date,
+                                                        clazz.__filtering, clazz.__sample_count,
                                                         clazz.__charting_area);
                         });
                 }
@@ -228,13 +228,13 @@ export function BloodPressureDisplay() {
 
         this.upload_to_remote_server = function() {
                 if (this.__local_bptable == null) return false;
-                
+
                 var params = {
-                        identity: this.__identity, 
-                        session_id: this.__session.get_session_id(), 
+                        identity: this.__identity,
+                        session_id: this.__session.get_session_id(),
                         bptable: this.__local_bptable,
                 };
-                Meteor.call("patient_super_update_bp_from_table", params, function(error, result) {
+                Meteor.call("update_measure_bp_from_table", params, function(error, result) {
                         if (result.error != "") {
                                 alert(result.error);
                                 console.log("failed to upload bp table: " + JSON.stringify(params));
@@ -253,7 +253,7 @@ export var G_BPDisplay = new BloodPressureDisplay();
 
 Template.tmplbpbrowser.onRendered(function() {
         console.log("bp browser rendered");
-        
+
         G_BPDisplay.set_charting_area(this.find("#charting-area"));
         G_BPDisplay.set_file_select_holder($("#ipt-file-select"), $("#lb-disconnect"), $("#div-filepath"));
         G_BPDisplay.set_date_holder($("#ipt-start-date"), $("#ipt-end-date"));

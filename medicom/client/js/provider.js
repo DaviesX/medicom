@@ -54,16 +54,16 @@ Template.tmplprovider.onRendered(function () {
                 G_ActivityCenter.update_welcome_text();
                 // Set up user browser.
                 G_UserBrowser.enable_add_user(true, "Add Patient");
-                G_UserBrowser.register_on_update("provider_get_patient_ids", {});
-                G_UserBrowser.register_on_add_user("provider_add_patient_by_id", {});
+                G_UserBrowser.register_on_update("get_associated_user_info", {});
+                G_UserBrowser.register_on_add_user("create_user_association", {});
                 G_UserBrowser.set_browser_on_select(user_browser_on_select);
                 G_UserBrowser.set_identity(identity);
                 G_UserBrowser.update_user_list();
                 // Set up session browser.
-                G_SessionBrowser.register_on_update_session("provider_get_sessions_by_patient_id", {});
-                G_SessionBrowser.register_on_start_new_session("provider_start_new_session_with", {});
-                G_SessionBrowser.register_on_end_session("provider_end_session", {});
-                G_SessionBrowser.register_on_recover_session("provider_recover_session", {});
+                G_SessionBrowser.register_on_update_session("get_associated_session", {});
+                G_SessionBrowser.register_on_start_new_session("create_medical_session", {});
+                G_SessionBrowser.register_on_end_session("deactivate_medical_session", {});
+                G_SessionBrowser.register_on_recover_session("activate_medical_session", {});
                 G_SessionBrowser.set_browser_on_quit(session_browser_on_quit);
                 G_SessionBrowser.set_identity(identity);
                 // Set up data browser.

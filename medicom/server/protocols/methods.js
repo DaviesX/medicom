@@ -60,7 +60,7 @@ function get_registerable_user_groups()
         return g_account_ctrl.get_registerable_user_group_strings();
 }
 
-function user_account_info_by_id(identity, account_id)
+function get_account_info_by_id(identity, account_id)
 {
         var err = new ErrorMessageQueue();
         if (identity == null) {
@@ -72,21 +72,21 @@ function user_account_info_by_id(identity, account_id)
         return { account_info: account_info, error: err.fetch_all() };
 }
 
-function user_login_by_email(email, password)
+function login_by_email(email, password)
 {
         var err = new ErrorMessageQueue();
         var identity = g_account_ctrl.login_by_email(email, password, err);
         return { identity: identity, error: err.fetch_all() };
 }
 
-function user_login_by_id(id, password)
+function login_by_id(id, password)
 {
         var err = new ErrorMessageQueue();
         var identity = g_account_ctrl.login_by_account_id(id, password, err);
         return { identity: identity, error: err.fetch_all() };
 }
 
-function user_logout(identity)
+function logout(identity)
 {
         var err = new ErrorMessageQueue();
         if (identity == null) {
@@ -98,21 +98,21 @@ function user_logout(identity)
         return { error: err.fetch_all() };
 }
 
-function user_register(user_group, email, name, phone, password)
+function register(user_group, email, name, phone, password)
 {
         var err = new ErrorMessageQueue();
         var info = g_account_ctrl.register(user_group, email, name, phone, password, err);
         return { account_info: info, error: err.fetch_all() };
 }
 
-function user_activate(auth_code)
+function activate_account(auth_code)
 {
         var err = new ErrorMessageQueue();
         var info = g_account_ctrl.activate(auth_code, err);
         return { account_info: info, error: err.fetch_all() };
 }
 
-function user_register_and_activate(user_group, email, name, phone, password)
+function register_and_activate(user_group, email, name, phone, password)
 {
         var err = new ErrorMessageQueue();
         var info = g_account_ctrl.register(user_group, email, name, phone, password, err);
@@ -122,7 +122,7 @@ function user_register_and_activate(user_group, email, name, phone, password)
         return { account_info: info, error: err.fetch_all() };
 }
 
-function provider_add_patient_by_id(identity, patient_id)
+function create_user_association(identity, patient_id)
 {
         var err = new ErrorMessageQueue();
         identity = Identity_create_from_POD(identity);
@@ -138,7 +138,7 @@ function provider_remove_patient_by_id(identity, patient_id)
         return { patients: patients, error: err.fetch_all() };
 }
 
-function provider_start_new_session_with(identity, patient_id)
+function create_medical_session(identity, patient_id)
 {
         var err = new ErrorMessageQueue();
         identity = Identity_create_from_POD(identity);
@@ -146,7 +146,7 @@ function provider_start_new_session_with(identity, patient_id)
         return { session: session, error: err.fetch_all() };
 }
 
-function provider_end_session(identity, session_id)
+function deactivate_medical_session(identity, session_id)
 {
         var err = new ErrorMessageQueue();
         identity = Identity_create_from_POD(identity);
@@ -154,7 +154,7 @@ function provider_end_session(identity, session_id)
         return { session: session, error: err.fetch_all() };
 }
 
-function provider_recover_session(identity, session_id)
+function activate_medical_session(identity, session_id)
 {
         var err = new ErrorMessageQueue();
         identity = Identity_create_from_POD(identity);
@@ -162,7 +162,7 @@ function provider_recover_session(identity, session_id)
         return { session: session, error: err.fetch_all() };
 }
 
-function provider_get_patient_ids(identity)
+function get_associated_user_info(identity)
 {
         var err = new ErrorMessageQueue();
         if (identity == null) {
@@ -180,7 +180,7 @@ function provider_get_patient_ids(identity)
         return { patient_ids: patient_ids, account_infos: account_infos, error: err.fetch_all() };
 }
 
-function provider_get_sessions_by_patient_id(identity, patient_id)
+function get_associated_session(identity, patient_id)
 {
         var err = new ErrorMessageQueue();
         identity = Identity_create_from_POD(identity);
@@ -191,7 +191,7 @@ function provider_get_sessions_by_patient_id(identity, patient_id)
         return { sessions: sessions, error: err.fetch_all() };
 }
 
-function user_get_patient_bp_table(identity, session_id, start_date, end_date, num_samples)
+function get_measure_bp_table(identity, session_id, start_date, end_date, num_samples)
 {
         identity = Identity_create_from_POD(identity);
         var err = new ErrorMessageQueue();
@@ -211,7 +211,7 @@ function user_get_patient_symptoms(identity, session_id, start_date, end_date, n
         identity = Identity_create_from_POD(identity);
 }
 
-function patient_super_update_bp_from_table(identity, session_id, table)
+function update_measure_bp_from_table(identity, session_id, table)
 {
         var err = new ErrorMessageQueue();
         if (table == null) {
@@ -226,7 +226,7 @@ function patient_super_update_bp_from_table(identity, session_id, table)
         return {error: err.fetch_all()};
 }
 
-function patient_super_update_bp_from_file(identity, session_id, format, blob)
+function update_measure_bp_from_file(identity, session_id, format, blob)
 {
         var err = new ErrorMessageQueue();
         if (format == null || blob == null) {
@@ -235,7 +235,7 @@ function patient_super_update_bp_from_file(identity, session_id, format, blob)
         }
         var bptable = new ValueTable();
         bptable.construct_from_stream(format, blob);
-        return patient_super_update_bp_from_table(identity, session_id, bptable);
+        return update_measure_bp_from_table(identity, session_id, bptable);
 }
 
 function update_pbc_record(identity, session_id, pbctable)
@@ -291,7 +291,7 @@ description: measures[i].get_description(),
         return {sym_table: sym_table, error: err.fetch_all()};
 }
 
-function user_update_symptom(identity, session_id, sym_table)
+function update_measure_symptom(identity, session_id, sym_table)
 {
         var err = new ErrorMessageQueue();
         if (identity == null) {
@@ -307,7 +307,7 @@ function user_update_symptom(identity, session_id, sym_table)
         return {result: true, error: err.fetch_all()};
 }
 
-function user_get_session_notes(identity, session_id)
+function get_session_notes(identity, session_id)
 {
         identity = Identity_create_from_POD(identity);
         var err = new ErrorMessageQueue();
@@ -315,7 +315,7 @@ function user_get_session_notes(identity, session_id)
         return {notes: notes, error: err.fetch_all()};
 }
 
-function provider_set_session_notes(identity, session_id, notes)
+function set_session_notes(identity, session_id, notes)
 {
         identity = Identity_create_from_POD(identity);
         var err = new ErrorMessageQueue();
@@ -333,6 +333,16 @@ inject_test_data:
         function(arg)
         {
                 TestData.PrepareTestData(true);
+        },
+
+        /**
+         * Unit test on the AdminRecordModel.
+         * @return {null}
+         */
+test_admin_record_model:
+        function(arg)
+        {
+            TestCase.test_admin_record_model();
         },
 
         /**
@@ -409,10 +419,10 @@ get_registerable_user_groups:
          * @param {Integer} The account ID.
          * @return {AccountInfo, String} return a {AccountInfo, ""} object if sucessful, or otherwise, {null, "..."}.
          */
-user_account_info_by_id:
+get_account_info_by_id:
         function(arg)
         {
-                return user_account_info_by_id(arg.identity, arg.id);
+                return get_account_info_by_id(arg.identity, arg.id);
         },
         /**
          * Login a user using email.
@@ -420,10 +430,10 @@ user_account_info_by_id:
          * @param {String} Password.
          * @return {Identity, String} return a {Identity, ""} object if sucessful, or otherwise, {null, "..."}.
          */
-user_login_by_email:
+login_by_email:
         function(arg)
         {
-                return user_login_by_email(arg.email, arg.password);
+                return login_by_email(arg.email, arg.password);
         },
 
         /**
@@ -432,20 +442,20 @@ user_login_by_email:
          * @param {String} Password.
          * @return {Identity, String} return a {Identity, ""} object if sucessful, or otherwise, {null, "..."}.
          */
-user_login_by_id:
+login_by_id:
         function(arg)
         {
-                return user_login_by_id(arg.id, arg.password);
+                return login_by_id(arg.id, arg.password);
         },
         /**
          * Logout a user.
          * @param {Identity} Identity of the user.
          * @return {String} return a {""} object if sucessful, or otherwise, {"..."}.
          */
-user_logout:
+logout:
         function(arg)
         {
-                return user_logout(arg.identity);
+                return logout(arg.identity);
         },
         /**
          * Register a new account which will require activation later on.
@@ -456,10 +466,10 @@ user_logout:
          * @param {String} Password.
          * @return {AccountInfo, String} return a {AccountInfo, ""} object if sucessful, or otherwise, {null, "..."}.
          */
-user_register:
+register:
         function(arg)
         {
-                return user_register(arg.user_group,
+                return register(arg.user_group,
                 arg.email,
                 arg.user_name,
                 arg.phone,
@@ -475,10 +485,10 @@ user_register:
          * @param {String} Password.
          * @return {AccountInfo, String} return a {AccountInfo, ""} object if sucessful, or otherwise, {null, "..."}.
          */
-user_register_and_activate:
+register_and_activate:
         function(arg)
         {
-                return user_register_and_activate(arg.user_group,
+                return register_and_activate(arg.user_group,
                 arg.email,
                 arg.user_name,
                 arg.phone,
@@ -490,10 +500,10 @@ user_register_and_activate:
          * @param {String} An authorization code in string.
          * @return {Boolean, String} return a {Boolean, ""} object if sucessful, or otherwise, {null, "..."}.
          */
-user_activate:
+activate_account:
         function(arg)
         {
-                return user_activate(arg.auth_code);
+                return activate_account(arg.auth_code);
         },
 
         /**
@@ -502,10 +512,10 @@ user_activate:
          * @param {Integer} Account ID of the patient.
          * @return {Boolean, String} return a {true, ""} object if sucessful, or otherwise, {false, "..."}.
          */
-provider_add_patient_by_id:
+create_user_association:
         function(arg)
         {
-                return provider_add_patient_by_id(arg.identity, arg.id);
+                return create_user_association(arg.identity, arg.id);
         },
 
         /**
@@ -514,7 +524,7 @@ provider_add_patient_by_id:
          * @param {Integer} Account ID of the patient.
          * @return {Boolean, String} return a {true, ""} object if sucessful, or otherwise, {false, "..."}.
          */
-provider_remove_patient:
+remove_user_association:
         function(arg)
         {
                 return provider_remove_patient_by_id(arg.identity, arg.id);
@@ -525,10 +535,10 @@ provider_remove_patient:
          * @param {Identity} Identity of the provider.
          * @return {Integer[], String} return a {Integer[], ""} object if sucessful, or otherwise, {null, "..."}.
          */
-provider_get_patient_ids:
+get_associated_user_info:
         function(arg)
         {
-                return provider_get_patient_ids(arg.identity);
+                return get_associated_user_info(arg.identity);
         },
 
         /**
@@ -537,10 +547,10 @@ provider_get_patient_ids:
          * @param {Integer} Account ID of the patient.
          * @return {Integer[], String} return a {Integer[], ""} object if sucessful, or otherwise, {null, "..."}.
          */
-provider_get_sessions_by_patient_id:
+get_associated_session:
         function(arg)
         {
-                return provider_get_sessions_by_patient_id(arg.identity, arg.id);
+                return get_associated_session(arg.identity, arg.id);
         },
 
         /**
@@ -549,10 +559,10 @@ provider_get_sessions_by_patient_id:
          * @param {Integer} Account ID of the patient.
          * @return {Session, String} return a {Session, ""} object if sucessful, or otherwise, {null, "..."}.
          */
-provider_start_new_session_with:
+create_medical_session:
         function(arg)
         {
-                return provider_start_new_session_with(arg.identity, arg.id);
+                return create_medical_session(arg.identity, arg.id);
         },
 
         /**
@@ -561,10 +571,10 @@ provider_start_new_session_with:
          * @param {Integer} Session ID to be ended.
          * @return {Session, String} return a {Session, ""} object if sucessful, or otherwise, {null, "..."}.
          */
-provider_end_session:
+deactivate_medical_session:
         function(arg)
         {
-                return provider_end_session(arg.identity, arg.session_id);
+                return deactivate_medical_session(arg.identity, arg.session_id);
         },
 
         /**
@@ -573,10 +583,10 @@ provider_end_session:
          * @param {Integer} Session ID to be ended.
          * @return {Session, String} return a {Session, ""} object if sucessful, or otherwise, {null, "..."}.
          */
-provider_recover_session:
+activate_medical_session:
         function(arg)
         {
-                return provider_recover_session(arg.identity, arg.session_id);
+                return activate_medical_session(arg.identity, arg.session_id);
         },
 
         /**
@@ -588,10 +598,10 @@ provider_recover_session:
          * @param {Integer} number of samples.
          * @return {ValueTable, String} return a {ValueTable, ""} object if sucessful, or otherwise, {null, "..."}.
          */
-user_get_patient_bp_table:
+get_measure_bp_table:
         function(arg)
         {
-                return user_get_patient_bp_table(arg.identity,
+                return get_measure_bp_table(arg.identity,
                 arg.session_id,
                 arg.start_date,
                 arg.end_date,
@@ -606,10 +616,10 @@ user_get_patient_bp_table:
          * @param {String} Text blob of the file.
          * @return {Boolean, String} return a {True, ""} object if sucessful, or otherwise, {False, "..."}.
          */
-patient_super_update_bp_from_file:
+update_measure_bp_from_file:
         function(arg)
         {
-                return patient_super_update_bp_from_file(arg.identity,
+                return update_measure_bp_from_file(arg.identity,
                 arg.session_id,
                 arg.format,
                 arg.blob);
@@ -622,10 +632,10 @@ patient_super_update_bp_from_file:
          * @param {ValueTable} bptable to be updated.
          * @return {Boolean, String} return a {True, ""} object if sucessful, or otherwise, {False, "..."}.
          */
-patient_super_update_bp_from_table:
+update_measure_bp_from_table:
         function(arg)
         {
-                return patient_super_update_bp_from_table(arg.identity,
+                return update_measure_bp_from_table(arg.identity,
                 arg.session_id,
                 arg.bptable);
         },
@@ -637,7 +647,7 @@ patient_super_update_bp_from_table:
          * @param {ValueTable} bptable to be updated.
          * @return {Boolean, String} return a {True, ""} object if sucessful, or otherwise, {False, "..."}.
          */
-user_update_pill_bottle_cap_record:
+update_measure_pbc_from_table:
         function(arg)
         {
                 return update_pbc_record(arg.identity,
@@ -653,7 +663,7 @@ user_update_pill_bottle_cap_record:
          * @param {Date} end date.
          * @return {ValueTable, String} return a {ValueTable, ""} object if sucessful, or otherwise, {null, "..."}.
          */
-user_get_pill_bottle_cap_record:
+get_measure_pbc_table:
         function(arg)
         {
                 return get_pbc_record(arg.identity,
@@ -670,10 +680,10 @@ user_get_pill_bottle_cap_record:
          * @param {ValueTable} Symtom table from which to update.
          * @return {Boolean, String} return a {True, ""} object if sucessful, or otherwise, {False, "..."}.
          */
-user_update_symptom:
+update_measure_symptom:
         function(arg)
         {
-                return user_update_symptom(arg.identity, arg.session_id, arg.sym_table);
+                return update_measure_symptom(arg.identity, arg.session_id, arg.sym_table);
         },
 
         /**
@@ -685,7 +695,7 @@ user_update_symptom:
          * @param {Integer} number of items.
          * @return {ValueTable, String} return a {SymptomsTable, ""} object if sucessful, or otherwise, {null, "..."}.
          */
-user_get_sypmtom:
+get_measure_symptom:
         function(arg)
         {
                 return user_get_symptom(arg.identity,
@@ -701,10 +711,10 @@ user_get_sypmtom:
          * @param {Integer} Session ID.
          * @return {String, String} return a {notes, ""} object if sucessful, or otherwise, {null, "..."}.
          */
-user_get_session_notes:
+get_session_notes:
         function(arg)
         {
-                return user_get_session_notes(arg.identity, arg.session_id);
+                return get_session_notes(arg.identity, arg.session_id);
         },
 
         /**
@@ -713,20 +723,10 @@ user_get_session_notes:
          * @param {Integer} Session ID.
          * @return {Boolean, String} return a {True, ""} object if sucessful, or otherwise, {False, "..."}.
          */
-provider_set_session_notes:
+set_session_notes:
         function(arg)
         {
-                return provider_set_session_notes(arg.identity, arg.session_id, arg.notes);
-        },
-
-        /**
-         * Unit test on the AdminRecordModel.
-         * @return {null}
-         */
-test_admin_record_model:
-        function(arg)
-        {
-            TestCase.test_admin_record_model();
+                return set_session_notes(arg.identity, arg.session_id, arg.notes);
         },
 };
 

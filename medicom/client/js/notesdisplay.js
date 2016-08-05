@@ -16,16 +16,16 @@ export function SessionNotesDisplay() {
         this.__identity = null;
         this.__session = null;
         this.__notes_holder = null;
-        
+
         this.set_access_info = function(identity, session) {
                 this.__identity = identity;
                 this.__session = session;
         }
-        
+
         // Holders.
         this.set_notes_holder = function(holder) {
                 this.__notes_holder = holder;
-                
+
                 var clazz = this;
                 holder.on("change", function(e) {
                         clazz.save_notes();
@@ -34,9 +34,9 @@ export function SessionNotesDisplay() {
 
         this.update_notes = function() {
                 var clazz = this;
-                
-                Meteor.call("user_get_session_notes", 
-                            {identity: this.__identity, 
+
+                Meteor.call("get_session_notes",
+                            {identity: this.__identity,
                              session_id: this.__session.get_session_id()}, function(error, result) {
                         if (result.error != "") {
                                 console.log(result.error);
@@ -45,10 +45,10 @@ export function SessionNotesDisplay() {
                         }
                 });
         }
-        
+
         this.save_notes = function() {
-                Meteor.call("provider_set_session_notes", 
-                            {identity: this.__identity, 
+                Meteor.call("set_session_notes",
+                            {identity: this.__identity,
                              session_id: this.__session.get_session_id(),
                              notes: this.__notes_holder.val()}, function(error, result) {
                         if (result.error != "") {
