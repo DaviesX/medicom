@@ -96,6 +96,7 @@ export const c_Provider_Actions = [
 
 export const c_Patient_Actions = [
         {action: "register account",            scope: [-2], grant_option: false},
+        {action: "search account",              scope: [-2], grant_option: false},
         {action: "view profile",                scope: [-2], grant_option: false},
         {action: "search association",          scope: [-1], grant_option: false},
         {action: "search session",              scope: [-1], grant_option: false},
