@@ -162,13 +162,14 @@ PrivilegeNode.prototype.__remove_all_action = function(edge_set, action)
         return edge_set.slice(edge_set.length - num_removed);
 }
 
-PrivilegeNode.prototype.__get_action = function(edge_set, action)
+PrivilegeNode.prototype.__get_actions = function(edge_set, action)
 {
+        var actions = []
         for (var i = 0; i < edge_set.length; i ++) {
                 if (edge_set[i].__action.is_action_compatible(action))
-                        return edge_set[i].__action;
+                        actions.push(edge_set[i].__action);
         }
-        return null;
+        return actions;
 }
 
 PrivilegeNode.prototype.__get_action_with = function(edge_set, src, dst, action)
@@ -198,7 +199,7 @@ PrivilegeNode.prototype.__add_action = function(edge_set, src, dst, action, scop
 
 PrivilegeNode.prototype.get_granted = function(action)
 {
-        return this.__get_action(this.__in_edges, action);
+        return this.__get_actions(this.__in_edges, action);
 }
 
 PrivilegeNode.prototype.get_granted_from = function(src_ref, action)
@@ -211,7 +212,7 @@ PrivilegeNode.prototype.get_granted_from = function(src_ref, action)
 
 PrivilegeNode.prototype.get_granting = function(action)
 {
-        return this.__get_action(this.__out_edges, action);
+        return this.__get_actions(this.__out_edges, action);
 }
 
 PrivilegeNode.prototype.get_all_actions = function(action)
@@ -428,14 +429,23 @@ PrivilegeNetwork.prototype.__dfs_derive_action = function(node_ref, indi_set, ac
         }
 }
 
-PrivilegeNetwork.prototype.has_action = function(node_ref, action, scope_set)
+PrivilegeNetwork.prototype.__has_action = function(node_ref, action, scope_set, need_grant_option)
 {
         if (this.__nodes[node_ref] == null)
                 return false;
-        var priv_action = this.__nodes[node_ref].get_granted(action);
-        return priv_action != null &&
-               priv_action.is_action_compatible(action) &&
-               priv_action.is_inclusive_scope_set(scope_set);
+        var priv_actions = this.__nodes[node_ref].get_granted(action);
+        for (var i = 0; i < priv_actions.length; i ++) {
+                if ((need_grant_option != true || priv_actions[i].has_grant_option()) &&
+                     priv_actions[i].is_action_compatible(action) &&
+                     priv_actions[i].is_inclusive_scope_set(scope_set))
+                     return true;
+        }
+        return false;
+}
+
+PrivilegeNetwork.prototype.has_action = function(node_ref, action, scope_set)
+{
+        return this.__has_action(node_ref, action, scope_set, false);
 }
 
 PrivilegeNetwork.prototype.has_action_from = function(src_ref, dst_ref, action, scope_set)
@@ -451,13 +461,7 @@ PrivilegeNetwork.prototype.has_action_from = function(src_ref, dst_ref, action, 
 
 PrivilegeNetwork.prototype.has_action_with_grant_option = function(node_ref, action, scope_set)
 {
-        if (this.__nodes[node_ref] == null)
-                return false;
-        var priv_action = this.__nodes[node_ref].get_granted(action);
-        return priv_action != null &&
-               priv_action.has_grant_option() &&
-               priv_action.is_action_compatible(action) &&
-               priv_action.is_inclusive_scope_set(scope_set);
+        return this.__has_action(node_ref, action, scope_set, true);
 }
 
 PrivilegeNetwork.prototype.derive_action_recursively_from = function(src_ref, dst_ref, action, scope_set, with_grant_option)
@@ -494,13 +498,6 @@ PrivilegeNetwork.prototype.modify_scope_on = function(src_ref, dst_ref, action, 
 {
         return this.derive_action_from(src_ref, dst_ref, action, scope_set, with_grant_option);
 }
-
-//PrivilegeNetwork.prototype.get_action = function(node_ref, action)
-//{
-//        if (this.__nodes[node_ref] == null)
-//                return null;
-//        return this.__nodes[node_ref].get_granted(action);
-//}
 
 PrivilegeNetwork.prototype.get_action_from = function(src_ref, dst_ref, action)
 {
