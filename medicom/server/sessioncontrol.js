@@ -224,7 +224,7 @@ SessionControl.prototype.add_session = function(identity, user_id, session_id, e
         var pair = this.__make_association_pair(identity, user_id, err);
         if (pair == null)
                 return false;
-debugger;
+
         if (this.__check_identity(identity, err) &&
             this.__priv_network.has_action(identity.get_account_record().get_privilege_ref(),
                                            "add session", [session_id])) {
