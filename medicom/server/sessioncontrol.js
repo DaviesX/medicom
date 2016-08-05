@@ -153,10 +153,8 @@ SessionControl.prototype.get_associated_users = function(identity, err)
                         assocs = this.__assoc_model.get_associations_by_first(record.get_account_id(), err);
                         which_user = 1;
                 }
-                if (assocs == null) {
-                        err.log("Association doesn't exists");
-                        return null;
-                }
+                if (assocs == null)
+                        return [];
                 var user_infos = [];
                 for (var i = 0; i < assocs.length; i ++) {
                         var record = this.__admin_model.get_record_by_id(assocs[i].get_user_pair()[which_user]);

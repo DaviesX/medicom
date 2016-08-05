@@ -1,9 +1,0 @@
-<template name="tmplpatient">
-<script>
-        document.title = "Medicom - Patient";
-</script>
-
-<body>
-        {{> tmplactivitycenter}}
-</body>
-</template>
