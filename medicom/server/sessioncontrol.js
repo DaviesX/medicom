@@ -101,7 +101,7 @@ SessionControl.prototype.__add_scope_for = function(priv_ref, session_id, action
 {
         var action = this.__priv_network.get_action_from(this.__root_ref, priv_ref, action_desc);
         if (action == null)
-                throw Error("You don't have the permission to " + action_desc)
+                throw Error("You don't have the permission to add scope - " + action_desc)
         action.add_scope(session_id);
         if (!this.__priv_network.modify_scope_on(this.__root_ref, priv_ref,
                                                  action.get_action(),
@@ -262,7 +262,7 @@ SessionControl.prototype.get_associated_session = function(identity, user_id, er
                 }
                 return sessions;
         } else {
-                err.log("You don't have the permission to add session " + session_id);
+                err.log("You don't have the permission to get associated session " + session_id);
                 return null;
         }
 }
@@ -314,7 +314,7 @@ SessionControl.prototype.share_session = function(identity, user_id, session_id,
                 }
                 return true;
         } else {
-                err.log("You don't have the permission to share session " + session_id);
+                err.log("You don't have the permission to share a session " + session_id);
                 return false;
         }
 }
