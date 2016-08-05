@@ -63,7 +63,7 @@ SessionManager.prototype.activate_session = function(session_id)
         if (session == null)
                 return false;
         session.activate();
-        this.__session_model.update_session(session0);
+        this.__session_model.update_session(session);
         return true;
 }
 
@@ -73,16 +73,16 @@ SessionManager.prototype.deactivate_session = function(session_id)
         if (session == null)
                 return false;
         session.deactivate();
-        this.__session_model.update_session(session0);
+        this.__session_model.update_session(session);
         return true;
 }
 
 SessionManager.prototype.remove_session = function(user_pair, session_id)
 {
-        if (!this.__has_association(user_pair))
+        if (!this.has_association(user_pair))
                 return false;
         this.__assoc_model.remove_associations_by_session_id(session_id);
-        this.__session_model.remove_session_by_id(session_id);
+        this.__session_model.remove_session(session_id);
         return true;
 }
 
