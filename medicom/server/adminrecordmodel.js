@@ -13,7 +13,7 @@
  */
 
 import {Meteor} from 'meteor/meteor';
-import {AdminRecord, AdminRecord_create_from_POD} from "../api/adminrecord.js"
+import {AdminRecord, AdminRecord_create_from_POD} from "../api/adminrecord.js";
 
 
 export function AdminRecordModel(mongodb)
