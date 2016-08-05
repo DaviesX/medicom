@@ -22,11 +22,13 @@ import {ProviderControl} from "../providercontrol.js";
 import {PatientControl} from "../patientcontrol.js";
 import {MeasureControl} from "../measurecontrol.js";
 import {SessionControl} from "../sessioncontrol.js";
+import {PrivilegeControl} from "../privilegecontrol.js";
 import {DataModelContext, G_DataModelContext} from "../datamodelcontext.js";
 import * as TestData from "../testdata.js";
 import * as TestCase from "../testcase.js";
 
 var g_account_ctrl = new AccountControl();
+var g_priv_ctrl = new PrivilegeControl();
 var g_provider_ctrl = new ProviderControl();
 var g_patient_ctrl = new PatientControl();
 var g_session_ctrl = new SessionControl();

@@ -140,3 +140,10 @@ Privilege.prototype.__find = function(action, scope)
         }
         return null;
 }
+
+export function Privilege_create_from_POD(pod)
+{
+        var obj = new Privilege();
+        obj.__actions = pod.__actions;
+        return obj;
+}
