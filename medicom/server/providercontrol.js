@@ -13,13 +13,12 @@
  */
 import {Meteor} from "meteor/meteor";
 import {DataModelContext, G_DataModelContext} from "./datamodelcontext.js";
-import {SessionUtils} from "./sessionutils.js";
 import {ErrorMessageQueue, MongoDB} from "../api/common.js";
 import {c_UserGroup_Provider} from "../api/usergroup.js";
 
 
 export function ProviderControl() {
-        this.__session_utils = new SessionUtils();
+        this.__session_utils = null;
         this.__identity_model = G_DataModelContext.get_identity_model();
         this.__session_model = G_DataModelContext.get_session_model();
         this.__provider_model = G_DataModelContext.get_provider_model();
