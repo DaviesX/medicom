@@ -18,8 +18,6 @@ import {ValueTable, ValueTable_create_from_POD} from "../../api/valuetable.js";
 import {ErrorMessageQueue} from "../../api/common.js";
 import {Identity_create_from_POD} from "../../api/identity.js";
 import {AccountControl} from "../accountcontrol.js";
-import {ProviderControl} from "../providercontrol.js";
-import {PatientControl} from "../patientcontrol.js";
 import {MeasureControl} from "../measurecontrol.js";
 import {SessionControl} from "../sessioncontrol.js";
 import {PrivilegeControl} from "../privilegecontrol.js";
@@ -29,8 +27,6 @@ import * as TestCase from "../testcase.js";
 
 var g_account_ctrl = new AccountControl();
 var g_priv_ctrl = new PrivilegeControl();
-var g_provider_ctrl = new ProviderControl();
-var g_patient_ctrl = new PatientControl();
 var g_session_ctrl = new SessionControl();
 var g_measure_ctrl = new MeasureControl();
 
@@ -65,25 +61,25 @@ function get_account_info_by_id(identity, account_id)
         var err = new ErrorMessageQueue();
         if (identity == null) {
                 err.log("identity is required, but it's absent");
-                return { patients: null, account_infos: null, error: err.fetch_all() };
+                return {account_infos: null, error: err.fetch_all()};
         }
         identity = Identity_create_from_POD(identity);
         var account_info = g_account_ctrl.get_account_info_by_id(identity, account_id, err);
-        return { account_info: account_info, error: err.fetch_all() };
+        return {account_info: account_info, error: err.fetch_all()};
 }
 
 function login_by_email(email, password)
 {
         var err = new ErrorMessageQueue();
         var identity = g_account_ctrl.login_by_email(email, password, err);
-        return { identity: identity, error: err.fetch_all() };
+        return {identity: identity, error: err.fetch_all()};
 }
 
 function login_by_id(id, password)
 {
         var err = new ErrorMessageQueue();
         var identity = g_account_ctrl.login_by_account_id(id, password, err);
-        return { identity: identity, error: err.fetch_all() };
+        return {identity: identity, error: err.fetch_all()};
 }
 
 function logout(identity)
@@ -91,25 +87,25 @@ function logout(identity)
         var err = new ErrorMessageQueue();
         if (identity == null) {
                 err.log("identity is required, but it's absent");
-                return { patients: null, account_infos: null, error: err.fetch_all() };
+                return {error: err.fetch_all()};
         }
         identity = Identity_create_from_POD(identity);
         g_account_ctrl.logout(identity, err);
-        return { error: err.fetch_all() };
+        return {error: err.fetch_all()};
 }
 
 function register(user_group, email, name, phone, password)
 {
         var err = new ErrorMessageQueue();
         var info = g_account_ctrl.register(user_group, email, name, phone, password, err);
-        return { account_info: info, error: err.fetch_all() };
+        return {account_info: info, error: err.fetch_all()};
 }
 
 function activate_account(auth_code)
 {
         var err = new ErrorMessageQueue();
         var info = g_account_ctrl.activate(auth_code, err);
-        return { account_info: info, error: err.fetch_all() };
+        return {account_info: info, error: err.fetch_all()};
 }
 
 function register_and_activate(user_group, email, name, phone, password)
@@ -119,47 +115,27 @@ function register_and_activate(user_group, email, name, phone, password)
         if (info != null) {
                 g_account_ctrl.activate(info.get_record().get_auth_code(), err);
         }
-        return { account_info: info, error: err.fetch_all() };
+        return {account_info: info, error: err.fetch_all()};
 }
 
-function create_user_association(identity, patient_id)
+function create_user_association(identity, user_id)
 {
         var err = new ErrorMessageQueue();
         identity = Identity_create_from_POD(identity);
-        patients = g_provider_ctrl.add_patient(identity, patient_id, err);
-        return { patients: patients, error: err.fetch_all() };
+        if (!g_session_ctrl.create_association(identity, user_id, err))
+                return {result: false, error: err.fetch_all()};
+        else
+                return {result: true, error: ""};
 }
 
-function provider_remove_patient_by_id(identity, patient_id)
+function remove_user_association(identity, user_id)
 {
         var err = new ErrorMessageQueue();
         identity = Identity_create_from_POD(identity);
-        patients = g_provider_ctrl.remove_patient(identity, patient_id, err);
-        return { patients: patients, error: err.fetch_all() };
-}
-
-function create_medical_session(identity, patient_id)
-{
-        var err = new ErrorMessageQueue();
-        identity = Identity_create_from_POD(identity);
-        var session = g_provider_ctrl.start_new_session_with(identity, patient_id, err);
-        return { session: session, error: err.fetch_all() };
-}
-
-function deactivate_medical_session(identity, session_id)
-{
-        var err = new ErrorMessageQueue();
-        identity = Identity_create_from_POD(identity);
-        var session = g_provider_ctrl.end_session(identity, session_id, err);
-        return { session: session, error: err.fetch_all() };
-}
-
-function activate_medical_session(identity, session_id)
-{
-        var err = new ErrorMessageQueue();
-        identity = Identity_create_from_POD(identity);
-        var session = g_provider_ctrl.recover_session(identity, session_id, err);
-        return { session: session, error: err.fetch_all() };
+        if (!g_session_ctrl.remove_association(identity, user_id, err))
+                return {result: false, error: err.fetch_all()};
+        else
+                return {result: true, error: ""};
 }
 
 function get_associated_user_info(identity)
@@ -170,25 +146,72 @@ function get_associated_user_info(identity)
                 return { patients: null, account_infos: null, error: err.fetch_all() };
         }
         identity = Identity_create_from_POD(identity);
-        var patient_ids = g_provider_ctrl.get_participated_patient_ids(identity, err);
-        var account_infos = null;
-        if (patient_ids != null) {
-                account_infos = g_account_ctrl.get_account_infos_by_ids(identity, patient_ids, err);
-        } else {
-                err.log("failed to find patients");
-        }
-        return { patient_ids: patient_ids, account_infos: account_infos, error: err.fetch_all() };
+        var user_infos = g_session_ctrl.get_associated_users(identity, err);
+        return {account_infos: user_infos, error: err.fetch_all()};
 }
 
-function get_associated_session(identity, patient_id)
+function create_medical_session(identity, user_id)
 {
         var err = new ErrorMessageQueue();
         identity = Identity_create_from_POD(identity);
-        var sessions = g_provider_ctrl.get_sessions_by_patient_id(identity, patient_id, err);
-        if (sessions == null) {
-                err.log("failed to find sessions");
-        }
-        return { sessions: sessions, error: err.fetch_all() };
+        var session = g_session_ctrl.create_session(identity, user_id, err);
+        return {session: session, error: err.fetch_all()};
+}
+
+function share_medical_session(identity, user_id, session_id)
+{
+        var err = new ErrorMessageQueue();
+        identity = Identity_create_from_POD(identity);
+        var result = g_session_ctrl.share_session(identity, user_id, session_id, err);
+        return {result: result, error: err.fetch_all()};
+}
+
+function add_medical_session(identity, user_id, session_id)
+{
+        var err = new ErrorMessageQueue();
+        identity = Identity_create_from_POD(identity);
+        var session = g_session_ctrl.add_session(identity, user_id, session_id, err);
+        return {session: session, error: err.fetch_all()};
+}
+
+function activate_medical_session(identity, session_id)
+{
+        var err = new ErrorMessageQueue();
+        identity = Identity_create_from_POD(identity);
+        var result = g_session_ctrl.activate_session(identity, user_id, err);
+        return {result: result, error: err.fetch_all()};
+}
+
+function deactivate_medical_session(identity, session_id)
+{
+        var err = new ErrorMessageQueue();
+        identity = Identity_create_from_POD(identity);
+        var result = g_session_ctrl.deactivate_session(identity, user_id, err);
+        return {result: result, error: err.fetch_all()};
+}
+
+function get_associated_session(identity, user_id)
+{
+        var err = new ErrorMessageQueue();
+        identity = Identity_create_from_POD(identity);
+        var sessions = g_session_ctrl.get_associated_session(identity, user_id, err);
+        return {sessions: sessions, error: err.fetch_all()};
+}
+
+function get_session_notes(identity, session_id)
+{
+        identity = Identity_create_from_POD(identity);
+        var err = new ErrorMessageQueue();
+        var notes = g_session_ctrl.get_session_notes(identity, session_id, err);
+        return {notes: notes, error: err.fetch_all()};
+}
+
+function set_session_notes(identity, session_id, notes)
+{
+        identity = Identity_create_from_POD(identity);
+        var err = new ErrorMessageQueue();
+        var result = g_session_ctrl.set_session_notes(identity, session_id, notes, err);
+        return {result: result, error: err.fetch_all()};
 }
 
 function get_measure_bp_table(identity, session_id, start_date, end_date, num_samples)
@@ -204,11 +227,6 @@ function get_measure_bp_table(identity, session_id, start_date, end_date, num_sa
                 }
         }
         return {bptable: bptable, error: err.fetch_all()};
-}
-
-function user_get_patient_symptoms(identity, session_id, start_date, end_date, num_samples, method)
-{
-        identity = Identity_create_from_POD(identity);
 }
 
 function update_measure_bp_from_table(identity, session_id, table)
@@ -269,7 +287,7 @@ function get_pbc_record(identity, session_id, start_date, end_date, num_samples)
         return {pbctable: pbctable, error: err.fetch_all()};
 }
 
-function user_get_symptom(identity, session_id, start_date, end_date, num_items)
+function get_measure_symptom(identity, session_id, start_date, end_date, num_items)
 {
         var err = new ErrorMessageQueue();
         if (identity == null) {
@@ -283,8 +301,8 @@ function user_get_symptom(identity, session_id, start_date, end_date, num_items)
                 var n = Math.min(measures.length, num_items == null ? measures.length : num_items);
                 for (var i = 0; i < n; i ++) {
                         sym_table.add_row(measures[i].__parent.get_date(), {
-patients_feel: measures[i].get_patients_feel(),
-description: measures[i].get_description(),
+                                        patients_feel: measures[i].get_patients_feel(),
+                                        description: measures[i].get_description(),
                         });
                 }
         }
@@ -305,22 +323,6 @@ function update_measure_symptom(identity, session_id, sym_table)
                 return {result: false, error: err.fetch_all()};
         }
         return {result: true, error: err.fetch_all()};
-}
-
-function get_session_notes(identity, session_id)
-{
-        identity = Identity_create_from_POD(identity);
-        var err = new ErrorMessageQueue();
-        var notes = g_measure_ctrl.get_session_notes(identity, session_id, err);
-        return {notes: notes, error: err.fetch_all()};
-}
-
-function set_session_notes(identity, session_id, notes)
-{
-        identity = Identity_create_from_POD(identity);
-        var err = new ErrorMessageQueue();
-        g_provider_ctrl.set_session_notes(identity, session_id, notes, err);
-        return {error: err.fetch_all()};
 }
 
 
@@ -527,7 +529,7 @@ create_user_association:
 remove_user_association:
         function(arg)
         {
-                return provider_remove_patient_by_id(arg.identity, arg.id);
+                return remove_user_association(arg.identity, arg.id);
         },
 
         /**
@@ -698,7 +700,7 @@ update_measure_symptom:
 get_measure_symptom:
         function(arg)
         {
-                return user_get_symptom(arg.identity,
+                return get_measure_symptom(arg.identity,
                 arg.session_id,
                 arg.start_date,
                 arg.end_date,
