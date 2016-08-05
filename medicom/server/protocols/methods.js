@@ -178,7 +178,7 @@ function activate_medical_session(identity, user_id, session_id)
 {
         var err = new ErrorMessageQueue();
         identity = Identity_create_from_POD(identity);
-        var result = g_session_ctrl.activate_session(identity, user_id, err);
+        var result = g_session_ctrl.activate_session(identity, session_id, err);
         return {result: result, error: err.fetch_all()};
 }
 
@@ -186,7 +186,7 @@ function deactivate_medical_session(identity, user_id, session_id)
 {
         var err = new ErrorMessageQueue();
         identity = Identity_create_from_POD(identity);
-        var result = g_session_ctrl.deactivate_session(identity, user_id, err);
+        var result = g_session_ctrl.deactivate_session(identity, session_id, err);
         return {result: result, error: err.fetch_all()};
 }
 
