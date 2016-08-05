@@ -12,7 +12,7 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-import {Assoication, Association_create_from_POD} from "../api/association.js";
+import {Association, Association_create_from_POD} from "../api/association.js";
 
 export function AssociationModel()
 {
@@ -38,12 +38,18 @@ AssociationModel.prototype.has_associated_session = function(user_pair, session_
         return null != this.__associations.findOne({__user0: user_pair[0], __user1: user_pair[1], __session_id: session_id});
 }
 
+AssociationModel.prototype.get_associated_association = function(user_pair, session_id)
+{
+        var assoc = this.__associations.findOne({__user0: user_pair[0], __user1: user_pair[1], __session_id: session_id});
+        return assoc != null ? Association_create_from_POD(assoc) : null;
+}
+
 AssociationModel.prototype.add_association = function(user_pair, session_id)
 {
-        var assoc = this.get_association(user_pair, session_id);
+        var assoc = this.get_associated_association(user_pair, session_id);
         if (assoc != null)
                 return assoc;
-        assoc = this.get_association(user_pair, null);
+        assoc = this.get_associated_association(user_pair, null);
         if (assoc != null) {
                 assoc.set_session_id(session_id);
                 this.__associations.update({__user0: user_pair[0], __user1: user_pair[1], __session_id: null}, assoc);
