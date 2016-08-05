@@ -35,6 +35,11 @@ SessionModel.prototype.get_session = function(session_id)
         return result != null ? MedicalSession_Create_From_POD(result) : null;
 }
 
+SessionModel.prototype.has_session = function(session_id)
+{
+        return null != this.__sessions.findOne({__session_id : session_id});
+}
+
 SessionModel.prototype.remove_session = function(session_id)
 {
         this.__sessions.remove({__session_id: session_id});
