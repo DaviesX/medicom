@@ -324,7 +324,7 @@ SessionControl.prototype.activate_session = function(identity, session_id, err)
                         return true;
         else {
                 err.log("You don't have the permission to activate an session");
-                return null;
+                return false;
         }
 }
 
@@ -340,7 +340,7 @@ SessionControl.prototype.deactivate_session = function(identity, session_id, err
                         return true;
         else {
                 err.log("You don't have the permission to deactivate an session");
-                return null;
+                return false;
         }
 }
 
