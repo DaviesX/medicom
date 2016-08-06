@@ -301,8 +301,9 @@ function get_measure_symptom(identity, session_id, start_date, end_date, num_ite
                 var n = Math.min(measures.length, num_items == null ? measures.length : num_items);
                 for (var i = 0; i < n; i ++) {
                         sym_table.add_row(measures[i].__parent.get_date(), {
-                                        patients_feel: measures[i].get_patients_feel(),
-                                        description: measures[i].get_description(),
+                                          symp_pairs: measures[i].get_symptom_pairs(),
+                                          patients_feel: measures[i].get_patients_feel(),
+                                          description: measures[i].get_description(),
                         });
                 }
         }

@@ -91,6 +91,11 @@ export function MeasureControl() {
                         measure.__parent.set_date(pair.date);
                         measure.set_patients_feel(pair.value.patients_feel);
                         measure.set_description(pair.value.description);
+                        var symptom_pairs = pair.value.symptom_pairs;
+                        if (symptom_pairs != null && symptom_pairs.length > 0) {
+                                for (var i = 0 ; i < symptom_pairs.length; i ++)
+                                        measure.add_symptom(symptom_pairs[i].symp_name, symptom_pairs[i].scale);
+                        }
                         return measure;
                 }, err);
                 return true;
