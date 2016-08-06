@@ -104,23 +104,4 @@ export function MeasureControl() {
         this.get_symptom_measures = function(identity, start_date, end_date, session_id, err) {
                 return this.__get_measure_samples(identity, M_Measure.c_Measure_Type_Symptoms, start_date, end_date, null, session_id, err);
         }
-
-        this.__get_session_by_id = function(identity, session_id, err) {
-                if (!this.__identity_model.verify_identity(identity)) {
-                        err.log("You don't have a valid identity");
-                        return null;
-                }
-                var session = this.__session_model.get_session(session_id);
-                if (session == null) {
-                        err.log("Session: " + session_id + " doesn't exists");
-                        return null;
-                }
-                var id = identity.get_account_record().get_account_id();
-                return session;
-        }
-
-        this.get_session_notes = function(identity, session_id, err) {
-                var session = this.__get_session_by_id(identity, session_id, err);
-                return session != null ? session.get_notes() : null;
-        }
 }
