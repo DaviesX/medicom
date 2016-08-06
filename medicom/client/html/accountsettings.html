@@ -14,5 +14,36 @@
 <template name="tmplaccountsettings">
 <script>
         document.title = "Account Settings";
+        document.body.className = "simp_nature";
 </script>
+
+<body>
+        <div class="simp_two-sided">
+            <div class="simp_left">
+                <div class="simp_user-board">
+                        <h2 id="txt-logo" class="simp_heading" style="margin-left: 30px; margin-top: 20px;" >
+                                <a class="simp_no-decoration" style="color: white;" href="home">MediCom</a>
+                        </h2>
+                        <div style="margin-top: 15%;">
+                                <button class="simp_classic-user-button"
+                                        id="btn-profile">Profile Settings</button>
+                                <button class="simp_classic-user-button"
+                                        id="btn-session">Session Management</button>
+                        </div>
+                </div>
+            </div>
+
+            <div class="simp_right" style="background-color: white; overflow-y: scroll">
+                <div class="simp_browser-board">
+                        {{#if show_profile_settings}}
+                                {{> tmplprofilesettings}}
+                        {{else}}
+                                {{#if show_session_settings}}
+                                        {{> tmplsessionsettings}}
+                                {{/if}}
+                        {{/if}}
+                </div>
+            </div>
+        </div>
+</body>
 </template>

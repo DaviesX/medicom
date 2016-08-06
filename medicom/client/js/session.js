@@ -58,11 +58,19 @@ export function SessionModel() {
         }
 
         this.set_browsing_mode = function(browsing_mode) {
-                return Session.set("browsingmode", browsing_mode);
+                Session.set("browsingmode", browsing_mode);
         }
 
         this.get_browsing_mode = function() {
                 return Session.get("browsingmode");
+        }
+
+        this.set_account_settings_mode = function(mode) {
+                Session.set("accountsettingsmode", mode);
+        }
+
+        this.get_account_settings_mode = function() {
+                return Session.get("accountsettingsmode");
         }
 
         this.set_data_display_mode = function(display_mode) {
