@@ -37,10 +37,12 @@
 		<Unit filename="../../medicom/api/common.js" />
 		<Unit filename="../../medicom/api/identity.js" />
 		<Unit filename="../../medicom/api/medicalsession.js" />
+		<Unit filename="../../medicom/api/memranker.js" />
 		<Unit filename="../../medicom/api/patient.js" />
 		<Unit filename="../../medicom/api/privilege.js" />
 		<Unit filename="../../medicom/api/profile.js" />
 		<Unit filename="../../medicom/api/provider.js" />
+		<Unit filename="../../medicom/api/seqscore.js" />
 		<Unit filename="../../medicom/api/symptomstable.js" />
 		<Unit filename="../../medicom/api/usergroup.js" />
 		<Unit filename="../../medicom/api/valuetable.js" />
