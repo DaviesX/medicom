@@ -238,6 +238,29 @@ AccountControl.prototype.get_account_info_by_id = function(identity, account_id,
         return infos != null ? infos[0] : null;
 }
 
+AccountControl.prototype.search_account_infos = function(identity, key_word, cap, err)
+{
+        if (!this.__identity_model.verify_identity(identity)) {
+                err.log("Your identity is invalid");
+                return null;
+        }
+        var profiles = this.__account_mgr.search_account_profiles(key_word, null);
+        var infos = [];
+        for (var i = 0; i < profiles.length; i ++) {
+                var record = this.__account_mgr.get_account_record_by_id(profiles[i].get_account_id());
+                if (record.is_active() &&
+                    this.__priv_network.has_action(identity.get_account_record().get_privilege_ref(),
+                                                   "search account", [record.user_group()])) {
+                        infos.push(new AccountInfo(record, record.get_account_id(),
+                                                   profiles[i].get_name(),
+                                                   profiles[i].get_email()));
+                }
+                if (cap != null && infos.length >= cap)
+                        break;
+        }
+        return infos;
+}
+
 // Return an identity if successful, or otherwise null.
 AccountControl.prototype.login_by_email = function(email, password, err)
 {

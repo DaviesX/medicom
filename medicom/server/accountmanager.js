@@ -194,6 +194,25 @@ AccountManager.prototype.remove_account_by_id = function(account_id)
         return true;
 }
 
+AccountManager.prototype.search_account_profiles = function(key_word, cap)
+{
+        var all_profiles = this.__profile_model.get_all_profiles();
+        var qualified = [];
+        var lower_key = key_word.toLowerCase();
+        for (var i = 0; i < all_profiles.length; i ++) {
+                if ((all_profiles[i].get_name() != null &&
+                     -1 != all_profiles[i].get_name().toLowerCase().indexOf(lower_key)) ||
+                    (all_profiles[i].get_email() != null &&
+                     -1 != all_profiles[i].get_email().toLowerCase().indexOf(lower_key)) ||
+                     -1 != all_profiles[i].get_account_id().toString().toLowerCase().indexOf(lower_key)) {
+                        qualified.push(all_profiles[i]);
+                }
+                if (cap != null && qualified.length >= cap)
+                        break;
+        }
+        return qualified;
+}
+
 AccountManager.prototype.get_temporary_account_record = function()
 {
         if (this.__temp_record == null)

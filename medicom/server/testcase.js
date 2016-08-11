@@ -174,10 +174,10 @@ export function test_account_control()
         account_control.system_init();
 
         account_control.remove_account_by_email(account_control.get_root_identity(), "zhaonias@uci.edu", errmq);
+        account_control.remove_account_by_email(account_control.get_root_identity(), "John_Smith@uci.edu", errmq);
         var error = errmq.fetch_all();
-        if (error != "" && error[0] != "No such account zhaonias@uci.edu exists") {
+        if (error != "") {
                 console.log(error);
-                throw Error("Failed to remove an existing account");
         }
         errmq.clear();
 
@@ -188,9 +188,9 @@ export function test_account_control()
                 throw Error("account_info fucked up");
         }
         // Login without activating the account.
-        var identity = account_control.login_by_email("zhaonias@uci.edu", "lzn19940830haha", errmq);
-        if (identity != null) {
-                if (identity.get_account_record().is_active() == "-1") {
+        var provider_id = account_control.login_by_email("zhaonias@uci.edu", "lzn19940830haha", errmq);
+        if (provider_id != null) {
+                if (provider_id.get_account_record().is_active() == "-1") {
                         // The account was falsely activated when it shouldn't.
                         console.log(account_control);
                         throw Error("How could you log in by email without activating your account!?");
@@ -201,11 +201,43 @@ export function test_account_control()
         }
         // Login with an activated account.
         account_control.activate(account_info.get_record().get_auth_code(), errmq);
-
-        if (account_control.login_by_email("zhaonias@uci.edu", "lzn19940830haha", errmq) == null) {
+        provider_id = account_control.login_by_email("zhaonias@uci.edu", "lzn19940830haha", errmq);
+        if (provider_id == null) {
                 console.log(account_control);
                 throw Error("test_account_control fucked up");
         }
+
+        // Register a patient account.search for it.
+        var john_smith = account_control.register("patient", "John_Smith@uci.edu", "John smith", "434546445", "111111", errmq);
+        account_control.activate(john_smith.get_record().get_auth_code(), errmq);
+        john_smith = account_control.get_account_info_by_id(provider_id, john_smith.get_record().get_account_id(), errmq)
+        var infos = account_control.search_account_infos(provider_id, "John", 10, errmq);
+        if (errmq.fetch_all() != "") {
+                console.log(provider_id);
+                console.log(john_smith);
+                console.log(errmq.fetch_all());
+                throw new Error("Got null pointer from searching john smith");
+        }
+        var has_match = false;
+        for (var i = 0; i < infos.length; i ++) {
+                if (infos[i].is_equal(john_smith)) {
+                        has_match = true;
+                        break;
+                }
+        }
+        if (!has_match) {
+                console.log(john_smith);
+                console.log(infos);
+                throw new Error("Couldn't found john smith when it should");
+        }
+
+        account_control.remove_account_by_email(account_control.get_root_identity(), "zhaonias@uci.edu", errmq);
+        account_control.remove_account_by_email(account_control.get_root_identity(), "John_Smith@uci.edu", errmq);
+        if (errmq.fetch_all() != "") {
+                console.log(errmq.fetch_all());
+                throw new Error("Failed to remove accounts");
+        }
+
         console.log("test_account_control passed");
 
 }

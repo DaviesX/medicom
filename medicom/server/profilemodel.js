@@ -38,6 +38,14 @@ ProfileModel.prototype.create_new_profile = function(account_id, email)
         return profile;
 }
 
+ProfileModel.prototype.get_all_profiles = function()
+{
+        var profiles = this.__profiles.find({}).fetch();
+        for (var i = 0; i < profiles.length; i ++)
+                profiles[i] = Profile_create_from_POD(profiles[i]);
+        return profiles;
+}
+
 ProfileModel.prototype.get_profile_by_id = function(account_id)
 {
         var result = this.__profiles.find({__account_id : account_id});

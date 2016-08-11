@@ -56,6 +56,18 @@ function get_registerable_user_groups()
         return g_account_ctrl.get_registerable_user_group_strings();
 }
 
+function search_account_info(identity, key_word)
+{
+        var err = new ErrorMessageQueue();
+        if (identity == null) {
+                err.log("identity is required, but it's absent");
+                return {account_infos: null, error: err.fetch_all()};
+        }
+        identity = Identity_create_from_POD(identity);
+        var account_infos = g_account_ctrl.search_account_infos(identity, key_word, err);
+        return {account_infos: account_infos, error: err.fetch_all()};
+}
+
 function get_account_info_by_id(identity, account_id)
 {
         var err = new ErrorMessageQueue();
@@ -415,7 +427,17 @@ get_registerable_user_groups:
         {
                 return get_registerable_user_groups();
         },
-
+        /**
+         * Search a list of accounts from the key word.
+         * @param {Identity} The user identity.
+         * @param {String} Key word.
+         * @return {AccountInfo[], String}  An array of account infos.
+         */
+search_account_infos:
+        function(arg)
+        {
+                return search_account_infos(arg.identity, arg.key_word);
+        },
         /**
          * Get account info by id.
          * @param {Identity} The user identity.
