@@ -125,7 +125,8 @@ UserBrowser.prototype.set_add_user_dialog = function(holder)
                                                 var info = AccountInfo_Create_From_POD(infos[i]);
                                                 html_menu += "<div class='emo_central-text' id='" + info.get_account_id() + "'>" 
                                                           + info.get_account_id() + "(" 
-                                                          + info.get_name() + ")</div>\n";
+                                                          + info.get_name() + "), " 
+                                                          + info.get_email() + "</div>\n";
                                         }
                                 }
                                 // Construct a dropdown menu.
@@ -166,7 +167,7 @@ UserBrowser.prototype.enable_add_user = function(to_enable, prompt)
                         clazz.__add_user_dialog.dialog({
                                 autoOpen: true,
                                 modal: true,
-                                width: 400,
+                                width: 600,
                                 open: function()
                                 {
                                         $(".ui-widget-overlay").addClass("simp_dialog_overlay");
