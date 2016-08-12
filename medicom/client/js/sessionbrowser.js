@@ -54,13 +54,22 @@ export function SessionBrowser() {
                 seq_effect.animate();
         }
 
-        this.__make_session_ui = function(session_id, session_date, is_active) {
+        this.__make_session_ui = function(session_id, start_date, end_date, desc, is_active) {
+                const c_Desc_Length = 50;
+                if (desc.length > c_Desc_Length)
+                        desc = desc.slice(0, c_Desc_Length) + "...";
                 if (is_active) {
-                        return '<button class="simp_classic-list-item" name="session-list" id="' + session_id + '">' +
-                                session_date.toDateString() + '. Session ID: ' + session_id + ', active</button>';
+                        return '<button class="simp_classic-list-item" name="session-list" id="' + session_id + '">' 
+                                + start_date.toDateString() 
+                                + '. (' + session_id + ') ' 
+                                + desc 
+                                + ' (ongoing)</button>';
                 } else {
-                        return '<button class="simp_classic-list-item" name="session-list" id="' + session_id + '">' +
-                                session_date.toDateString() + '. Session ID: ' + session_id + ', non-active</button>';
+                        return '<button class="simp_classic-list-item" name="session-list" id="' + session_id + '">' 
+                                + start_date.toDateString() + " - " + end_date.toDateString() 
+                                + '. (' + session_id + ') ' 
+                                + desc 
+                                + ' (ended)</button>';
                 }
         }
 
@@ -130,6 +139,8 @@ export function SessionBrowser() {
                                         var session = MedicalSession_Create_From_POD(result.sessions[i]);
                                         var ui = clazz.__make_session_ui(session.get_session_id(),
                                                                  session.get_start_date(),
+                                                                 session.get_end_date(),
+                                                                 session.get_comments(),
                                                                  session.is_active());
                                         clazz.__sessions[session.get_session_id()] = session;
                                         clazz.__session_holder.append(ui);
