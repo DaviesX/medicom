@@ -63,10 +63,14 @@ export function ActivityCenter() {
                         if (result.error != "") {
                                 clazz.__welcome_holder.html("error: " + result.error);
                         } else {
-                                var account_info = AccountInfo_Create_From_POD(result.account_info);
-                                clazz.__welcome_holder.html("Welcome, " + account_info.get_name());
-                                clazz.__welcome_holder.attr("href", clazz.__redir_path);
-                                clazz.__logout_holder.css("display", "inline");
+                                if (result.account_info == null) {
+                                        clazz.__welcome_holder.html("Failed to obtain your account info");
+                                } else {
+                                        var account_info = AccountInfo_Create_From_POD(result.account_info);
+                                        clazz.__welcome_holder.html("Welcome, " + account_info.get_name());
+                                        clazz.__welcome_holder.attr("href", clazz.__redir_path);
+                                        clazz.__logout_holder.css("display", "inline");
+                                }
                         }
                 });
         }
