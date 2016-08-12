@@ -14,7 +14,7 @@
 import {Meteor} from 'meteor/meteor';
 import {MeasureBP, MeasureBP_Create_From_POD} from "./measurebp.js";
 import {MeasureSymptoms, MeasureSymptoms_Create_From_POD} from "./measuresymptoms.js";
-import {MeasureFitbit} from "./measurefitbit.js";
+import {MeasureFitbit, MeasureFitbit_create_from_POD} from "./measurefitbit.js";
 import {MeasurePillBottleCap, MeasurePillBottleCap_Create_From_POD} from "./measurepillbottlecap.js";
 
 export var c_Measure_Type_BP = "MeasureBP";
@@ -58,6 +58,8 @@ export function Measure_Create_From_POD(pod) {
                 return MeasurePillBottleCap_Create_From_POD(pod);
         case c_Measure_Type_Symptoms:
                 return MeasureSymptoms_Create_From_POD(pod);
+        case c_Measure_Type_Fitbit:
+                return MeasureFitbit_create_from_POD(pod);
         default:
                 throw "Unknown measure type";
         }
