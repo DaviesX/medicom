@@ -32,15 +32,12 @@ MedicalSession.prototype.get_session_id = function()
 MedicalSession.prototype.activate = function()
 {
         this.__is_active = true;
+        this.__end = null;
 }
 
 MedicalSession.prototype.deactivate = function()
 {
         this.__is_active = false;
-}
-
-MedicalSession.prototype.end_session = function()
-{
         this.__end = new Date().getTime();
 }
 
