@@ -22,26 +22,53 @@ export var c_Measure_Type_Symptoms = "MeasureSymptoms";
 export var c_Measure_Type_Fitbit = "MeasureFitbit";
 export var c_Measure_Type_PillBottleCap = "MeasurePillBottleCap";
 
-export function Measure(type) {
+export function Measure(type) 
+{
         this.__measure_id = "-1";
         this.__session_id = -1;
         this.__type = type;
         this.__date = new Date().getTime();
-        
-        this.set_session_id = function(session_id) { this.__session_id = session_id; }
-        this.set_measure_id = function(measure_id) { this.__measure_id = measure_id; }
-        this.get_session_id = function() { return this.__session_id; }
-        this.get_measure_id = function() { return this.__measure_id; }
-        this.set_date = function(date) { this.__date = date.getTime(); }
-        this.get_date = function() {
-                var date = new Date();
-                date.setTime(this.__date);
-                return date;
-        }
-        this.get_internal_date = function() { return this.__date; }
 }
 
-export function Measure_Parent_Create_From_POD(pod) {
+Measure.prototype.set_session_id = function(session_id) 
+{ 
+        this.__session_id = session_id;
+}
+
+Measure.prototype.set_measure_id = function(measure_id) 
+{ 
+        this.__measure_id = measure_id;
+}
+
+Measure.prototype.get_session_id = function() 
+{ 
+        return this.__session_id;
+}
+
+Measure.prototype.get_measure_id = function() 
+{ 
+        return this.__measure_id;
+}
+
+Measure.prototype.set_date = function(date) 
+{ 
+         this.__date = date.getTime();
+}
+
+Measure.prototype.get_date = function() 
+{
+        var date = new Date();
+        date.setTime(this.__date);
+        return date;
+}
+
+Measure.prototype.get_internal_date = function() 
+{ 
+        return this.__date;
+}
+
+export function Measure_Parent_Create_From_POD(pod) 
+{
         var obj = new Measure("", -1);
         obj.__measure_id = pod.__measure_id;
         obj.__session_id = pod.__session_id;
@@ -50,7 +77,8 @@ export function Measure_Parent_Create_From_POD(pod) {
         return obj;
 }
 
-export function Measure_Create_From_POD(pod) {
+export function Measure_Create_From_POD(pod) 
+{
         switch (pod.__parent.__type) {
         case c_Measure_Type_BP:
                 return MeasureBP_Create_From_POD(pod);
