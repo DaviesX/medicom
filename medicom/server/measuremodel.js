@@ -48,11 +48,7 @@ MeasureModel.prototype.update_measure = function(session_id, measure)
 
 MeasureModel.prototype.__generate_result = function(result)
 {
-        if (result.count() > 0) {
-                return Measure_Create_From_POD(result.fetch()[0]);
-        } else {
-                return null;
-        }
+        return result.count() > 0 ? Measure_Create_From_POD(result.fetch()[0]) : null;
 }
 
 MeasureModel.prototype.__generate_results = function(result)

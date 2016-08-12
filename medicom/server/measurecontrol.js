@@ -117,3 +117,20 @@ MeasureControl.prototype.get_symptom_measures = function(identity, start_date, e
         return this.__get_measure_samples(identity, M_Measure.c_Measure_Type_Symptoms,
                                           start_date, end_date, null, session_id, err);
 }
+
+MeasureControl.prototype.update_fitbit_measures = function(identity, session_id, fitbittable, err)
+{
+        var measure = new MeasureFitbit();
+        this.__update_measures_from_table(identity, session_id, fittbittable, function(pair) {
+                measure.__parent.set_date(pair.date);
+                measure.set_sleep_info(pair.value);
+                return measure;
+        }, err);
+        return true;
+}
+
+MeasureControl.prototype.get_fitbit_measures = function(identity, start_date, end_date, sample_count, session_id, err)
+{
+        return this.__get_measure_samples(identity, M_Measure.c_Measure_Type_Fitbit,
+                                          start_date, end_date, sample_count, session_id, err);
+}

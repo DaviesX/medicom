@@ -28,10 +28,20 @@ export function MeasureFitbit(measure_id)
 
 MeasureFitbit.prototype.set_sleep_info = function(value)
 {
-        this.__mins_asleep = value.__mins_asleep;
-        this.__mins_awake = value.__mins_awake;
-        this.__num_awakenings = value.__num_awakenings;
-        this.__time_in_bed = value.__time_in_bed;
+        this.__mins_asleep = value.mins_asleep;
+        this.__mins_awake = value.mins_awake;
+        this.__num_awakenings = value.num_awakenings;
+        this.__time_in_bed = value.time_in_bed;
+}
+
+MeasureFitbit.prototype.get_sleep_info = function()
+{
+        return {
+                mins_asleep: this.__mins_asleep,
+                mins_awake: this.__mins_awake,
+                num_awakenings: this.__num_awakenings,
+                time_in_bed: this.__time_in_bed,
+        };
 }
 
 MeasureFitbit.prototype.get_measure_id = function() 

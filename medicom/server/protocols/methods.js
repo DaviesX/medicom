@@ -338,6 +338,39 @@ function update_measure_symptom(identity, session_id, sym_table)
         return {result: true, error: err.fetch_all()};
 }
 
+function get_measure_fitbit_table(identity, session_id, start_date, end_date, num_samples)
+{
+        var err = new ErrorMessageQueue();
+        if (identity == null) {
+                err.log("identity is required, but it's absent");
+                return {sym_table: null, error: err.fetch_all()};
+        }
+        identity = Identity_create_from_POD(identity);
+        var measures = g_measure_ctrl.get_fitbit_measures(identity, start_date, end_date, num_samples, session_id, err);
+        var fbtable = new ValueTable();
+        if (measures != null) {
+                for (var i = 0; i < measures.length; i ++)
+                        fbtable.add_row(measures[i].__parent.get_date(), measures[i].get_sleep_info());
+        }
+        return {fbtable: fbtable, error: err.fetch_all()};
+}
+
+function update_measure_fitbit_from_table(identity, session_id, fbtable)
+{
+        var err = new ErrorMessageQueue();
+        if (identity == null) {
+                err.log("identity is required, but it's absent");
+                return {result: false, error: err.fetch_all()};
+        }
+        identity = Identity_create_from_POD(identity);
+        fbtable = ValueTable_create_from_POD(fbtable);
+        if (!g_measure_ctrl.update_fitbit_measures(identity, session_id, fbtable, err)) {
+                err.log("failed to update fitbit measures");
+                return {result: false, error: err.fetch_all()};
+        }
+        return {result: true, error: err.fetch_all()};
+}
+
 
 export var c_Meteor_Methods = {
         /**
@@ -729,6 +762,41 @@ get_measure_symptom:
                 arg.end_date,
                 arg.num_items);
         },
+
+        /**
+         * Get a patient's fitbit graph data.
+         * @param {Identity} Identity of the provider/patient.
+         * @param {Integer} Target Session ID.
+         * @param {Date} start date.
+         * @param {Date} end date.
+         * @param {Integer} number of samples.
+         * @return {ValueTable, String} return a {ValueTable, ""} object if sucessful, or otherwise, {null, "..."}.
+         */
+get_measure_fitbit_table:
+        function(arg)
+        {
+                return get_measure_fitbit_table(arg.identity,
+                                                arg.session_id,
+                                                arg.start_date,
+                                                arg.end_date,
+                                                arg.num_samples);
+        },
+
+        /**
+         * Update fitbit data from fitbit table.
+         * @param {Identity} Identity of the provider/patient/super intendant.
+         * @param {Integer} Target Session ID.
+         * @param {ValueTable} source fitbit table to update.
+         * @return {Boolean, String} return a {True, ""} object if sucessful, or otherwise, {False, "..."}.
+         */
+update_measure_fitbit_from_table:
+        function(arg)
+        {
+                return update_measure_fitbit_from_table(arg.identity,
+                                                        arg.session_id,
+                                                        arg.fbtable);
+        },
+
 
         /**
          * Get session notes.
