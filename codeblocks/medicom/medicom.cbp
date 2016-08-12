@@ -75,6 +75,7 @@
 		<Unit filename="../../medicom/client/js/activitycenter.js" />
 		<Unit filename="../../medicom/client/js/bpdisplay.js" />
 		<Unit filename="../../medicom/client/js/databrowser.js" />
+		<Unit filename="../../medicom/client/js/dialog.js" />
 		<Unit filename="../../medicom/client/js/effects.js" />
 		<Unit filename="../../medicom/client/js/fitbitdisplay.js" />
 		<Unit filename="../../medicom/client/js/home.js" />
