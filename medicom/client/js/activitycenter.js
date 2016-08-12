@@ -20,64 +20,70 @@ export function ActivityCenter() {
         this.__welcome_holder = null;
         this.__logout_holder = null;
         this.__redir_path = null;
+}
 
-        this.set_welcome_text_holder = function(holder) {
-                this.__welcome_holder = holder;
-        }
+ActivityCenter.prototype.set_welcome_text_holder = function(holder)
+{
+        this.__welcome_holder = holder;
+}
 
-        this.set_logout_text_holder = function(holder) {
-                this.__logout_holder = holder;
-                var clazz = this;
+ActivityCenter.prototype.set_logout_text_holder = function(holder)
+{
+        this.__logout_holder = holder;
+        var clazz = this;
 
-                holder.click(function (event) {
+        holder.click(function (event) {
                         Meteor.call("logout", {identity: clazz.__identity},
-                                    function(error, result) {
-                                if (result.error != "") {
+                                        function(error, result) {
+                                        if (result.error != "") {
                                         alert(result.error);
-                                }
-                                clazz.__welcome_holder.attr("href", "");
-                                document.location.reload(true);
+                                        }
+                                        clazz.__welcome_holder.attr("href", "");
+                                        document.location.reload(true);
+                                        });
                         });
-                });
+}
+
+ActivityCenter.prototype.set_identity = function(identity)
+{
+        this.__identity = identity;
+}
+
+ActivityCenter.prototype.set_redirection_path = function(path)
+{
+        this.__redir_path = path;
+}
+
+ActivityCenter.prototype.update_welcome_text = function()
+{
+        if (this.__identity == null) {
+                this.__welcome_holder.html("You haven't login yet");
+                return;
         }
 
-        this.set_identity = function(identity) {
-                this.__identity = identity;
-        }
+        var account_id = this.__identity.get_account_record().get_account_id();
+        var clazz = this;
 
-        this.set_redirection_path = function(path) {
-                this.__redir_path = path;
-        }
-
-        this.update_welcome_text = function() {
-                if (this.__identity == null) {
-                        this.__welcome_holder.html("You haven't login yet");
-                        return;
-                }
-
-                var account_id = this.__identity.get_account_record().get_account_id();
-                var clazz = this;
-
-                Meteor.call("get_account_info_by_id",
-                            {identity: this.__identity, id: account_id}, function(error, result) {
+        Meteor.call("get_account_info_by_id",
+                        {identity: this.__identity, id: account_id}, function(error, result) {
                         if (result.error != "") {
-                                clazz.__welcome_holder.html("error: " + result.error);
+                        clazz.__welcome_holder.html("error: " + result.error);
                         } else {
-                                if (result.account_info == null) {
-                                        clazz.__welcome_holder.html("Failed to obtain your account info");
-                                } else {
-                                        var account_info = AccountInfo_Create_From_POD(result.account_info);
-                                        clazz.__welcome_holder.html("Welcome, " + account_info.get_name());
-                                        clazz.__welcome_holder.attr("href", clazz.__redir_path);
-                                        clazz.__logout_holder.css("display", "inline");
-                                }
+                        if (result.account_info == null) {
+                        clazz.__welcome_holder.html("Failed to obtain your account info");
+                        } else {
+                        var account_info = AccountInfo_Create_From_POD(result.account_info);
+                        clazz.__welcome_holder.html("Welcome, " + account_info.get_name());
+                        clazz.__welcome_holder.attr("href", clazz.__redir_path);
+                        clazz.__logout_holder.css("display", "inline");
                         }
-                });
-        }
+                        }
+                        });
+}
 
-        this.print_error_text = function(error_text) {
-                this.__welcome_holder.html(error_text);
-        }
+ActivityCenter.prototype.print_error_text = function(error_text)
+{
+        this.__welcome_holder.html(error_text);
 }
 
 export var G_ActivityCenter = new ActivityCenter();
