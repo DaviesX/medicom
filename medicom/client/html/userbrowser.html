@@ -21,14 +21,21 @@
                         style="display: none;
                                margin-top: 10px; 
                                margin-bottom: 10px"></button>
+                <button id="btn-remove-user" 
+                        class="simp_classic-user-button" 
+                        style="display: none;
+                               margin-top: 10px; 
+                               margin-bottom: 10px"></button>
 
-                <div id="div-user-holder" class="simp_user-holder">
+                <div id="div-user-holder" class="simp_user-holder" style="overflow: hidden;">
                 </div>
                 
-                <div id="div-add-user-dlg" style="display: none; width: 40%;">
-                        <div class="emo_central-text">You can select a user through his user name, user ID, or email</div>
+                <div id="div-add-user-dlg" style="display: none;">
+                        <div class="emo_central-text">You can type in email, user name, account id to search for the user, then input the account id and click on the "Add User" button.</div>
                         <input name="input-field" class="emo_central-input" type="text"/>
-                        <button name="submit" class="emo_central-button">Add</button>
+                        <div id="ul-search-menu-holder">
+                        </div>
+                        <button name="submit" class="emo_central-button">Add User</button>
                 </div>
         </div>
 </template>

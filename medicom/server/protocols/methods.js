@@ -56,7 +56,7 @@ function get_registerable_user_groups()
         return g_account_ctrl.get_registerable_user_group_strings();
 }
 
-function search_account_info(identity, key_word)
+function search_account_infos(identity, key_word, cap)
 {
         var err = new ErrorMessageQueue();
         if (identity == null) {
@@ -64,7 +64,7 @@ function search_account_info(identity, key_word)
                 return {account_infos: null, error: err.fetch_all()};
         }
         identity = Identity_create_from_POD(identity);
-        var account_infos = g_account_ctrl.search_account_infos(identity, key_word, err);
+        var account_infos = g_account_ctrl.search_account_infos(identity, key_word, cap, err);
         return {account_infos: account_infos, error: err.fetch_all()};
 }
 
@@ -436,7 +436,7 @@ get_registerable_user_groups:
 search_account_infos:
         function(arg)
         {
-                return search_account_infos(arg.identity, arg.key_word);
+                return search_account_infos(arg.identity, arg.key_word, arg.cap);
         },
         /**
          * Get account info by id.

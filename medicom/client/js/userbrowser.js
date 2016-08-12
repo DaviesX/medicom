@@ -97,10 +97,43 @@ UserBrowser.prototype.set_add_user_dialog = function(holder)
         this.__add_user_dialog = holder;
         var submit_btn = this.__add_user_dialog.find("button[name='submit']");
         var input_field = this.__add_user_dialog.find("input[name='input-field']");
-        if (submit_btn == null) throw "The dialog doesn't contain a submit button";
-        if (input_field == null) throw "The dialog doesn't contain an input field";
+        if (submit_btn == null) throw new Error("The dialog doesn't contain a submit button");
+        if (input_field == null) throw new Error("The dialog doesn't contain an input field");
 
         var clazz = this;
+        var menu_holder = $("#ul-search-menu-holder");
+
+        input_field.on("input", function(e) {
+                var input = e.target.value;
+
+                var params = {
+                        identity: clazz.__identity,
+                        key_word: input,
+                        cap: 7,
+                };
+                Meteor.call("search_account_infos", params, function(error, result) {
+                        if (result.error != "") {
+                                console.log("Failed to search account info");
+                                console.log(result.error);
+                        } else {
+                                var infos = result.account_infos;
+                                var html_menu = "";
+                                if (infos.length == 0) {
+                                        html_menu += "<div class='emo_central-text'>Nothing matches your input. Please try something else.</div>";
+                                } else {
+                                        for (var i = 0; i < infos.length; i ++) {
+                                                var info = AccountInfo_Create_From_POD(infos[i]);
+                                                html_menu += "<div class='emo_central-text' id='" + info.get_account_id() + "'>" 
+                                                          + info.get_account_id() + "(" 
+                                                          + info.get_name() + ")</div>\n";
+                                        }
+                                }
+                                // Construct a dropdown menu.
+                                menu_holder.html(html_menu);
+                        }
+                });
+        });
+
         submit_btn.click(function() {
                 clazz.__add_user_dialog.dialog("close");
                 var account_id = parseInt(input_field.val(), 10);
@@ -133,6 +166,7 @@ UserBrowser.prototype.enable_add_user = function(to_enable, prompt)
                         clazz.__add_user_dialog.dialog({
                                 autoOpen: true,
                                 modal: true,
+                                width: 400,
                                 open: function()
                                 {
                                         $(".ui-widget-overlay").addClass("simp_dialog_overlay");
