@@ -95,6 +95,7 @@ export function DataBrowser() {
                 this.__pbc_display.set_access_info(this.__identity, this.__browsing_user, this.__session);
                 this.__smart_display.set_access_info(this.__identity, this.__browsing_user, this.__session);
                 this.__symp_display.set_access_info(this.__identity, this.__browsing_user, this.__session);
+                this.__fitbit_display.set_access_info(this.__identity, this.__browsing_user, this.__session);
                 this.__notes_display.set_access_info(this.__identity, this.__session);
                 
                 // Update notes

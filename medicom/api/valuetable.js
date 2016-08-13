@@ -20,7 +20,7 @@ export function ValueTable()
         this.__pairs = [];
         // CSV delimiter and line break.
         this.__c_Delimiter = ",";
-        this.__c_LineDelim = "\r";
+        this.__c_LineDelim = "\n";
         // A dirty flag to show whether the data set is sorted or not.
         this.__is_sorted = true;
 }
@@ -54,7 +54,7 @@ ValueTable.prototype.construct_from_pairs = function(pairs)
 ValueTable.prototype.construct_from_bpcsv_stream = function(stream)
 {
         stream = stream.toString();
-        var lines = stream.split(this.__c_LineDelim);
+        var lines = stream.split("\r");
 
         for (var i = 0; i < lines.length; i ++) {
                 var parts = lines[i].split(this.__c_Delimiter);
@@ -147,7 +147,7 @@ ValueTable.prototype.__parse_bp2csv_bpm = function(s)
 ValueTable.prototype.construct_from_bp2csv_stream = function(stream)
 {
         stream = stream.toString();
-        var lines = stream.split(this.__c_LineDelim);
+        var lines = stream.split("\r");
         var bps_values = [];
         var bpm_values = [];
         for (var i = 0, j = 0, k = 0; i < lines.length; i ++) {
@@ -174,7 +174,7 @@ ValueTable.prototype.construct_from_bp2csv_stream = function(stream)
 ValueTable.prototype.construct_from_pbccsv_stream = function(stream)
 {
         stream = stream.toString();
-        var lines = stream.split(this.__c_LineDelim);
+        var lines = stream.split("\n");
         for (var i = 0; i < lines.length; i ++) {
                 var parts = lines[i].split(this.__c_Delimiter);
                 var action = parts[3];
@@ -188,23 +188,30 @@ ValueTable.prototype.construct_from_pbccsv_stream = function(stream)
 ValueTable.prototype.construct_from_fitbitcsv_stream = function(stream)
 {
         stream = stream.toString();
-        var lines = stream.split(this.__c_LineDelim);
+        var lines = stream.split("\n");
         var i = 0;
-        while (i < line.length) {
-                if (-1 != lines[i ++].indexOf("Sleep")) {
-                        // Capture sleep quality.
-                        lines[i].replace('"', '');
-                        var parts = lines[i].split(this.__c_Delimiter);
-                        var date = new Date(parts[0]);
-                        var mins_asleep = parseInt(parts[1], 10);
-                        var mins_awake = parseInt(parts[2], 10);
-                        var num_awakenings = parseInt(parse[3], 10);
-                        var time_in_bed = parseInt(parse[4], 10);
-                        this.add_row(date, {mins_aspleep: mins_asleep,
-                                            mins_awake: mins_awake,
-                                            num_awakenings: num_awakenings,
-                                            time_in_bed: time_in_bed});
+        while (i < lines.length) {
+                if (-1 != lines[i].indexOf("Sleep")) {
+                        i += 2;
+                        while (i < lines.length) {
+                                // Capture sleep quality.
+                                lines[i] = lines[i].split('"').join("");
+                                var parts = lines[i].split(this.__c_Delimiter);
+                                if (parts.length <= 1)
+                                        break;
+                                var date = new Date(parts[0]);
+                                var mins_asleep = parseInt(parts[1], 10);
+                                var mins_awake = parseInt(parts[2], 10);
+                                var num_awakenings = parseInt(parts[3], 10);
+                                var time_in_bed = parseInt(parts[4], 10);
+                                var r = this.add_row(date, {mins_asleep: mins_asleep,
+                                                            mins_awake: mins_awake,
+                                                            num_awakenings: num_awakenings,
+                                                            time_in_bed: time_in_bed});
+                                i ++;
+                        }
                 }
+                i ++;
         }
 }
 

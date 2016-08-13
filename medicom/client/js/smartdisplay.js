@@ -15,6 +15,7 @@ import {ValueTable, ValueTable_create_from_POD} from "../../api/valuetable.js";
 import {G_BPDisplay} from "./bpdisplay.js";
 import {G_PBCDisplay} from "./pbcdisplay.js";
 import {G_SymptomsDisplay} from "./symptomsdisplay.js";
+import {G_FitbitDisplay} from "./fitbitdisplay.js";
 
 // Nasty hacks to allow c3 chart to read the data.
 var g_does_amount = [];
@@ -107,6 +108,11 @@ export function SmartDisplay() {
                                 case "use_sym_feeling":
                                         G_SymptomsDisplay.set_local_data_from_remote_server(
                                                         start_date, end_date, f_On_Display_Complete);
+                                        break;
+                                case "use_fb_qsleep":
+                                        G_FitbitDisplay.set_local_data_from_remote_server(
+                                                        start_date, end_date, null, f_On_Display_Complete);
+                                        break;
                                 }
                         }
                 }
@@ -132,6 +138,11 @@ export function SmartDisplay() {
                                         break;
                                 case "use_sym_feeling":
                                         curr_table = G_SymptomsDisplay.get_processed_table(start_date, end_date);
+                                        break;
+                                case "use_fb_qsleep":
+                                        curr_table = G_FitbitDisplay.get_processed_table(start_date, end_date,
+                                                                                         null,
+                                                                                         filter);
                                         break;
                                 }
                                 if (curr_table == null) 
@@ -177,6 +188,7 @@ export function SmartDisplay() {
                         var z = ["systolic blood pressure"];
                         var w = ["diastolic blood pressure"];
                         var a = ["general feeling"];
+                        var b = ["sleep quality"];
                         
                         var columns = [x];
                         var pairs = merged.get_pairs();
@@ -214,6 +226,14 @@ export function SmartDisplay() {
                                 }
                                 columns.push(a);
                         }
+
+                        if (options.use_fb_qsleep === true) {
+                                const scale = 50;
+                                for (var i = 0; i < pairs.length; i ++) {
+                                        b[i + 1] = Math.ceil(pairs[i].value.mins_asleep/pairs[i].value.time_in_bed*scale);
+                                }
+                                columns.push(b);
+                        }
                         
                         return {
                                 bindto: charting_area,
@@ -225,12 +245,14 @@ export function SmartDisplay() {
                                                 "systolic blood pressure": "line",
                                                 "diastolic blood pressure": "line",
                                                 "general feeling": "line",
+                                                "sleep quality": "line",
                                         },
                                         colors: {
                                                 "pill bottle cap": d3.rgb(0, 255, 0).toString(),
                                                 "systolic blood pressure": d3.rgb(255, 118, 50).toString(),
                                                 "diastolic blood pressure": d3.rgb(62, 65, 255).toString(),
                                                 "general feeling": d3.rgb(255, 0, 0).toString(),
+                                                "sleep quality": d3.rgb(0, 40, 255).toString(),
                                         },
                                         color: function(color, d) {
                                                 if (d.id === "pill bottle cap") {
