@@ -20,5 +20,8 @@ medicom.calit2.uci.edu
 ### Pill bottle cap records.
 ![alt tag](screenshots/pill-bottle-cap-display.png)
 
+### Measuring sleep quality from fitbit records.
+![alt tag](screenshots/fitbit-display.png)
+
 ### Medical sessions management.
 ![alt tag](screenshots/session-browser.png)
