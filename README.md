@@ -2,7 +2,7 @@
 A tool to research the factors that influence patients' medical adherence.
 
 ### Our site
-medicom.calit2.uci.edu
+[medicom.calit2.uci.edu](medicom.calit2.uci.edu)
 
 ![alt tag](screenshots/home-page.png)
 
