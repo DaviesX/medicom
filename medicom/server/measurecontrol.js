@@ -16,6 +16,7 @@ import {DataModelContext, G_DataModelContext} from "./datamodelcontext.js";
 import {MeasureBP} from "./measurebp.js";
 import {MeasurePillBottleCap} from "./measurepillbottlecap.js";
 import {MeasureSymptoms} from "./measuresymptoms.js";
+import {MeasureFitbit} from "./measurefitbit.js";
 import {ErrorMessageQueue, MongoDB} from "../api/common.js";
 import * as M_UserGroup from "../api/usergroup.js";
 import * as M_Measure from "./measure.js";
@@ -121,7 +122,7 @@ MeasureControl.prototype.get_symptom_measures = function(identity, start_date, e
 MeasureControl.prototype.update_fitbit_measures = function(identity, session_id, fitbittable, err)
 {
         var measure = new MeasureFitbit();
-        this.__update_measures_from_table(identity, session_id, fittbittable, function(pair) {
+        this.__update_measures_from_table(identity, session_id, fitbittable, function(pair) {
                 measure.__parent.set_date(pair.date);
                 measure.set_sleep_info(pair.value);
                 return measure;

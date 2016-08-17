@@ -27,31 +27,31 @@ export function DataBrowser() {
         this.__identity = null;
         this.__browsing_user = null;
         this.__session = null;
-        
+
         this.__display_types = ["Smart Display Mode",
-                                "Blood Pressure Data", 
-                                "Symptoms Data", 
-                                "Pill Bottle Cap", 
+                                "Blood Pressure Data",
+                                "Symptoms Data",
+                                "Pill Bottle Cap",
                                 "Fitbit Data"];
 
         this.__curr_display_mode = this.__display_types[0];
-        
+
         this.__display_type_holder = null;
-        
+
         this.__smart_display = G_SmartDisplay;
         this.__bp_display = G_BPDisplay;
         this.__pbc_display = G_PBCDisplay;
         this.__symp_display = G_SymptomsDisplay;
         this.__fitbit_display = G_FitbitDisplay;
         this.__notes_display = G_SessionNotesDisplay;
-        
+
         // Access infos.
         this.set_target_session = function(session, user_info, identity) {
                 this.__session = session;
                 this.__browsing_user = user_info;
                 this.__identity = identity;
         }
-        
+
         this.get_target_session = function() {
                 return this.__session;
         }
@@ -59,7 +59,7 @@ export function DataBrowser() {
         this.get_browsing_user = function() {
                 return this.__browsing_user;
         }
-        
+
         // Holders
         this.set_display_type_holder = function(holder) {
                 var clazz = this;
@@ -70,8 +70,8 @@ export function DataBrowser() {
                 for (var i = 0; i < types.length; i ++) {
                         holder.append('<option value="' + types[i] + '">' + types[i] + '</option>');
                 }
-        } 
-        
+        }
+
         // Browser states.
         this.set_display_mode = function(display_mode) {
                 this.__curr_display_mode = display_mode;
@@ -89,7 +89,7 @@ export function DataBrowser() {
         this.load_display = function(display_mode) {
                 if (display_mode == null) display_mode = this.get_current_display_mode();
                 else this.set_display_mode(display_mode);
-                
+
                 // Handle access info.
                 this.__bp_display.set_access_info(this.__identity, this.__browsing_user, this.__session);
                 this.__pbc_display.set_access_info(this.__identity, this.__browsing_user, this.__session);
@@ -97,22 +97,22 @@ export function DataBrowser() {
                 this.__symp_display.set_access_info(this.__identity, this.__browsing_user, this.__session);
                 this.__fitbit_display.set_access_info(this.__identity, this.__browsing_user, this.__session);
                 this.__notes_display.set_access_info(this.__identity, this.__session);
-                
+
                 // Update notes
                 this.__notes_display.update_notes();
-               
+
                 // Update charting area.
                 switch (display_mode) {
                 case "Smart Display Mode":
                         this.__smart_display.update();
                         break;
-                case "Blood Pressure Data": 
+                case "Blood Pressure Data":
                         this.__bp_display.update();
                         break;
-                case "Symptoms Data": 
+                case "Symptoms Data":
                         this.__symp_display.update();
                         break;
-                case "Pill Bottle Cap": 
+                case "Pill Bottle Cap":
                         this.__pbc_display.update();
                         break;
                 case "Fitbit Data":
@@ -122,10 +122,11 @@ export function DataBrowser() {
                         throw "unkown display mode: " + display_mode;
                 }
         }
-        
+
         this.save_changes = function() {
                 this.__bp_display.upload_to_remote_server();
                 this.__pbc_display.upload_to_remote_server();
+                this.__fitbit_display.upload_to_remote_server();
                 this.__notes_display.save_notes();
                 this.load_display();
                 alert("Everything has been saved");
@@ -144,7 +145,7 @@ Template.tmpldatabrowser.onRendered(function () {
 
         G_DataBrowser.set_display_type_holder($("#sel-chart-types"));
         G_Session.set_data_display_mode(G_DataBrowser.get_current_display_mode());
-        
+
         G_DataBrowser.load_display();
 });
 
@@ -158,11 +159,11 @@ Template.tmpldatabrowser.helpers({
         use_smartbrowser() {
                 return G_Session.get_data_display_mode() == "Smart Display Mode";
         },
-        
+
         use_bpbrowser() {
                 return G_Session.get_data_display_mode() == "Blood Pressure Data";
         },
-        
+
         use_pbcbrowser() {
                 return G_Session.get_data_display_mode() == "Pill Bottle Cap";
         },
@@ -170,7 +171,7 @@ Template.tmpldatabrowser.helpers({
         use_symptombrowser() {
                 return G_Session.get_data_display_mode() == "Symptoms Data";
         },
-        
+
         use_fitbitbrowser() {
                 return G_Session.get_data_display_mode() == "Fitbit Data";
         },
