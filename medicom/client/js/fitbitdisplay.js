@@ -14,7 +14,7 @@
 
 import {ValueTable, ValueTable_create_from_POD} from "../../api/valuetable.js";
 
-export function FitbitDisplay() 
+export function FitbitDisplay()
 {
         this.__charting_area = null;
         this.__identity = null;
@@ -46,7 +46,7 @@ FitbitDisplay.prototype.__get_file_from_file_select = function(holder)
 FitbitDisplay.prototype.set_holders = function(template)
 {
         var clazz = this;
-        
+
         this.__charting_area = template.find("#charting-area");
 
         var file_holder = $("#ipt-file-select");
@@ -103,11 +103,11 @@ FitbitDisplay.prototype.get_processed_table = function(start_date, end_date, num
         fbtable = fbtable.sort_data(false);
 
         // merge the data from the same day.
-        /* fbtable = fbtable.merge_adjacent_data(
+        fbtable = fbtable.merge_adjacent_data(
                 {
                         name: filter,
                         scalar: function(v) { return v.mins_asleep/v.time_in_bed; },
-                        add: function(r, s) { 
+                        add: function(r, s) {
                                                 var v;
                                                 for (var prop in r)
                                                         v.prop = r.prop + s.prop;
@@ -125,7 +125,7 @@ FitbitDisplay.prototype.get_processed_table = function(start_date, end_date, num
                                a.getMonth() == b.getMonth() &&
                                a.getDate() == b.getDate();
                 }
-        ); */
+        );
         fbtable = fbtable.sample(start_date, end_date, num_samples);
         return fbtable;
 }
