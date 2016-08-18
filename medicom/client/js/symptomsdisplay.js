@@ -25,6 +25,7 @@ export function SymptomsDisplay()
         this.__start_date = null;
         this.__end_date = null;
 
+        this.__sym_selector_holder = null;
         this.__sym_record_holder = null;
         this.__charting_area = null;
 }
@@ -36,16 +37,15 @@ SymptomsDisplay.prototype.set_access_info = function(identity, browsing_user, se
         this.__session = session;
 }
 
-SymptomsDisplay.prototype.set_charting_area = function(charting_area)
+SymptomsDisplay.prototype.set_holders = function(template)
 {
-        this.__charting_area = charting_area;
-}
-
-SymptomsDisplay.prototype.set_holders = function(sym_record_area, next_page, prev_page, page_num, num_items, start_date, end_date)
-{
-        this.__sym_record_holder = sym_record_area;
+        this.__charting_area = template.find("#charting-area");
+        this.__sym_record_holder = $("#div-sym-record-holder");
+        this.__sym_selector_holder = $("#symptom-selector-holder");
         var clazz = this;
-        next_page.on("click", function(e) {
+        var page_num = $("#div-page-num-holder");
+        var num_items = $("#ipt-num-items");
+        $("#btn-next-page").on("click", function(e) {
                 var max_page_num = clazz.__sym_table != null ?
                                    Math.ceil(clazz.__sym_table.get_pairs().length/clazz.__num_items) :
                                    1;
@@ -53,7 +53,7 @@ SymptomsDisplay.prototype.set_holders = function(sym_record_area, next_page, pre
                 page_num.html(clazz.__i_page);
                 clazz.update();
         });
-        prev_page.on("click", function(e) {
+        $("#btn-prev-page").on("click", function(e) {
                 clazz.__i_page = Math.max(clazz.__i_page - 1, 1);
                 page_num.html(clazz.__i_page);
                 clazz.update();
@@ -64,11 +64,11 @@ SymptomsDisplay.prototype.set_holders = function(sym_record_area, next_page, pre
                 clazz.__num_items = parseInt(e.target.value);
                 clazz.update();
         });
-        start_date.datepicker().on("change", function (e) {
+        $("#ipt-start-date").datepicker().on("change", function (e) {
                 clazz.__start_date = new Date(e.target.value);
                 clazz.update();
         });
-        end_date.datepicker().on("change", function(e) {
+        $("#ipt-end-date").datepicker().on("change", function(e) {
                 clazz.__end_date = new Date(e.target.value);
                 clazz.update();
         });
@@ -217,13 +217,6 @@ export var G_SymptomsDisplay = new SymptomsDisplay();
 
 Template.tmplsymptombrowser.onRendered(function() {
         console.log("symptom browser rendered");
-        G_SymptomsDisplay.set_charting_area(this.find("#charting-area"));
-        G_SymptomsDisplay.set_holders($("#div-sym-record-holder"),
-                                      $("#btn-next-page"),
-                                      $("#btn-prev-page"),
-                                      $("#div-page-num-holder"),
-                                      $("#ipt-num-items"),
-                                      $("#ipt-start-date"),
-                                      $("#ipt-end-date"));
+        G_SymptomsDisplay.set_holders(this);
         G_SymptomsDisplay.update();
 });
