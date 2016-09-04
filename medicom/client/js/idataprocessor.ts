@@ -13,14 +13,28 @@
  */
 
 import {IDataTransaction} from "./idatatransaction.ts";
+import {Identity} from "../../api/identity.ts";
+import {AccountInfo} from "../../api/accountinfo.ts";
+import {MedicalSession} from "../../api/medicalsession.ts";
 
 /*
  * <IDataProcessor> Process and Present data.
  */
-export interface IDataProcessor
+export abstract class IDataProcessor
 {
-        upload(data: IDataTransaction): boolean;
-        download():                     IDataTransaction;
-        load(file: File):               IDataTransaction;
-        render(data: IDataTransaction): boolean;
+        protected identity:     Identity;
+        protected user:         AccountInfo;
+        protected session:      MedicalSession;
+
+        constructor(identity: Identity, user: AccountInfo, session: MedicalSession)
+        {
+                this.identity = identity;
+                this.user = user;
+                this.session = session;
+        }
+
+        public abstract upload(data: IDataTransaction): boolean;
+        public abstract download():                     IDataTransaction;
+        public abstract load(file: File):               IDataTransaction;
+        public abstract render(data: IDataTransaction): boolean;
 };
