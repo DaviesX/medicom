@@ -12,7 +12,9 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-export class AdminRecord
+import {IDataTransaction} from "./idatatransaction.ts";
+
+export class AdminRecord implements IDataTransaction
 {
         public m_account_id:            number;
         public m_user_group:            number;

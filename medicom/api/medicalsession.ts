@@ -12,7 +12,9 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-export class MedicalSession
+import {IDataTransaction} from "./idatatransaction.ts";
+
+export class MedicalSession implements IDataTransaction
 {
         public m_session_id:    number;
         public m_is_active:     boolean = false;
