@@ -17,6 +17,9 @@ import {Identity} from "../../api/identity.ts";
 import {AccountInfo} from "../../api/accountinfo.ts";
 import {MedicalSession} from "../../api/medicalsession.ts";
 
+import {DataParams} from "./dataparams.ts";
+import {DataBrowserUI} from "./databrowserui.ts";
+
 /*
  * <IDataProcessor> Process and Present data.
  */
@@ -33,8 +36,13 @@ export abstract class IDataProcessor
                 this.session = session;
         }
 
-        public abstract upload(data: IDataTransaction): boolean;
-        public abstract download():                     IDataTransaction;
-        public abstract load(file: File):               IDataTransaction;
-        public abstract render(data: IDataTransaction): boolean;
+        public abstract id():                                   string;
+        public abstract name():                                 string;
+        public abstract upload_call(data: IDataTransaction, 
+                                    params: DataParams):        [string, any];
+        public abstract download_call(params: DataParams):      [string, any];
+        public abstract load(stream:string, suffix:string):     IDataTransaction;
+        public abstract render(data: IDataTransaction, 
+                               params: DataParams,
+                               target: DataBrowserUI):          boolean;
 };
