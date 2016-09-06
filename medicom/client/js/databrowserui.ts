@@ -122,7 +122,7 @@ export class DataBrowserUI
         private m_on_update:            OnUIComponentUpdate;
         
         // UI values.
-        private m_chart:                any;
+        private m_chart:                HTMLElement;
         private m_file:                 File = null;
         private m_start_date:           Date;
         private m_end_date:             Date;
@@ -147,12 +147,12 @@ export class DataBrowserUI
         private m_select_groups:        Map<string, SelectGroup>;
         private m_display_modes:        DisplayMode;
 
-        constructor(on_update: OnUIComponentUpdate, template: any)
+        constructor(on_update: OnUIComponentUpdate)
         {
                 this.m_on_update = on_update;
                 var clazz = this;
 
-                this.m_chart = template.find("#charting-area");
+                this.m_chart = $("#charting-area").get(0);
 
                 this.m_jfile_path.html("No file is connected");
                 this.m_jfile_connect.on("change", function (e: Event) {
