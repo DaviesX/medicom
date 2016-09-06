@@ -58,7 +58,7 @@ export class AccountInfo
         }
 };
 
-export function account_info_copy(pod: AccountInfo)
+export function account_info_copy(pod: AccountInfo): AccountInfo
 {
         var obj = new AccountInfo(null, null, null, null);
         obj.m_record            = admin_record_copy(pod.m_record);

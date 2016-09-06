@@ -61,7 +61,7 @@ export class Identity implements IDataTransaction
         }
 };
 
-export function identity_copy(pod) 
+export function identity_copy(pod): Identity
 {
         var obj = new Identity(null, null);
         obj.m_session_id = pod.m_session_id;

@@ -73,7 +73,7 @@ export class MedicalSession implements IDataTransaction
         }
 }
 
-export function medical_session_copy(pod) 
+export function medical_session_copy(pod): MedicalSession
 {
         var obj = new MedicalSession(null);
         obj.m_session_id = pod.m_session_id;
