@@ -16,8 +16,7 @@
 /// <reference path="../../tslib/jqueryui.d.ts" />
 /// <reference path="../../tslib/lib.es6.d.ts" />
 
-namespace DataBrowserUI 
-{
+import {DataParams} from "./dataparams.ts";
 
 class UIElement
 {
@@ -112,12 +111,12 @@ class DisplayMode
         }
 };
 
-export type OnUIComponentUpdate = (ui: UI, component: string) => void;
+export type OnUIComponentUpdate = (ui: DataBrowserUI, component: string) => void;
 
 /*
  * <UI> Handling DataBrowser UI components.
  */
-export class UI
+export class DataBrowserUI 
 {
         // On update callback.
         private m_on_update:            OnUIComponentUpdate;
@@ -277,6 +276,13 @@ export class UI
         {
                 return this.m_filter;
         }
+
+        public generate_data_params(): DataParams
+        {
+                return new DataParams(this.file(), 
+                                      this.start_date(), this.end_date(), 
+                                      this.sample_count(), this.expected_dose(), this.filter(),
+                                      this.selected_options(null));
+        }
 };
 
-}
