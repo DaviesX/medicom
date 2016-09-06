@@ -21,11 +21,13 @@ export class DataParams
         protected expected_dose:        number;
         protected filter:               string; 
         protected chart_select:         string[];
+        protected chart:                any;
 
         constructor(file: File, 
                     start_date: Date, end_date: Date, 
                     sample_count: number, expected_dose: number, filter: string,
-                    chart_select: string[])
+                    chart_select: string[],
+                    chart: any)
         {
                 this.file = file;
                 this.start_date = start_date;
@@ -34,5 +36,6 @@ export class DataParams
                 this.expected_dose = expected_dose;
                 this.filter = filter;
                 this.chart_select = chart_select;
+                this.chart = chart;
         }
 };

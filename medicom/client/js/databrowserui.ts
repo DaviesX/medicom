@@ -122,6 +122,7 @@ export class DataBrowserUI
         private m_on_update:            OnUIComponentUpdate;
         
         // UI values.
+        private m_chart:                any;
         private m_file:                 File = null;
         private m_start_date:           Date;
         private m_end_date:             Date;
@@ -146,13 +147,14 @@ export class DataBrowserUI
         private m_select_groups:        Map<string, SelectGroup>;
         private m_display_modes:        DisplayMode;
 
-        constructor(on_update: OnUIComponentUpdate)
+        constructor(on_update: OnUIComponentUpdate, template: any)
         {
                 this.m_on_update = on_update;
                 var clazz = this;
 
-                this.m_jfile_path.html("No file is connected");
+                this.m_chart = template.find("#charting-area");
 
+                this.m_jfile_path.html("No file is connected");
                 this.m_jfile_connect.on("change", function (e: Event) {
                         var files = <Array<File>> clazz.m_jfile_connect.prop("files");
                         if (files == null || files.length == 0)
@@ -277,12 +279,18 @@ export class DataBrowserUI
                 return this.m_filter;
         }
 
+        public chart(): any
+        {
+                return this.m_chart;
+        }
+
         public generate_data_params(): DataParams
         {
                 return new DataParams(this.file(), 
                                       this.start_date(), this.end_date(), 
                                       this.sample_count(), this.expected_dose(), this.filter(),
-                                      this.selected_options(null));
+                                      this.selected_options(null),
+                                      this.chart());
         }
 };
 
