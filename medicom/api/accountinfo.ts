@@ -12,9 +12,10 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+import {IDataTransaction} from "./idatatransaction.ts";
 import {AdminRecord, admin_record_copy} from "./adminrecord.ts";
 
-export class AccountInfo
+export class AccountInfo implements IDataTransaction
 {
         public m_record:       AdminRecord; 
         public m_account_id:   number;
