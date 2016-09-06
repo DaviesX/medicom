@@ -14,22 +14,24 @@
 
 export class DataParams
 {
-        protected file:                 File;
-        protected start_date:           Date;
-        protected end_date:             Date;
-        protected sample_count:         number;
-        protected expected_dose:        number;
-        protected filter:               string; 
-        protected chart_select:         string[];
-        protected chart:                any;
+        public file:                 File;
+        public filepath:             string;
+        public start_date:           Date;
+        public end_date:             Date;
+        public sample_count:         number;
+        public expected_dose:        number;
+        public filter:               string; 
+        public chart_select:         string[];
+        public chart:                any;
 
-        constructor(file: File, 
+        constructor(file: File, filepath: string,
                     start_date: Date, end_date: Date, 
                     sample_count: number, expected_dose: number, filter: string,
                     chart_select: string[],
                     chart: any)
         {
                 this.file = file;
+                this.filepath = filepath;
                 this.start_date = start_date;
                 this.end_date = end_date;
                 this.sample_count = sample_count;

@@ -17,6 +17,7 @@
 /// <reference path="../../tslib/lib.es6.d.ts" />
 
 import {DataParams} from "./dataparams.ts";
+import {UI, UIObserver} from "./ui.ts";
 
 class UIElement
 {
@@ -111,19 +112,19 @@ class DisplayMode
         }
 };
 
-export type OnUIComponentUpdate = (ui: DataBrowserUI, component: string) => void;
 
 /*
  * <UI> Handling DataBrowser UI components.
  */
-export class DataBrowserUI 
+export class DataBrowserUI implements UI
 {
         // On update callback.
-        private m_on_update:            OnUIComponentUpdate;
+        private m_observer:             UIObserver;
         
         // UI values.
         private m_chart:                HTMLElement;
         private m_file:                 File = null;
+        private m_filepath:             string;
         private m_start_date:           Date;
         private m_end_date:             Date;
         private m_sample_count:         number;
@@ -147,9 +148,9 @@ export class DataBrowserUI
         private m_select_groups:        Map<string, SelectGroup>;
         private m_display_modes:        DisplayMode;
 
-        constructor(on_update: OnUIComponentUpdate)
+        constructor(observer: UIObserver)
         {
-                this.m_on_update = on_update;
+                this.m_observer = observer;
                 var clazz = this;
 
                 this.m_chart = $("#charting-area").get(0);
@@ -162,9 +163,12 @@ export class DataBrowserUI
                         var file = files[0];
                         if (file == null)
                                 return;
+
                         clazz.m_jfile_path.html(file.name);
                         clazz.m_file = file;
-                        clazz.m_on_update(clazz, "File Select");
+                        clazz.m_filepath = file.name;
+
+                        clazz.m_observer.update(clazz, "File Select");
                 });
 
                 this.m_jfile_disconn.on("click", function(e: Event) {
@@ -172,34 +176,35 @@ export class DataBrowserUI
                         clazz.m_jfile_connect.replaceWith(
                                 clazz.m_jfile_connect = clazz.m_jfile_connect.clone(true));
                         clazz.m_file = null;
-                        clazz.m_on_update(clazz, "File Disconnect");
+                        clazz.m_filepath = null;
+                        clazz.m_observer.update(clazz, "File Disconnect");
                 });
 
                 this.m_jstart_date.datepicker().on("change", function (e: Event) {
                         clazz.m_start_date = new Date((<HTMLInputElement> e.target).value);
-                        clazz.m_on_update(clazz, "Start Date");
+                        clazz.m_observer.update(clazz, "Start Date");
                 });
 
                 this.m_jend_date.datepicker().on("change", function(e: Event) {
                         clazz.m_end_date = new Date((<HTMLInputElement> e.target).value);
-                        clazz.m_on_update(clazz, "End Date");
+                        clazz.m_observer.update(clazz, "End Date");
                 });
 
                 this.m_jfilter.on("change", function(e: Event) {
                         clazz.m_filter = (<HTMLInputElement> e.target).value;
-                        clazz.m_on_update(clazz, "Filter Type");
+                        clazz.m_observer.update(clazz, "Filter Type");
                 });
 
                 this.m_jsample_count.on("change", function(e: Event) {
                         var val = (<HTMLInputElement> e.target).value;
                         clazz.m_sample_count = val == "" ? null : parseInt(val, 10);
-                        clazz.m_on_update(clazz, "Sample Count");
+                        clazz.m_observer.update(clazz, "Sample Count");
                 });
 
                 this.m_expected_dose = parseInt(this.m_jexpected_count.val(), 10);
                 this.m_jexpected_count.on("change", function(e: Event) {
                         clazz.m_expected_dose = parseInt((<HTMLInputElement> e.target).value, 10);
-                        clazz.m_on_update(clazz, "Expected Dose");
+                        clazz.m_observer.update(clazz, "Expected Dose");
                 });
         }
 
@@ -254,6 +259,11 @@ export class DataBrowserUI
                 return this.m_file;
         }
 
+        public filepath(): string
+        {
+                return this.m_filepath;
+        }
+
         public start_date(): Date
         {
                 return this.m_start_date;
@@ -286,7 +296,7 @@ export class DataBrowserUI
 
         public generate_data_params(): DataParams
         {
-                return new DataParams(this.file(), 
+                return new DataParams(this.file(), this.filepath(),
                                       this.start_date(), this.end_date(), 
                                       this.sample_count(), this.expected_dose(), this.filter(),
                                       this.selected_options(null),
