@@ -206,6 +206,10 @@ export class DataBrowserUI implements UI
                         clazz.m_expected_dose = parseInt((<HTMLInputElement> e.target).value, 10);
                         clazz.m_observer.update(clazz, "Expected Dose");
                 });
+
+                this.m_jupload.on("click", function(e: Event) {
+                        clazz.m_observer.update(clazz, "Save");
+                });
         }
 
         // The following functions modify UI dynamically.
