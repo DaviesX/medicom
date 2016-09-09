@@ -377,6 +377,16 @@ export var c_Meteor_Methods = {
          * Inject test data into the database.
          * @return {null}
          */
+reset_data:
+        function(arg)
+        {
+                TestData.reset_data(true);
+        },
+
+        /**
+         * Inject test data into the database.
+         * @return {null}
+         */
 inject_test_data:
         function(arg)
         {

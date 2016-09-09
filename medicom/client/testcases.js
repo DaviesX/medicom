@@ -275,4 +275,7 @@ export function inject_test_data()
         Meteor.call("inject_test_data");
 }
 
-
+export function reset_data()
+{
+        Meteor.call("reset_data");
+}

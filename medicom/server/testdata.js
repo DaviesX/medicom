@@ -184,3 +184,8 @@ export function PrepareTestData() {
         });
         console.log("TestPrepareSampleData - ends");
 }
+
+function reset_data()
+{
+        M_Methods.system_reset();
+}

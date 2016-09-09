@@ -22,6 +22,10 @@ Router.route("/inject-test-data", function() {
              TestCase.inject_test_data();
              });
 
+Router.route("/reset-data", function() {
+             TestCase.reset_data();
+             });
+
 Router.route("/test-privilege-network", function() {
              TestCase.test_privilege_network();
              });
