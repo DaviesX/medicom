@@ -15,14 +15,18 @@
 /// <reference path="../../tslib/c3.d.ts" />
 /// <reference path="../../tslib/d3.d.ts" />
 
-type ColorEval = (i: number) => any;
-
 export enum ChartShape
 {
         Line,
         Bar,
         Overlay
 };
+
+
+interface IColorEval 
+{
+        eval(y_val: number): d3.Color;
+}
 
 class XDesc 
 {
@@ -40,13 +44,14 @@ class YDesc
 {
         public label:           string;
         public data_type:       ChartShape;
-        public color_eval:      ColorEval;
+        public color_eval:      IColorEval;
+
         public color:           d3.Color;
         public values:          Array<number>;
 
         constructor(label: string, 
                     data_type: ChartShape, 
-                    color_eval: ColorEval, 
+                    color_eval: IColorEval, 
                     color: d3.Color,
                     values: Array<number>)
         {
@@ -64,15 +69,36 @@ export interface IChart
         ys():           Array<YDesc>;
 };
 
+
+class ColorEvalBell implements IColorEval
+{
+        private m_miu:          number;
+        private m_sigma:       number;
+        private m_central_deg:  number;
+
+        constructor(miu: number, sigma: number, central: number)
+        {
+                this.m_miu = miu;
+                this.m_sigma = sigma;
+                this.m_central_deg = central;
+        }
+
+        public eval(y_val: number): d3.Color
+        {
+                var level = Math.min(Math.max(
+                        this.m_central_deg + (y_val - this.m_miu)*this.m_sigma, 0), 360);
+                return d3.hsl(level, 0.4, 0.7);
+        }
+};
+
 export class TemperalChart implements IChart
 {
         private m_x_desc:       XDesc;            
         private m_y_descs:      Array<YDesc>;
-        private m_color:        d3.Color;
 
-        constructor(color: d3.Color) 
+        constructor() 
         {
-                this.m_color = color;
+                this.m_y_descs = new Array<YDesc>();
         }
 
         public set_x(x: Array<Date>): void
@@ -80,9 +106,16 @@ export class TemperalChart implements IChart
                 this.m_x_desc = new XDesc("time", x);
         }
 
-        public add_y(label: string, y: Array<number>, shape: ChartShape): void
+        public add_y(label: string, y: Array<number>, color: d3.Color): void
         {
-                this.m_y_descs.push(new YDesc(label, shape, null, this.m_color, y));
+                this.m_y_descs.push(new YDesc(label, ChartShape.Line, null, color, y));
+        }
+
+        // @fixme: not enough to implement overlay.
+        public set_overlay(y: Array<number>, miu: number, sigma: number, central_deg: number): void
+        {
+                this.m_y_descs.push(new YDesc("", ChartShape.Bar, 
+                                              new ColorEvalBell(miu, sigma, central_deg), null, y));
         }
 
         public x(): XDesc
@@ -98,29 +131,26 @@ export class TemperalChart implements IChart
 
 export class BooleanChart implements IChart
 {
-        private m_x:            [string, string];
-        private m_y:            [number, number];
-        private m_title:        string;
-        private m_x_desc:       XDesc;
-        private m_y_desc:       YDesc;
-        private m_color:        d3.Color;
+        private m_x:            Array<string>;
+        private m_y:            Array<[number, number]>;
+        private m_binary:       [string, string];
 
-        constructor(title: string, color: d3.Color) 
+        private m_colors:       [d3.Color, d3.Color];
+
+        constructor(yes: string, no: string, 
+                    color_yes: d3.Color, color_no: d3.Color) 
         {
-                this.m_title = title;
-                this.m_color = color;
+                this.m_binary[0] = yes;
+                this.m_binary[1] = no;
+
+                this.m_colors[0] = color_yes;
+                this.m_colors[1] = color_no;
         }
 
-        public set_yes(label: string, value: number)
+        public add_pair(category: string, y0: number, y1: number)
         {
-                this.m_x[1] = label;
-                this.m_y[1] = value;
-        }
-
-        public set_no(label: string, value: number)
-        {
-                this.m_x[0] = label;
-                this.m_y[0] = value;
+                this.m_x.push(category);
+                this.m_y.push([y0, y1]);
         }
 
         public x(): XDesc
@@ -130,11 +160,19 @@ export class BooleanChart implements IChart
 
         public ys(): Array<YDesc>
         {
-                return [new YDesc(this.m_title, ChartShape.Bar, null, this.m_color, this.m_y)];
+                var a = new Array<YDesc>();
+                for (var i = 0; i < 2; i ++) {
+                        var content = new Array<number>();
+                        for (var j = 0; j < this.m_y.length; j ++) {
+                                content.push(this.m_y[j][i]);
+                        }
+                        a.push(new YDesc(this.m_binary[i], ChartShape.Bar, null, this.m_colors[i], content));
+                }
+                return a;
         }
 };
 
-var cys;
+var cys: Array<YDesc>;
 
 /*
  * <C3ChartRenderer> A C3 based chart renderer.
@@ -187,7 +225,7 @@ export class C3ChartRenderer
                                 if (max_height > cys[i].values[j])
                                         max_height = cys[i].values[j];
                         }
-                        columns.push([cys[i].label].concat(cys[i].values));
+                        columns.push((<Array<any>>[cys[i].label]).concat(cys[i].values));
                 }
 
                 var ys_type = {};
@@ -220,7 +258,7 @@ export class C3ChartRenderer
                                 color: function(color, d) {
                                         for (var i = 0; i < cys.length; i ++) {
                                                 if (cys[i].label == d.id && cys[i].color_eval != null)
-                                                        return cys[i].color_eval(d.index);
+                                                        return cys[i].color_eval.eval(cys[i].values[d.index]).toString();
                                         }
                                         return color;
                                 },
