@@ -42,12 +42,23 @@ function crc32(str: string): number
 
 class SymptomPacket
 {
-        public email:           string;
-        public checksum:        number;
-        public timestamp:       Date;
-        public symptom_names:   Array<string>;
-        public symptom_scales:  Array<number>;
-        public comments:        string;
+        public email:                   string;
+        public checksum:                number;
+        public date:                    Date;
+        public times_of_the_day:        string;
+        public symptom_names:           Array<string>;
+        public symptom_scales:          Array<number>;
+        public lifestyle_names:         Array<string>;
+        public lifestyle_factors:       Array<boolean>;
+        public comments:                string;
+}
+
+class AppConfigPacket
+{
+        public email:                   string;
+        public symptom_names:           Array<string>;
+        public lifestyle_names:         Array<string>;
+        public reserved:                string;
 }
 
 /**
@@ -70,14 +81,8 @@ function() {
         if (this.request.body == null)
                 console.log("Invalid body");
 
-        var a: Array<SymptomPacket>;
-        try  {
-                a = <Array<SymptomPacket>> JSON.parse(this.request.body);
-        } catch (error) {
-                console.log(error.toString());
-                return;
-        }
-        console.log("Received data: ");
+        var a = <Array<SymptomPacket>> this.request.body;
+        console.log("Received symptoms data: ");
         console.log(a);
 
         for (var i = 0; i < a.length; i ++) {
@@ -88,4 +93,20 @@ function() {
                 }
         }
         this.response.end("Symptoms received");
+});
+
+Router.route("/api-config", {where: "server"}).post(
+function() {
+        if (this.request.body == null)
+                console.log("Invalid body");
+
+        var config = <AppConfigPacket> this.request.body;
+        console.log("Received app config data: ");
+        console.log(config);
+
+        this.response.end("App config received");
+});
+
+Router.route("/api-config", {where: "server"}).get(
+function() {
 });
