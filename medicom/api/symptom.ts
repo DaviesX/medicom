@@ -17,12 +17,12 @@ import {IRowValue} from "./irowvalue.ts";
 
 export class Symptom implements IRowValue
 {
-        public symptom:         Array<[string, number]>;
+        public symptoms:        Array<[string, number]>;
         public free_text:       string;
 
-        constructor(symptom: Array<[string, number]>, free_text: string)
+        constructor(symptoms: Array<[string, number]>, free_text: string)
         {
-                this.symptom = symptom;
+                this.symptoms = symptoms;
                 this.free_text = free_text;
         }
 };
