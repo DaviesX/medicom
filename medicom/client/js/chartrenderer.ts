@@ -245,7 +245,8 @@ export class C3ChartRenderer
                                         throw new Error("Unknown chart shape of " + cys[i].label);
                                 }
                         }
-                        ys_color[cys[i].label] = cys[i].color.toString();
+                        if (cys[i].color != null)
+                                ys_color[cys[i].label] = cys[i].color.toString();
                 }
 
                 c3.generate({
