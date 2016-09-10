@@ -18,11 +18,15 @@ import {IRowValue} from "./irowvalue.ts";
 export class Symptom implements IRowValue
 {
         public symptoms:        Array<[string, number]>;
+        public lifestyles:      Array<[string, boolean]>;
         public free_text:       string;
 
-        constructor(symptoms: Array<[string, number]>, free_text: string)
+        constructor(symptoms: Array<[string, number]>, 
+                    lifestyles: Array<[string, boolean]>, 
+                    free_text: string)
         {
                 this.symptoms = symptoms;
+                this.lifestyles = lifestyles;
                 this.free_text = free_text;
         }
 };
