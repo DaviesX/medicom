@@ -105,8 +105,7 @@ function() {
         console.log(config);
 
         this.response.end("App config received");
-});
-
-Router.route("/api-config", {where: "server"}).get(
+}).get(
 function() {
 });
+
