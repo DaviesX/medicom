@@ -38,11 +38,11 @@ export abstract class IDataProcessor
 
         public abstract id():                                   string;
         public abstract name():                                 string;
-        public abstract upload_call(data: IDataTransaction, 
-                                    params: DataParams):        [string, any];
-        public abstract download_call(params: DataParams):      [string, any];
-        public abstract load(stream:string, suffix:string):     IDataTransaction;
-        public abstract render(data: IDataTransaction, 
+        public abstract upload_calls(data: Array<IDataTransaction>, 
+                                     params: DataParams):        Array<[string, any]>;
+        public abstract download_calls(params: DataParams):      Array<[string, any]>;
+        public abstract load(stream:string, suffix:string):     Array<IDataTransaction>;
+        public abstract render(data: Array<IDataTransaction>, 
                                params: DataParams,
                                target: DataBrowserUI):          boolean;
 };

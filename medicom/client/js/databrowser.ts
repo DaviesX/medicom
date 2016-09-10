@@ -45,6 +45,18 @@ class DataBrowserObserver implements UIObserver
         }
 };
 
+class LocalCache
+{
+        public processor:       IDataProcessor;
+        public data:            Array<IDataTransaction>;
+
+        constructor(proc: IDataProcessor)
+        {
+                this.processor = proc;
+                this.data = new Array<IDataTransaction> ();
+        }
+}
+
 
 /*
  * <DataBrowser> A controller class to coordinate data presentation.
@@ -54,7 +66,7 @@ export class DataBrowser
         private m_identity:     Identity;
         private m_user:         AccountInfo;
         private m_session:      MedicalSession;
-        private m_local_cache:  Map<string, [IDataProcessor, IDataTransaction]>;
+        private m_local_cache:  Map<string, LocalCache>; 
         private m_ui:           DataBrowserUI;
 
         constructor(identity: Identity, user: AccountInfo, session: MedicalSession)
@@ -65,28 +77,33 @@ export class DataBrowser
 
                 this.m_ui = new DataBrowserUI(new DataBrowserObserver(this));
 
-                // Initialize local cache and ui display mode.
+                // Initialize local cache.
                 var a = data_proc_factory_create_all(identity, user, session);
                 for (var i = 0; i < a.length; i ++) {
-                        this.m_local_cache.set(a[i].id(), [a[i], null]);
+                        this.m_local_cache.set(a[i].id(), new LocalCache(a[i]));
+                }
+
+                // Initialize display mode UI.
+                for (var i = 0; i < a.length; i ++) {
                         this.m_ui.add_display_mode(a[i].name(), a[i].id());
                 }
         }
 
         public update(component: string): void
         {
-                var cur_cache = this.m_local_cache.get(this.m_ui.display_mode());
+                var cur_cache = <LocalCache> this.m_local_cache.get(this.m_ui.display_mode());
                 var params = this.m_ui.generate_data_params();
 
                 switch (component) {
                         case "File Select": {
                                 var suffix = params.file.name.split(".").pop();
                                 var fr = new FileReader();
+                                var clazz = this;
                                 fr.onload = function(e: Event) {
-                                        cur_cache[1] = cur_cache[0].load(e.target.result, suffix);
+                                        cur_cache.data = cur_cache.processor.load(e.target.result, suffix);
 
                                         // Render local data.
-                                        cur_cache[0].render(cur_cache[1], params, this.m_ui);
+                                        cur_cache.processor.render(cur_cache.data, params, clazz.m_ui);
                                 }
                                 fr.readAsText(params.file);
                                 break;
@@ -95,11 +112,14 @@ export class DataBrowser
                         case "Save": {
                                 for (var id in this.m_local_cache) {
                                         var cache = this.m_local_cache.get(id);
-                                        var call = cache[0].upload_call(cache[1], params);
-                                        Meteor.call(call[0], call[1], function (err, result) {
-                                                if (result.error != "")
-                                                        alert("Failed to upload " + cache[0].name() + " data");
-                                        });
+                                        var calls = cache.processor.upload_calls(cache.data, params);
+                                        for (var i = 0; i < calls.length; i ++) {
+                                                var meteor_call = calls[i];
+                                                Meteor.call(meteor_call[0], meteor_call[1], function (err, result) {
+                                                        if (result.error != "")
+                                                                alert("Failed to upload " + cache.processor.name() + " data");
+                                                });
+                                        }
                                 }
                                 alert("Uploading data");
                                 break;
@@ -107,17 +127,23 @@ export class DataBrowser
 
                         default: {
                                 // Download data.
-                                var call = cache[0].download_call(params);
-                                Meteor.call(call[0], call[1], function (err, result) {
-                                        if (result.error != "") {
-                                                alert("Failed to download " + cache[0].name() + " data");
-                                                return ;
-                                        }
-                                        cur_cache[1] = data_transaction_copy(result.type, result.value);
+                                var calls = cur_cache.processor.download_calls(params);
+                                for (var i = 0; i < calls.length; i ++) {
+                                        var meteor_call = calls[i];
+                                        var clazz = this;
+                                        Meteor.call(meteor_call[0], meteor_call[1], function (err, result) {
+                                                if (result.error != "") {
+                                                        alert("Failed to download " + cur_cache[0].processor.name() + " data");
+                                                        return ;
+                                                }
+                                                cur_cache.data.push(data_transaction_copy(result.type, result.value));
 
-                                        // Render local cache.
-                                        cur_cache[0].render(cur_cache[1], params, this.m_ui);
-                                });
+                                                // Render local cache after collected everything requested by the call.
+                                                if (cur_cache.data.length == calls.length) {
+                                                        cur_cache.processor.render(cur_cache.data, params, clazz.m_ui);
+                                                }
+                                        });
+                                }
                                 break;
                         }
                 }
