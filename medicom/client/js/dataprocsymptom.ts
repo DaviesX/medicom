@@ -17,9 +17,12 @@ import {IDataTransaction} from "../../api/idatatransaction.ts";
 import {Identity} from "../../api/identity.ts";
 import {AccountInfo} from "../../api/accountinfo.ts";
 import {MedicalSession} from "../../api/medicalsession.ts";
+import {ValueTable} from "../../api/valuetable.ts";
+import {Symptom} from "../../api/symptom.ts";
 
 import {DataParams} from "./dataparams.ts";
 import {DataBrowserUI} from "./databrowserui.ts";
+import {C3ChartRenderer, TemperalChart} from "./chartrenderer.ts";
 
 
 /*
@@ -32,35 +35,96 @@ export class DataProcSymptom extends IDataProcessor
                 super(identity, user, session);
         }
 
+        // @override
         public id(): string
         {
                 return "data_proc_symptom";
         }
 
+        // @overrdie
         public name(): string
         {
                 return "Symptom Data";
         }
 
-        public upload_call(pdata: IDataTransaction, arams: DataParams): [string, any] 
+        // @override
+        public upload_calls(data: Array<IDataTransaction>, params: DataParams): Array<[string, any]>
         {
-                return null;
+                return new Array<[string, any]>();
         }
 
-        public download_call(params: DataParams): [string, any]
+        // @override
+        public download_calls(params: DataParams): Array<[string, any]>
         {
-                return null;
+                var call_params = {
+                        identity:       this.identity,
+                        session_id:     this.session.get_session_id(),
+                        start_date:     params.start_date,
+                        end_date:       params.end_date,
+                        num_items:      null,
+                };
+                return [["get_measure_symptom", call_params]];
         }
 
-        public load(stream: string, suffix: string): IDataTransaction
+        // @overrdie
+        public load(stream: string, suffix: string): Array<IDataTransaction>
         {
-                return null;
+                return new Array<IDataTransaction>();
         }
 
-        public render(data: IDataTransaction, 
+        public generate_chart(data: ValueTable, params: DataParams): TemperalChart
+        {
+                var chart = new TemperalChart();
+                if (data == null) {
+                        chart.set_x(new Array<Date>());
+                        chart.add_y("Nothing to Display", new Array<number>(), null);
+                } else {
+                        var sym_table = data;
+                        var x = new Array<Date>();
+                        var pairs = sym_table.get_pairs();
+                        for (var i = 0; i < pairs.length; i ++) {
+                                x.push(pairs[i].date);
+                        }
+                        // Scan the category of the symptoms.
+                        var categories = new Map<string, number>();
+                        var n_symps = 0;
+                        for (var i = 0; i < pairs.length; i ++) {
+                                var val = <Symptom> pairs[j].value;
+                                for (var j = 0; j < val.symptoms.length; j ++) {
+                                        if (!categories.has(val.symptoms[j][0]))
+                                                categories.set(val.symptoms[j][0], n_symps ++);
+                                }
+                        }
+                        // Generate values.
+                        var ys = new Array<Array<number>>();
+                        for (var j = 0; j < pairs.length; j ++) {
+                                var val = <Symptom> pairs[j].value;
+                                // Initialize to null for all categories.
+                                for (var i = 0; i < 0; i ++)
+                                        ys[i][j] = null;
+
+                                for (var i = 0; i < 0; i ++) {
+                                        if (val.symptoms[i] != null) {
+                                                var slot = categories.get(val.symptoms[i][0]);
+                                                ys[slot][j] = val.symptoms[slot][1];
+                                        }
+                                }
+                        }
+                        // Put in chart.
+                        categories.forEach(function(slot: number, sym_name: string, map: Map<string, number>) {
+                                chart.add_y(sym_name, ys[slot], null);
+                        });
+                }
+                return chart;
+        }
+
+        // @override
+        public render(data: Array<IDataTransaction>,
                       params: DataParams,
                       target: DataBrowserUI): boolean
         {
-                return false;
+                var renderer = new C3ChartRenderer(target.chart());
+                renderer.render(this.generate_chart(<ValueTable> data[0], params));
+                return true;
         }
 };
