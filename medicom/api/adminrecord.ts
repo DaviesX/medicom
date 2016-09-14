@@ -16,12 +16,12 @@ import {IDataTransaction} from "./idatatransaction.ts";
 
 export class AdminRecord implements IDataTransaction
 {
-        public m_account_id:            number;
-        public m_user_group:            number;
-        public m_internal_pass:         number;
-        public m_is_active:             boolean = false;
-        public m_auth_code:             string;
-        public m_privi_ref:             number;
+        public account_id:              number;
+        public usergroup:               number;
+        public internal_pass:           number;
+        public isactive:                boolean = false;
+        public authcode:                string;
+        public privilege_ref:           number;
 
         private hash33(s: string): number
         {
@@ -35,92 +35,92 @@ export class AdminRecord implements IDataTransaction
 
         constructor(account_id: number, user_group: number, password: string, auth_code: string, privi_ref: number)
         {
-                this.m_account_id = account_id;
-                this.m_user_group = user_group
-                this.m_internal_pass = password != null ? this.hash33(password) : 0;
-                this.m_auth_code = auth_code;
-                this.m_privi_ref = privi_ref;
+                this.account_id = account_id;
+                this.usergroup = user_group
+                this.internal_pass = password != null ? this.hash33(password) : 0;
+                this.authcode = auth_code;
+                this.privilege_ref = privi_ref;
         }
 
         public is_equal(other: AdminRecord): boolean
         {
-                return other.m_account_id == this.m_account_id &&
-                       other.m_privi_ref == this.m_privi_ref &&
-                       other.m_user_group == this.m_user_group &&
-                       other.m_internal_pass == this.m_internal_pass &&
-                       other.m_is_active == this.m_is_active &&
-                       other.m_auth_code == this.m_auth_code;
+                return other.account_id == this.account_id &&
+                       other.privilege_ref == this.privilege_ref &&
+                       other.usergroup == this.usergroup &&
+                       other.internal_pass == this.internal_pass &&
+                       other.isactive == this.isactive &&
+                       other.authcode == this.authcode;
         }
 
         public set_auth_code(auth_code: string): void
         {
-                this.m_auth_code = auth_code;
+                this.authcode = auth_code;
         }
         
         public get_account_id(): number
         {
-                return this.m_account_id;
+                return this.account_id;
         }
         
         public user_group(): number
         {
-                return this.m_user_group;
+                return this.usergroup;
         }
         
         public get_auth_code(): string
         {
-                return this.m_auth_code;
+                return this.authcode;
         }
         
         public verify_password(password: string): boolean
         {
-                return this.m_internal_pass == this.hash33(password);
+                return this.internal_pass == this.hash33(password);
         }
         
         public verify_internal_pass(pass: number): boolean
         {
-                return this.m_internal_pass == pass;
+                return this.internal_pass == pass;
         }
         
         public verify_auth_code(auth_code: string): boolean
         {
-                return this.m_auth_code == auth_code;
+                return this.authcode == auth_code;
         }
         
         public get_internal_pass(): number
         {
-                return this.m_internal_pass;
+                return this.internal_pass;
         }
         
         public activate(): void 
         {
-                this.m_is_active = true;
+                this.isactive = true;
         }
         
         public deactivate(): void
         {
-                this.m_is_active = false;
+                this.isactive = false;
         }
         
         public is_active(): boolean
         {
-                return this.m_is_active;
+                return this.isactive;
         }
         
         public get_privilege_ref(): number
         {
-                return this.m_privi_ref;
+                return this.privilege_ref;
         }
 }
 
 export function admin_record_copy(pod)
 {
         var obj = new AdminRecord(null, null, null, null, null);
-        obj.m_account_id = pod.m_account_id;
-        obj.m_privi_ref = pod.m_privi_ref;
-        obj.m_user_group = pod.m_user_group;
-        obj.m_internal_pass = pod.m_internal_pass;
-        obj.m_is_active = pod.m_is_active;
-        obj.m_auth_code = pod.m_auth_code;
+        obj.account_id = pod.account_id;
+        obj.privilege_ref = pod.privilege_ref;
+        obj.usergroup = pod.usergroup;
+        obj.internal_pass = pod.internal_pass;
+        obj.isactive = pod.isactive;
+        obj.authcode = pod.authcode;
         return obj;
 }
