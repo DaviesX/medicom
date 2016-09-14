@@ -13,9 +13,9 @@
  */
 import { Template } from "meteor/templating";
 import {SessionModel} from "./session.js";
-import {ErrorMessageQueue} from "../../api/common.js";
 import {Identity_create_from_POD} from "../../api/identity.js";
-import {UserGroup} from "../../api/usergroup.js";
+import {UserGroup} from "../../api/usergroup.ts";
+import {ErrorMessages} from "../../api/error.ts";
 
 
 var G_Session = new SessionModel();
@@ -33,7 +33,7 @@ function redirect_page_on(result) {
 
         // redirect according to account type.
         var record = identity.get_account_record();
-        var user_group = new UserGroup().get_string_from_user_group(record.user_group());
+        var user_group = new UserGroup(record.user_group()).to_string();
 
         switch (user_group) {
         case "admin":
@@ -46,7 +46,7 @@ function redirect_page_on(result) {
                 Router.go("/patient");
                 break;
         case "super indendant":
-                Router.go("/super indendant");
+                Router.go("/super_indendant");
                 break;
         }
 }
@@ -54,7 +54,7 @@ function redirect_page_on(result) {
 Template.tmpllogin.events({"submit"(event) {
         event.preventDefault();
 
-        var regerror = new ErrorMessageQueue();
+        var regerror = new ErrorMessages();
         var email_id = $("#txb-email-id").val();
         var password = $("#txb-password").val();
         var form_content = {

@@ -21,7 +21,7 @@ import {Identity} from "../api/identity.js";
 import {Patient} from "../api/patient.js";
 import {Provider} from "../api/provider.js";
 import {Profile} from "../api/profile.js";
-import {ErrorMessageQueue} from "../api/common.js";
+import {ErrorMessages} from "../api/error.ts";
 
 export function test_admin_record_model()
 {
@@ -226,7 +226,7 @@ export function test_profile()
 
 export function test_ErrorMessageQueue()
 {
-        var error_message_q = new ErrorMessageQueue();
+        var error_message_q = new ErrorMessages();
         error_message_q.log("dog")
         error_message_q.log("cat")
         error_message_q.log("fish")

@@ -11,7 +11,7 @@
  * You should have received a copy of the GNU General Public License along with this program; if not,
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
-import {ErrorMessageQueue_Create_From_POD} from "../../api/common.js";
+import {error_messages_copy} from "../../api/error.ts";
 import {AccountInfo_Create_From_POD} from "../../api/accountinfo.js";
 import {Identity_create_from_POD} from "../../api/identity.js";
 import {SessionBrowser, SessionBrowser_Create_From_POD} from "./sessionbrowser.js";
@@ -21,7 +21,7 @@ export function SessionModel() {
         this.get_error_message = function() {
                 var err = Session.get("errormessage");
                 if (err != null && err != undefined) {
-                        return ErrorMessageQueue_Create_From_POD(err);
+                        return error_message_copy(err);
                 } else {
                         return null;
                 }

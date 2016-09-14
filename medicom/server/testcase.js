@@ -12,12 +12,12 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-import {MongoDB} from "../api/common.js";
+import {MongoUtil} from "../api/mongoutil.ts";
 import {Measure} from "./measure.js";
 import {MeasureBP} from "./measurebp.js";
 import {AccountControl} from "./accountcontrol.js";
 import {SessionControl} from "./sessioncontrol.js";
-import {ErrorMessageQueue} from "../api/common.js";
+import {ErrorMessages} from "../api/error.ts";
 import {Privilege,
         c_Root_Actions,
         c_Admin_Actions,
@@ -38,7 +38,7 @@ import {AdminRecord} from "../api/adminrecord.js";
 // Helper functions.
 function remove_test_accounts()
 {
-        var err = new ErrorMessageQueue();
+        var err = new ErrorMessages();
         var account_ctrl = new AccountControl();
         account_ctrl.remove_account_by_email(account_ctrl.get_root_identity(), "bob", err);
         account_ctrl.remove_account_by_email(account_ctrl.get_root_identity(), "amy", err);
@@ -52,7 +52,7 @@ function prepare_test_accounts()
 {
         remove_test_accounts();
 
-        var err = new ErrorMessageQueue();
+        var err = new ErrorMessages();
         var account_ctrl = new AccountControl();
         var bob = account_ctrl.register("provider", "bob", "bob", "", "", err);
         var amy = account_ctrl.register("patient", "amy", "amy", "", "", err);
@@ -168,7 +168,7 @@ export function test_measure()
 
 export function test_account_control()
 {
-        var errmq = new ErrorMessageQueue();
+        var errmq = new ErrorMessages();
 
         var account_control = new AccountControl();
         account_control.system_init();
@@ -341,7 +341,7 @@ export function test_privilege_network()
 
 export function test_session_control()
 {
-        var err = new ErrorMessageQueue();
+        var err = new ErrorMessages();
         var session_ctrl = new SessionControl();
         session_ctrl.system_init();
 

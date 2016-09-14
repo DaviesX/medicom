@@ -11,10 +11,10 @@
  * You should have received a copy of the GNU General Public License along with this program; if not,
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
-import { Template } from "meteor/templating";
+import {Template} from "meteor/templating";
 import {SessionModel} from "./session.js";
-import {ErrorMessageQueue} from "../../api/common.js";
-import {AccountInfo_Create_From_POD} from "../../api/accountinfo.js";
+import {ErrorMessages} from "../../api/error.ts";
+import {account_info_copy} from "../../api/accountinfo.ts";
 
 var G_Session = new SessionModel();
 
@@ -40,7 +40,7 @@ Template.tmplreg.onRendered(function () {
 Template.tmplreg.events({"submit"(event) {
         event.preventDefault();
 
-        var regerror = new ErrorMessageQueue();
+        var regerror = new ErrorMessages();
         if ($("#txb-password").val() != $("#txb-retype-password").val()) {
                 console.log("password doesn't match");
                 regerror.log("password doesn't match");
@@ -59,7 +59,7 @@ Template.tmplreg.events({"submit"(event) {
                 email:          $("#txb-email").val(),
                 password:       $("#txb-password").val(),
                 phone:          $("#txb-phone-number").val(),
-                user_group:   $("#sel-reg-as").val()
+                user_group:     $("#sel-reg-as").val()
         };
 
         console.log(form_content);

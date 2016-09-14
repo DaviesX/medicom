@@ -11,7 +11,7 @@
  * You should have received a copy of the GNU General Public License along with this program; if not,
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
-import {MongoDB} from "../api/common.js";
+import {MongoUtil} from "../api/mongoutil.ts";
 import {AdminRecordModel} from "./adminrecordmodel.js";
 import {ProfileModel} from "./profilemodel.js";
 import {AccountManager} from "./accountmanager.js";
@@ -25,7 +25,7 @@ import {MeasureModel} from "./measuremodel.js";
 import {PrivilegeNetwork} from "./privilegenetwork.js";
 
 export function DataModelContext() {
-        this.__mongodb = new MongoDB();
+        this.__mongodb = new MongoUtil();
         this.__provider_model = new ProviderModel(this.__mongodb);
         this.__patient_model = new PatientModel(this.__mongodb);
         this.__profile_model = new ProfileModel(this.__mongodb);

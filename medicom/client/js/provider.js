@@ -12,7 +12,6 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 import {Template} from "meteor/templating";
-import {ErrorMessageQueue} from "../../api/common.js";
 import {UserGroup} from "../../api/usergroup.js";
 import {Patient_Create_From_POD} from "../../api/patient.js";
 import {AccountInfo_Create_From_POD} from "../../api/accountinfo.js";

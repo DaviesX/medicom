@@ -15,7 +15,7 @@
 import {Meteor} from 'meteor/meteor';
 import {Profile} from "../../api/profile.js";
 import {ValueTable, ValueTable_create_from_POD} from "../../api/valuetable.js";
-import {ErrorMessageQueue} from "../../api/common.js";
+import {ErrorMessages} from "../../api/error.ts";
 import {Identity_create_from_POD} from "../../api/identity.js";
 import {AccountControl} from "../accountcontrol.js";
 import {MeasureControl} from "../measurecontrol.js";
@@ -58,7 +58,7 @@ function get_registerable_user_groups()
 
 function search_account_infos(identity, key_word, cap)
 {
-        var err = new ErrorMessageQueue();
+        var err = new ErrorMessages();
         if (identity == null) {
                 err.log("identity is required, but it's absent");
                 return {account_infos: null, error: err.fetch_all()};
@@ -70,7 +70,7 @@ function search_account_infos(identity, key_word, cap)
 
 function get_account_info_by_id(identity, account_id)
 {
-        var err = new ErrorMessageQueue();
+        var err = new ErrorMessages();
         if (identity == null) {
                 err.log("identity is required, but it's absent");
                 return {account_infos: null, error: err.fetch_all()};
@@ -82,21 +82,21 @@ function get_account_info_by_id(identity, account_id)
 
 function login_by_email(email, password)
 {
-        var err = new ErrorMessageQueue();
+        var err = new ErrorMessages();
         var identity = g_account_ctrl.login_by_email(email, password, err);
         return {identity: identity, error: err.fetch_all()};
 }
 
 function login_by_id(id, password)
 {
-        var err = new ErrorMessageQueue();
+        var err = new ErrorMessages();
         var identity = g_account_ctrl.login_by_account_id(id, password, err);
         return {identity: identity, error: err.fetch_all()};
 }
 
 function logout(identity)
 {
-        var err = new ErrorMessageQueue();
+        var err = new ErrorMessages();
         if (identity == null) {
                 err.log("identity is required, but it's absent");
                 return {error: err.fetch_all()};
@@ -108,21 +108,21 @@ function logout(identity)
 
 function register(user_group, email, name, phone, password)
 {
-        var err = new ErrorMessageQueue();
+        var err = new ErrorMessages();
         var info = g_account_ctrl.register(user_group, email, name, phone, password, err);
         return {account_info: info, error: err.fetch_all()};
 }
 
 function activate_account(auth_code)
 {
-        var err = new ErrorMessageQueue();
+        var err = new ErrorMessages();
         var info = g_account_ctrl.activate(auth_code, err);
         return {account_info: info, error: err.fetch_all()};
 }
 
 function register_and_activate(user_group, email, name, phone, password)
 {
-        var err = new ErrorMessageQueue();
+        var err = new ErrorMessages();
         var info = g_account_ctrl.register(user_group, email, name, phone, password, err);
         if (info != null) {
                 g_account_ctrl.activate(info.get_record().get_auth_code(), err);
@@ -132,7 +132,7 @@ function register_and_activate(user_group, email, name, phone, password)
 
 function create_user_association(identity, user_id)
 {
-        var err = new ErrorMessageQueue();
+        var err = new ErrorMessages();
         identity = Identity_create_from_POD(identity);
         if (!g_session_ctrl.create_association(identity, user_id, err))
                 return {result: false, error: err.fetch_all()};
@@ -142,7 +142,7 @@ function create_user_association(identity, user_id)
 
 function remove_user_association(identity, user_id)
 {
-        var err = new ErrorMessageQueue();
+        var err = new ErrorMessages();
         identity = Identity_create_from_POD(identity);
         if (!g_session_ctrl.remove_association(identity, user_id, err))
                 return {result: false, error: err.fetch_all()};
@@ -152,7 +152,7 @@ function remove_user_association(identity, user_id)
 
 function get_associated_user_info(identity)
 {
-        var err = new ErrorMessageQueue();
+        var err = new ErrorMessages();
         if (identity == null) {
                 err.log("identity is required, but it's absent");
                 return { patients: null, account_infos: null, error: err.fetch_all() };
@@ -164,7 +164,7 @@ function get_associated_user_info(identity)
 
 function create_medical_session(identity, user_id)
 {
-        var err = new ErrorMessageQueue();
+        var err = new ErrorMessages();
         identity = Identity_create_from_POD(identity);
         var session = g_session_ctrl.create_session(identity, user_id, err);
         return {session: session, error: err.fetch_all()};
@@ -172,7 +172,7 @@ function create_medical_session(identity, user_id)
 
 function share_medical_session(identity, user_id, session_id)
 {
-        var err = new ErrorMessageQueue();
+        var err = new ErrorMessages();
         identity = Identity_create_from_POD(identity);
         var result = g_session_ctrl.share_session(identity, user_id, session_id, err);
         return {result: result, error: err.fetch_all()};
@@ -180,7 +180,7 @@ function share_medical_session(identity, user_id, session_id)
 
 function add_medical_session(identity, user_id, session_id)
 {
-        var err = new ErrorMessageQueue();
+        var err = new ErrorMessages();
         identity = Identity_create_from_POD(identity);
         var session = g_session_ctrl.add_session(identity, user_id, session_id, err);
         return {session: session, error: err.fetch_all()};
@@ -188,7 +188,7 @@ function add_medical_session(identity, user_id, session_id)
 
 function activate_medical_session(identity, user_id, session_id)
 {
-        var err = new ErrorMessageQueue();
+        var err = new ErrorMessages();
         identity = Identity_create_from_POD(identity);
         var result = g_session_ctrl.activate_session(identity, session_id, err);
         return {result: result, error: err.fetch_all()};
@@ -196,7 +196,7 @@ function activate_medical_session(identity, user_id, session_id)
 
 function deactivate_medical_session(identity, user_id, session_id)
 {
-        var err = new ErrorMessageQueue();
+        var err = new ErrorMessages();
         identity = Identity_create_from_POD(identity);
         var result = g_session_ctrl.deactivate_session(identity, session_id, err);
         return {result: result, error: err.fetch_all()};
@@ -204,7 +204,7 @@ function deactivate_medical_session(identity, user_id, session_id)
 
 function get_associated_session(identity, user_id)
 {
-        var err = new ErrorMessageQueue();
+        var err = new ErrorMessages();
         identity = Identity_create_from_POD(identity);
         var sessions = g_session_ctrl.get_associated_session(identity, user_id, err);
         return {sessions: sessions, error: err.fetch_all()};
@@ -213,7 +213,7 @@ function get_associated_session(identity, user_id)
 function get_session_notes(identity, session_id)
 {
         identity = Identity_create_from_POD(identity);
-        var err = new ErrorMessageQueue();
+        var err = new ErrorMessages();
         var notes = g_session_ctrl.get_session_notes(identity, session_id, err);
         return {notes: notes, error: err.fetch_all()};
 }
@@ -221,7 +221,7 @@ function get_session_notes(identity, session_id)
 function set_session_notes(identity, session_id, notes)
 {
         identity = Identity_create_from_POD(identity);
-        var err = new ErrorMessageQueue();
+        var err = new ErrorMessages();
         var result = g_session_ctrl.set_session_notes(identity, session_id, notes, err);
         return {result: result, error: err.fetch_all()};
 }
@@ -229,7 +229,7 @@ function set_session_notes(identity, session_id, notes)
 function get_measure_bp_table(identity, session_id, start_date, end_date, num_samples)
 {
         identity = Identity_create_from_POD(identity);
-        var err = new ErrorMessageQueue();
+        var err = new ErrorMessages();
         var measures = g_measure_ctrl.get_bp_measures(
                                identity, start_date, end_date, num_samples, session_id, err);
         var bptable = new ValueTable();
@@ -243,7 +243,7 @@ function get_measure_bp_table(identity, session_id, start_date, end_date, num_sa
 
 function update_measure_bp_from_table(identity, session_id, table)
 {
-        var err = new ErrorMessageQueue();
+        var err = new ErrorMessages();
         if (table == null) {
                 err.log("invalid blood pressure table");
                 return {error: err.fetch_all()};
@@ -258,7 +258,7 @@ function update_measure_bp_from_table(identity, session_id, table)
 
 function update_measure_bp_from_file(identity, session_id, format, blob)
 {
-        var err = new ErrorMessageQueue();
+        var err = new ErrorMessages();
         if (format == null || blob == null) {
                 err.log("invalid format or data blob");
                 return {error: err.fetch_all()};
@@ -270,7 +270,7 @@ function update_measure_bp_from_file(identity, session_id, format, blob)
 
 function update_pbc_record(identity, session_id, pbctable)
 {
-        var err = new ErrorMessageQueue();
+        var err = new ErrorMessages();
         if (identity == null) {
                 err.log("identity is required, but it's absent");
                 return { patients: null, account_infos: null, error: err.fetch_all() };
@@ -283,7 +283,7 @@ function update_pbc_record(identity, session_id, pbctable)
 
 function get_pbc_record(identity, session_id, start_date, end_date, num_samples)
 {
-        var err = new ErrorMessageQueue();
+        var err = new ErrorMessages();
         if (identity == null) {
                 err.log("identity is required, but it's absent");
                 return {pbctable: null, error: err.fetch_all()};
@@ -301,7 +301,7 @@ function get_pbc_record(identity, session_id, start_date, end_date, num_samples)
 
 function get_measure_symptom(identity, session_id, start_date, end_date, num_items)
 {
-        var err = new ErrorMessageQueue();
+        var err = new ErrorMessages();
         if (identity == null) {
                 err.log("identity is required, but it's absent");
                 return {sym_table: null, error: err.fetch_all()};
@@ -324,7 +324,7 @@ function get_measure_symptom(identity, session_id, start_date, end_date, num_ite
 
 function update_measure_symptom(identity, session_id, sym_table)
 {
-        var err = new ErrorMessageQueue();
+        var err = new ErrorMessages();
         if (identity == null) {
                 err.log("identity is required, but it's absent");
                 return {result: false, error: err.fetch_all()};
@@ -340,7 +340,7 @@ function update_measure_symptom(identity, session_id, sym_table)
 
 function get_measure_fitbit_table(identity, session_id, start_date, end_date, num_samples)
 {
-        var err = new ErrorMessageQueue();
+        var err = new ErrorMessages();
         if (identity == null) {
                 err.log("identity is required, but it's absent");
                 return {sym_table: null, error: err.fetch_all()};
@@ -357,7 +357,7 @@ function get_measure_fitbit_table(identity, session_id, start_date, end_date, nu
 
 function update_measure_fitbit_from_table(identity, session_id, fbtable)
 {
-        var err = new ErrorMessageQueue();
+        var err = new ErrorMessages();
         if (identity == null) {
                 err.log("identity is required, but it's absent");
                 return {result: false, error: err.fetch_all()};
