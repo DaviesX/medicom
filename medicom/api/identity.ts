@@ -17,58 +17,58 @@ import {AdminRecord, admin_record_copy} from "./adminrecord.ts";
 
 export class Identity implements IDataTransaction
 {
-        public m_session_id:    number;
-        public m_elev_stack:    Array<AdminRecord>;
-        public m_record:        AdminRecord;
-        public m_date:          Date;
+        public session_id:      string;
+        public elev_stack:      Array<AdminRecord>;
+        public record:          AdminRecord;
+        public date:            Date;
 
-        constructor(session_id: number, record: AdminRecord)
+        constructor(session_id: string, record: AdminRecord)
         {
-                this.m_elev_stack.push(record);
-                this.m_date = new Date();
+                this.elev_stack.push(record);
+                this.date = new Date();
         }
 
         public elevate(record: AdminRecord): void
         {
-                this.m_elev_stack.push(record);
-                this.m_record = record;
+                this.elev_stack.push(record);
+                this.record = record;
         }
         
         public descend(): void
         {
-                if (this.m_elev_stack.length > 1)
-                        this.m_record = this.m_elev_stack.pop();
+                if (this.elev_stack.length > 1)
+                        this.record = this.elev_stack.pop();
         }
         
         public get_account_record(): AdminRecord
         {
-                return this.m_record;
+                return this.record;
         }
         
-        public get_session_id(): number
+        public get_session_id(): string
         {
-                return this.m_session_id;
+                return this.session_id;
         }
         
         public get_last_date(): Date
         {
-                return this.m_date;
+                return this.date;
         }
         
         public update_date(): Date
         {
-                return this.m_date = new Date();
+                return this.date = new Date();
         }
 };
 
 export function identity_copy(pod): Identity
 {
         var obj = new Identity(null, null);
-        obj.m_session_id = pod.m_session_id;
-        obj.m_elev_stack = pod.m_elev_stack;
-        for (var i = 0; i < obj.m_elev_stack.length; i ++)
-                obj.m_elev_stack[i] = admin_record_copy(obj.m_elev_stack[i]);
-        obj.m_record = admin_record_copy(pod.m_record);
-        obj.m_date = pod.m_date;
+        obj.session_id = pod.session_id;
+        obj.elev_stack = pod.elev_stack;
+        for (var i = 0; i < obj.elev_stack.length; i ++)
+                obj.elev_stack[i] = admin_record_copy(obj.elev_stack[i]);
+        obj.record = admin_record_copy(pod.record);
+        obj.date = pod.date;
         return obj;
 }
