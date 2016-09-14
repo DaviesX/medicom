@@ -13,7 +13,7 @@
  */
 
 import {G_DataModelContext} from "./datamodelcontext.js";
-import {AccountInfo} from "../api/accountinfo.js";
+import {AccountInfo} from "../api/accountinfo.ts";
 import {c_UserGroup_Provider,
         c_UserGroup_Assistant,
         c_UserGroup_Patient} from "../api/usergroup.js";

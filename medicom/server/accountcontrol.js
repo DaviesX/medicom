@@ -18,7 +18,7 @@ import {DataModelContext, G_DataModelContext} from "./datamodelcontext.js";
 import {Profile} from "../api/profile.js";
 import {ErrorMessageQueue, MongoDB} from "../api/common.js";
 import {AdminRecord} from "../api/adminrecord.js";
-import {AccountInfo} from "../api/accountinfo.js";
+import {AccountInfo} from "../api/accountinfo.ts";
 import * as M_Privilege from "../api/privilege.js";
 import * as M_UserGroup from "../api/usergroup.js";
 
