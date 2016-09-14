@@ -16,6 +16,9 @@ import {Mongo} from "meteor/mongo";
 import {MongoUtil} from "../api/mongoutil.ts";
 import {AdminRecord, admin_record_copy} from "../api/adminrecord.ts";
 
+/*
+ * <AdminRecordModel> AdminRecord storage model.
+ */
 export class AdminRecordModel
 {
         private m_util:                 MongoUtil;
@@ -77,4 +80,4 @@ export class AdminRecordModel
         {
                 return this.m_admin_records.remove({});
         }
-}
+};

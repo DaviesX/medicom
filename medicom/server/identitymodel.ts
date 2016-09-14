@@ -227,5 +227,5 @@ export class IdentityModel
         {
                 return this.remove_all();
         }
-}
+};
 
