@@ -54,7 +54,10 @@ export class ValueTable
         public m_pairs:        Array<Row>;             // m_pairs: array of {date, value, num_insts}.
         public m_is_sorted:    boolean = true;         // A dirty flag to show whether the data set is sorted or not.
 
-        constructor() {}
+        constructor() 
+        {
+                this.m_pairs = new Array<Row>();
+        }
         
         public construct_from_pairs(pairs: Array<Row>): void
         {

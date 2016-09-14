@@ -16,7 +16,10 @@ export class ErrorMessages
 {
         public m_queue:        Array<string>;
 
-        constructor() {}
+        constructor() 
+        {
+                this.m_queue = new Array<string>();
+        }
         
         public log(message: string): void
         {

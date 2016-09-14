@@ -24,6 +24,7 @@ export class Identity implements IDataTransaction
 
         constructor(session_id: string, record: AdminRecord)
         {
+                this.elev_stack = new Array<AdminRecord>();
                 this.elev_stack.push(record);
                 this.date = new Date();
         }
