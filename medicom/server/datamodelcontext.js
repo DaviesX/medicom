@@ -18,7 +18,7 @@ import {AccountManager} from "./accountmanager.js";
 import {IdentityModel} from "./identitymodel.js";
 import {ProviderModel} from "./providermodel.js";
 import {PatientModel} from "./patientmodel.js";
-import {SessionModel} from "./sessionmodel.js";
+import {SessionModel} from "./sessionmodel.ts";
 import {AssociationModel} from "./associationmodel.js";
 import {SessionManager} from "./sessionmanager.js";
 import {MeasureModel} from "./measuremodel.js";
