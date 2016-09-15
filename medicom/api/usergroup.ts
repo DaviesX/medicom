@@ -12,6 +12,16 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+export enum UserGroupConst
+{
+        Root,
+        Admin,
+        Provider,
+        Patient,
+        Assistant,
+        Temporary,
+};
+
 /*
  * <UserGroup> Represents a user group.
  */
@@ -36,18 +46,19 @@ export class UserGroup
                         case 3: return "patient";
                         case 4: return "assistant";
                         case 5: return "temporary";
+                        default:        throw new Error("Unknown user group " + this.m_user_group);
                 }
         }
 
-        public from_string(s: string): void
+        public from_string(s: string): number 
         {
                 switch (s) {
-                        case "root":            this.m_user_group = 0;
-                        case "admin":           this.m_user_group = 1;
-                        case "provider":        this.m_user_group = 2;
-                        case "patient":         this.m_user_group = 3;
-                        case "assistant":       this.m_user_group = 4;
-                        case "temporary":       this.m_user_group = 5;
+                        case "root":            return this.m_user_group = UserGroupConst.Root;
+                        case "admin":           return this.m_user_group = UserGroupConst.Admin;
+                        case "provider":        return this.m_user_group = UserGroupConst.Provider;
+                        case "patient":         return this.m_user_group = UserGroupConst.Patient;
+                        case "assistant":       return this.m_user_group = UserGroupConst.Assistant;
+                        case "temporary":       return this.m_user_group = UserGroupConst.Temporary;
                         default:                throw new Error("Unknown user group string " + s);
                 }
         }

@@ -15,9 +15,7 @@ import {MongoUtil} from "../api/mongoutil.ts";
 import {AdminRecordModel} from "./adminrecordmodel.js";
 import {ProfileModel} from "./profilemodel.js";
 import {AccountManager} from "./accountmanager.js";
-import {IdentityModel} from "./identitymodel.js";
-import {ProviderModel} from "./providermodel.js";
-import {PatientModel} from "./patientmodel.js";
+import {IdentityModel} from "./identitymodel.ts";
 import {SessionModel} from "./sessionmodel.ts";
 import {AssociationModel} from "./associationmodel.js";
 import {SessionManager} from "./sessionmanager.js";
@@ -26,8 +24,6 @@ import {PrivilegeNetwork} from "./privilegenetwork.js";
 
 export function DataModelContext() {
         this.__mongodb = new MongoUtil();
-        this.__provider_model = new ProviderModel(this.__mongodb);
-        this.__patient_model = new PatientModel(this.__mongodb);
         this.__profile_model = new ProfileModel(this.__mongodb);
         this.__admin_record_model = new AdminRecordModel(this.__mongodb);
         this.__identity_model = new IdentityModel(this.__mongodb, 10);
@@ -35,8 +31,6 @@ export function DataModelContext() {
         this.__account_mgr = new AccountManager(this.__mongodb,
                                                 this.__admin_record_model,
                                                 this.__profile_model,
-                                                this.__provider_model,
-                                                this.__patient_model,
                                                 this.__identity_model,
                                                 this.__priv_network);
         this.__association_model = new AssociationModel();
@@ -50,8 +44,6 @@ export function DataModelContext() {
         this.get_admin_record_model = function() { return this.__admin_record_model; }
         this.get_profile_model = function() { return this.__profile_model; }
         this.get_identity_model = function() { return this.__identity_model; }
-        this.get_provider_model = function() { return this.__provider_model; }
-        this.get_patient_model = function() { return this.__patient_model; }
         this.get_measure_model = function() { return this.__measure_model; }
         this.get_association_model = function() { return this.__association_model; }
         this.get_session_model = function() { return this.__session_model; }
@@ -59,8 +51,6 @@ export function DataModelContext() {
         this.get_privilege_network = function() { return this.__priv_network; }
         this.reset_all = function() {
                 this.__profile_model.reset();
-                this.__provider_model.reset();
-                this.__patient_model.reset();
                 this.__admin_record_model.reset();
                 this.__identity_model.reset();
                 this.__account_mgr.reset();
