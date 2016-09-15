@@ -13,7 +13,6 @@
  */
 import {Template} from "meteor/templating";
 import {UserGroup} from "../../api/usergroup.js";
-import {Patient_Create_From_POD} from "../../api/patient.js";
 import {AccountInfo_Create_From_POD} from "../../api/accountinfo.js";
 import {MedicalSession_Create_From_POD} from "../../api/medicalsession.js";
 import {G_Session} from "./session.js";

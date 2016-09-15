@@ -15,11 +15,9 @@ import {Meteor} from "meteor/meteor";
 import {ValueTable} from "../api/valuetable.js";
 import {AdminRecord} from "../api/adminrecord.js";
 import {AccountInfo} from "../api/accountinfo.js";
-import {c_UserGroup_Strings, c_Account_Type_Strings_Registerable, UserGroup} from "../api/usergroup.js";
+import {UserGroup} from "../api/usergroup.ts";
 import {MedicalSession} from "../api/medicalsession.js";
 import {Identity} from "../api/identity.js";
-import {Patient} from "../api/patient.js";
-import {Provider} from "../api/provider.js";
 import {Profile} from "../api/profile.js";
 import {ErrorMessages} from "../api/error.ts";
 
