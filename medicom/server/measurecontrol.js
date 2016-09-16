@@ -12,13 +12,13 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 import {DataModelContext, G_DataModelContext} from "./datamodelcontext.js";
-import {MeasureBP} from "./measurebp.js";
-import {MeasurePillBottleCap} from "./measurepillbottlecap.js";
-import {MeasureSymptoms} from "./measuresymptoms.js";
-import {MeasureFitbit} from "./measurefitbit.js";
+import {MeasureBP} from "./measurebp.ts";
+import {MeasurePBC} from "./measurepbc.ts";
+import {MeasureSymptoms} from "./measuresymptoms.ts";
+import {MeasureFitbit} from "./measurefitbit.ts";
 import {ErrorMessages} from "../api/error.ts";
-import * as M_UserGroup from "../api/usergroup.js";
-import * as M_Measure from "./measure.js";
+import {UserGroup} from "../api/usergroup.ts";
+import {Measure} from "./measure.ts";
 
 export function MeasureControl()
 {

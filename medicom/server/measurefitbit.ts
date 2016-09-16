@@ -11,22 +11,35 @@
  * You should have received a copy of the GNU General Public License along with this program; if not,
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
-import {Meteor} from 'meteor/meteor';
-import {Measure, c_Measure_Type_PillBottleCap, Measure_Parent_Create_From_POD} from "./measure.js";
+
+import {SleepQuality} from "../api/sleepquality.ts";
+import {Measure, MeasureObject} from "./measure.ts";
 
 
-export function MeasurePillBottleCap() {
-        this.__parent = new Measure(c_Measure_Type_PillBottleCap);
-        this.__action = "";
+export class MeasureFitbit extends Measure
+{
+        public value:   SleepQuality;
+
+        constructor(date: Date, value: SleepQuality)
+        {
+                super(MeasureObject.Fitbit, date);
+                this.value = value;
+        }
+
+        public set_sleep_info(value: SleepQuality): void
+        {
+                this.value = value;
+        }
         
-        this.set_action = function(action) { this.__action = action; }
-        this.get_measure_id = function() { return this.__parent.get_measure_id(); }
-        this.get_action = function() { return this.__action; }
-}
+        public get_sleep_info(): SleepQuality
+        {
+                return this.value;
+        }
+};
 
-export function MeasurePillBottleCap_Create_From_POD(pod) {
-        var obj = new MeasurePillBottleCap();
-        obj.__parent = Measure_Parent_Create_From_POD(pod.__parent);
-        obj.__action = pod.__action;
+export function measure_fitbit_copy(pod): MeasureFitbit
+{
+        var obj = new MeasureFitbit(null, null);
+        obj.value = pod.value;
         return obj;
 }
