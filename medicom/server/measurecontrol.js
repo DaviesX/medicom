@@ -11,7 +11,7 @@
  * You should have received a copy of the GNU General Public License along with this program; if not,
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
-import {DataModelContext, G_DataModelContext} from "./datamodelcontext.js";
+import {DataModelContext} from "./datamodelcontext.ts";
 import {MeasureBP} from "./measurebp.ts";
 import {MeasurePBC} from "./measurepbc.ts";
 import {MeasureSymptoms} from "./measuresymptoms.ts";
@@ -22,9 +22,9 @@ import {Measure} from "./measure.ts";
 
 export function MeasureControl()
 {
-        this.__measure_model = G_DataModelContext.get_measure_model();
-        this.__identity_model = G_DataModelContext.get_identity_model();
-        this.__session_model = G_DataModelContext.get_session_model();
+        this.__measure_model = DataModelContext.get_measure_model();
+        this.__identity_model = DataModelContext.get_identity_model();
+        this.__session_model = DataModelContext.get_session_model();
 }
 
 MeasureControl.prototype.__update_measures_from_table = function(identity, session_id, table, f_Construct_Measure, err)

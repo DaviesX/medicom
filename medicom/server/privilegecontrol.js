@@ -12,13 +12,13 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-import {G_DataModelContext} from "./datamodelcontext.js";
+import {DataModelContext} from "./datamodelcontext.js";
 import {Privilege} from "../api/privilege.js";
 
 export function PrivilegeControl()
 {
-        this.__priv_network = G_DataModelContext.get_privilege_network();
-        this.__identity_model = G_DataModelContext.get_identity_model();
+        this.__priv_network = DataModelContext.get_privilege_network();
+        this.__identity_model = DataModelContext.get_identity_model();
 }
 
 PrivilegeControl.prototype.get_identity_actions = function(identity, err)

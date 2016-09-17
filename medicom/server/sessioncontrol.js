@@ -12,7 +12,7 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-import {G_DataModelContext} from "./datamodelcontext.js";
+import {DataModelContext} from "./datamodelcontext.js";
 import {AccountInfo} from "../api/accountinfo.ts";
 import {c_UserGroup_Provider,
         c_UserGroup_Assistant,
@@ -20,20 +20,20 @@ import {c_UserGroup_Provider,
 
 export function SessionControl()
 {
-        this.__admin_model = G_DataModelContext.get_admin_record_model();
-        this.__profile_model = G_DataModelContext.get_profile_model();
-        this.__session_mgr = G_DataModelContext.get_session_manager();
-        this.__identity_model = G_DataModelContext.get_identity_model();
-        this.__assoc_model = G_DataModelContext.get_association_model();
-        this.__session_model = G_DataModelContext.get_session_model();
-        this.__priv_network = G_DataModelContext.get_privilege_network();
+        this.__admin_model = DataModelContext.get_admin_record_model();
+        this.__profile_model = DataModelContext.get_profile_model();
+        this.__session_mgr = DataModelContext.get_session_manager();
+        this.__identity_model = DataModelContext.get_identity_model();
+        this.__assoc_model = DataModelContext.get_association_model();
+        this.__session_model = DataModelContext.get_session_model();
+        this.__priv_network = DataModelContext.get_privilege_network();
 
         this.__root_ref = null;
 }
 
 SessionControl.prototype.system_init = function()
 {
-        this.__root_ref = G_DataModelContext.get_account_manager().get_root_account_record().get_privilege_ref();
+        this.__root_ref = DataModelContext.get_account_manager().get_root_account_record().get_privilege_ref();
 }
 
 SessionControl.prototype.__check_identity = function(identity, err)

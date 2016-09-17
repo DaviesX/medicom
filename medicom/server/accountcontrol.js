@@ -14,7 +14,7 @@
 import {Meteor} from "meteor/meteor";
 import {AccountManager} from "./accountmanager.js";
 import {IdentityModel} from "./identitymodel.js";
-import {DataModelContext, G_DataModelContext} from "./datamodelcontext.js";
+import {DataModelContext} from "./datamodelcontext.ts";
 import {Profile} from "../api/profile.js";
 import {ErrorMessages} from "../api/error.ts";
 import {MongoUtil} from "../api/mongoutil.ts";
@@ -32,10 +32,10 @@ c_Account_Privilege[M_UserGroup.c_UserGroup_Patient] = 20;
 
 export function AccountControl()
 {
-        this.__account_mgr = G_DataModelContext.get_account_manager();
-        this.__profile_model = G_DataModelContext.get_profile_model();
-        this.__identity_model = G_DataModelContext.get_identity_model();
-        this.__priv_network = G_DataModelContext.get_privilege_network();
+        this.__account_mgr = DataModelContext.get_account_manager();
+        this.__profile_model = DataModelContext.get_profile_model();
+        this.__identity_model = DataModelContext.get_identity_model();
+        this.__priv_network = DataModelContext.get_privilege_network();
 }
 
 AccountControl.prototype.system_init = function()
