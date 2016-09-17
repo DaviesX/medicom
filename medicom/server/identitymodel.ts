@@ -140,7 +140,7 @@ export class IdentityModel
                 this.m_mem_identities = new Map<string, Identity>();
         }
 
-        public verify_identity(identity: Identity): boolean
+        public verify_identity(identity: Identity): void 
         {
                 if (identity == null)
                         throw new Error("No identity specified");
@@ -165,7 +165,6 @@ export class IdentityModel
                 }
                 db_iden.update_date();
                 this.update(db_iden);
-                return true;
         }
 
         public create_identity(record: AdminRecord): Identity
