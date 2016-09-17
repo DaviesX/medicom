@@ -46,6 +46,11 @@ export class MeasureSymptoms extends Measure
                 this.value.free_text = description;
         }
 
+        public set_symptoms(value: Symptom): void
+        {
+                this.value = value;
+        }
+
         public get_symptoms(): Symptom
         {
                 return this.value;
