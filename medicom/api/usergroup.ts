@@ -27,38 +27,48 @@ export enum UserGroupConst
  */
 export class UserGroup
 {
-        private m_user_group:   number;
+        public user_group:      number;
 
         constructor(user_group: number)
         {
                 if (user_group < 0 || user_group > 5)
                         throw new Error("Unknown user group " + user_group);
                 else
-                        this.m_user_group = user_group;
+                        this.user_group = user_group;
+        }
+
+        public is(group: number): boolean
+        {
+                return this.user_group == group;
+        }
+
+        public what(): number
+        {
+                return this.user_group;
         }
 
         public to_string(): string
         {
-                switch (this.m_user_group) {
+                switch (this.user_group) {
                         case 0: return "root";
                         case 1: return "admin";
                         case 2: return "provider";
                         case 3: return "patient";
                         case 4: return "assistant";
                         case 5: return "temporary";
-                        default:        throw new Error("Unknown user group " + this.m_user_group);
+                        default:        throw new Error("Unknown user group " + this.user_group);
                 }
         }
 
         public from_string(s: string): number 
         {
                 switch (s) {
-                        case "root":            return this.m_user_group = UserGroupConst.Root;
-                        case "admin":           return this.m_user_group = UserGroupConst.Admin;
-                        case "provider":        return this.m_user_group = UserGroupConst.Provider;
-                        case "patient":         return this.m_user_group = UserGroupConst.Patient;
-                        case "assistant":       return this.m_user_group = UserGroupConst.Assistant;
-                        case "temporary":       return this.m_user_group = UserGroupConst.Temporary;
+                        case "root":            return this.user_group = UserGroupConst.Root;
+                        case "admin":           return this.user_group = UserGroupConst.Admin;
+                        case "provider":        return this.user_group = UserGroupConst.Provider;
+                        case "patient":         return this.user_group = UserGroupConst.Patient;
+                        case "assistant":       return this.user_group = UserGroupConst.Assistant;
+                        case "temporary":       return this.user_group = UserGroupConst.Temporary;
                         default:                throw new Error("Unknown user group string " + s);
                 }
         }
