@@ -438,6 +438,18 @@ export class PrivilegeNetwork
                 return true;
         }
 
+        public get_action_from(src_ref: number, dst_ref: number, action: string, scope_set: Array<number>): PrivilegeAction
+        {
+                if (this.nodes[src_ref] == null ||
+                    this.nodes[dst_ref] == null)
+                        return null;
+                
+                var priv_action = this.nodes[dst_ref].get_granted_from(src_ref, action);
+                return priv_action != null &&
+                       priv_action.is_action_compatible(action) &&
+                       priv_action.is_inclusive_scope_set(scope_set) ? priv_action : null;
+        }
+
         public modify_scope_on(src_ref: number, dst_ref: number, 
                                action: string, scope_set: Array<number>, with_grant_option: boolean): boolean
         {
