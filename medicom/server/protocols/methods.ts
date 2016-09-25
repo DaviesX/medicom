@@ -27,7 +27,7 @@ import {SessionControl} from "../sessioncontrol.js";
 import {PrivilegeControl} from "../privilegecontrol.js";
 import {DataModelContext} from "../datamodelcontext.js";
 import {TestData} from "../testdata.ts";
-import * as TestCase from "../testcase.js";
+import {TestCase} from "../testcase.ts";
 
 export class MeteorMethods
 {
@@ -366,7 +366,7 @@ inject_test_data:
 test_admin_record_model:
         function(arg)
         {
-                TestCase.test_admin_record_model();
+                TestCase.admin_record_model();
         },
 
         /**
@@ -376,7 +376,7 @@ test_admin_record_model:
 test_privilege_network:
         function(arg)
         {
-                TestCase.test_privilege_network();
+                TestCase.privilege_network();
         },
 
         /**
@@ -386,7 +386,7 @@ test_privilege_network:
 test_mongodb:
         function(arg)
         {
-                TestCase.test_MongoDB();
+                TestCase.mongo_util();
         },
 
         /**
@@ -396,7 +396,7 @@ test_mongodb:
 test_measure:
         function(arg)
         {
-                TestCase.test_measure();
+                TestCase.measure();
         },
 
         /**
@@ -406,7 +406,7 @@ test_measure:
 test_account_control:
         function(arg)
         {
-                TestCase.test_account_control();
+                TestCase.account_control();
         },
         /**
          * Unit test on the SessionControl.
@@ -415,7 +415,7 @@ test_account_control:
 test_session_control:
         function(arg)
         {
-                TestCase.test_session_control();
+                TestCase.session_control();
         },
         /**
          * Print a message on server side.
