@@ -99,9 +99,9 @@ export class MeasureControl
         
         public get_bp_measures(identity: Identity, 
                                start_date: Date, end_date: Date, sample_count: number, 
-                               session_id: number, err: ErrorMessages): Array<Measure>
+                               session_id: number, err: ErrorMessages): Array<MeasureBP>
         {
-                return this.get_measure_samples(identity, MeasureObject.BloodPressure,
+                return <Array<MeasureBP>> this.get_measure_samples(identity, MeasureObject.BloodPressure,
                                                 start_date, end_date, sample_count, session_id, err);
         }
         
@@ -118,9 +118,9 @@ export class MeasureControl
         
         public get_pbc_measures(identity: Identity, 
                                 start_date: Date, end_date: Date, sample_count: number, 
-                                session_id: number, err: ErrorMessages): Array<Measure>
+                                session_id: number, err: ErrorMessages): Array<MeasurePBC>
         {
-                return this.get_measure_samples(identity, MeasureObject.PillBottleCap,
+                return <Array<MeasurePBC>> this.get_measure_samples(identity, MeasureObject.PillBottleCap,
                                                 start_date, end_date, sample_count, session_id, err);
         }
         
@@ -138,9 +138,9 @@ export class MeasureControl
         
         public get_symptom_measures(identity: Identity, 
                                     start_date: Date, end_date: Date, session_id: number, 
-                                    err: ErrorMessages): Array<Measure>
+                                    err: ErrorMessages): Array<MeasureSymptoms>
         {
-                return this.get_measure_samples(identity, MeasureObject.Symptoms,
+                return <Array<MeasureSymptoms>> this.get_measure_samples(identity, MeasureObject.Symptoms,
                                                 start_date, end_date, null, session_id, err);
         }
         
@@ -158,9 +158,9 @@ export class MeasureControl
         
         public get_fitbit_measures(identity: Identity, 
                                    start_date: Date, end_date: Date, sample_count: number, 
-                                   session_id: number, err: ErrorMessages): Array<Measure>
+                                   session_id: number, err: ErrorMessages): Array<MeasureFitbit>
         {
-                return this.get_measure_samples(identity, MeasureObject.Fitbit,
+                return <Array<MeasureFitbit>> this.get_measure_samples(identity, MeasureObject.Fitbit,
                                                 start_date, end_date, sample_count, session_id, err);
         }
 };
