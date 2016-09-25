@@ -60,6 +60,18 @@ export class Identity implements IDataTransaction
         {
                 return this.date = new Date();
         }
+
+        public static recover(pod): Identity
+        {
+                var obj = new Identity(null, null);
+                obj.session_id = pod.session_id;
+                obj.elev_stack = pod.elev_stack;
+                for (var i = 0; i < obj.elev_stack.length; i ++)
+                        obj.elev_stack[i] = admin_record_copy(obj.elev_stack[i]);
+                obj.record = admin_record_copy(pod.record);
+                obj.date = pod.date;
+                return obj;
+        }
 };
 
 export function identity_copy(pod): Identity
