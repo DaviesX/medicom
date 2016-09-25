@@ -13,7 +13,7 @@
  */
 // server
 import {Meteor} from "meteor/meteor";
-import * as protocol from "./protocols/methods.js";
+import {METHODS, MeteorMethods} from "./protocols/methods.ts";
 
 
 Meteor.startup(() =>
@@ -21,10 +21,9 @@ Meteor.startup(() =>
         // code to run on server at startup
         console.log("Starting up medicom server...");
         console.log("Loading up methods...");
-        console.log(protocol.c_Meteor_Methods);
-        Meteor.methods(protocol.c_Meteor_Methods);
+        Meteor.methods(METHODS);
         console.log("Initializing system protocol...");
-        protocol.system_init();
+        MeteorMethods.system_init();
         console.log("All set and ready to go");
 });
 
