@@ -312,11 +312,15 @@ export class AccountControl
                 return identity;
         }
         
-        public logout(identity: Identity, err: ErrorMessages): void 
+        public logout(identity: Identity, err: ErrorMessages): boolean
         {
-                if (!this.identities.verify_identity(identity))
+                var r: boolean = true;
+                if (!this.identities.verify_identity(identity)) {
                         err.log("The identity is invalid");
+                        r = false;
+                }
                 this.identities.logout(identity);
+                return r;
         }
         
         private __activate(identity: Identity, record: AdminRecord, err: ErrorMessages): void
