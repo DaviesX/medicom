@@ -347,6 +347,8 @@ export class AccountControl
                 try {
                         identity = this.identities.elevate_by_identity_auth_code(identity, auth_code, root_record);
                 } catch (error) {
+                        if (error.name == "TypeError")
+                                throw error;
                         err.log(error.toString());
                         return false;
                 }
@@ -355,6 +357,8 @@ export class AccountControl
                 try {
                         this.__activate(identity, record, err);
                 } catch (error) {
+                        if (error.name == "TypeError")
+                                throw error;
                         err.log(error.toString());
                         return false;
                 } finally {
@@ -371,6 +375,8 @@ export class AccountControl
                 try {
                         this.identities.verify_identity(identity);
                 } catch (error) {
+                        if (error.name == "TypeError")
+                                throw error;
                         err.log(error.toString());
                 }
                 var record = this.accounts.get_account_record_by_id(account_id);
@@ -381,6 +387,8 @@ export class AccountControl
                 try {
                         this.__activate(identity, record, err);
                 } catch (error) {
+                        if (error.name == "TypeError")
+                                throw error;
                         err.log(error.toString());
                         return false;
                 }

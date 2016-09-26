@@ -189,8 +189,8 @@ export class IdentityModel
                                              auth_code: string, 
                                              record: AdminRecord): Identity
         {
-                if (!identity.get_account_record().verify_auth_code(auth_code))
-                        throw Error("Invalid auth code: " + auth_code);
+                if (identity == null || !identity.get_account_record().verify_auth_code(auth_code))
+                        throw new Error("Invalid auth code: " + auth_code);
                 return this.elevate(identity, record);
         }
 
