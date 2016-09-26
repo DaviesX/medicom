@@ -345,7 +345,7 @@ export class TestCase
         
                 // Create association between bob and amy.
                 session_ctrl.create_association(test_accounts.bob_id,
-                                                test_accounts.amy.get_record().get_account_id(),
+                                                test_accounts.amy.get_admin_record().get_account_id(),
                                                 err);
                 if (!err.is_empty()) {
                         console.log(test_accounts);
@@ -355,7 +355,7 @@ export class TestCase
                 var sessions_0 = [];
                 for (var i = 0; i < 5; i ++) {
                         var session = session_ctrl.create_session(test_accounts.bob_id,
-                                                                  test_accounts.amy.get_record().get_account_id(),
+                                                                  test_accounts.amy.get_admin_record().get_account_id(),
                                                                   err);
                         if (!err.is_empty()) {
                                 console.log(session);
@@ -373,7 +373,7 @@ export class TestCase
                 }
                 // Get all the sessions from this association. It should succeed.
                 var sessions_0_v = session_ctrl.get_associated_sessions(test_accounts.bob_id,
-                                                                        test_accounts.amy.get_record().get_account_id(),
+                                                                        test_accounts.amy.get_admin_record().get_account_id(),
                                                                         err);
                 if (!err.is_empty()) {
                         console.log(sessions_0_v);
@@ -386,7 +386,7 @@ export class TestCase
                 }
                 // Create association between bob and janet.
                 session_ctrl.create_association(test_accounts.bob_id,
-                                                test_accounts.janet.get_record().get_account_id(),
+                                                test_accounts.janet.get_admin_record().get_account_id(),
                                                 err);
                 if (!err.is_empty()) {
                         console.log(test_accounts);
@@ -396,7 +396,7 @@ export class TestCase
                 var sessions_1 = [];
                 for (var i = 0; i < 5; i ++) {
                         var session = session_ctrl.create_session(test_accounts.bob_id,
-                                                                  test_accounts.janet.get_record().get_account_id(),
+                                                                  test_accounts.janet.get_admin_record().get_account_id(),
                                                                   err);
                         if (!err.is_empty()) {
                                 console.log(session);
@@ -414,7 +414,7 @@ export class TestCase
                 }
                 // Get all the sessions from this association. It should succeed.
                 var sessions_1_v = session_ctrl.get_associated_sessions(test_accounts.bob_id,
-                                                                        test_accounts.janet.get_record().get_account_id(),
+                                                                        test_accounts.janet.get_admin_record().get_account_id(),
                                                                         err);
                 if (!err.is_empty()) {
                         console.log(sessions_0_v);
@@ -427,7 +427,7 @@ export class TestCase
                 }
                 // Create association between jack and amy.
                 session_ctrl.create_association(test_accounts.jack_id,
-                                                test_accounts.amy.get_record().get_account_id(),
+                                                test_accounts.amy.get_admin_record().get_account_id(),
                                                 err);
                 if (!err.is_empty()) {
                         console.log(test_accounts);
@@ -436,7 +436,7 @@ export class TestCase
                 // Add the sessions bob created with amy, expected to fail.
                 for (var i = 0; i < 5; i ++) {
                         var session = session_ctrl.add_session(test_accounts.jack_id,
-                                                               test_accounts.amy.get_record().get_account_id(),
+                                                               test_accounts.amy.get_admin_record().get_account_id(),
                                                                sessions_0[i].get_session_id(),
                                                                err);
                         if (err.is_empty()) {
@@ -448,7 +448,7 @@ export class TestCase
                 err.clear();
                 for (var i = 0; i < 5; i ++) {
                         var r = session_ctrl.share_session(test_accounts.bob_id,
-                                                           test_accounts.jack.get_record().get_account_id(),
+                                                           test_accounts.jack.get_admin_record().get_account_id(),
                                                            sessions_0[i].get_session_id(),
                                                            err);
                         if (!r || !err.is_empty()) {
@@ -459,7 +459,7 @@ export class TestCase
                 // Add the sessions bob created. It should succeed.
                 for (var i = 0; i < 5; i ++) {
                         var session = session_ctrl.add_session(test_accounts.jack_id,
-                                                               test_accounts.amy.get_record().get_account_id(),
+                                                               test_accounts.amy.get_admin_record().get_account_id(),
                                                                sessions_0[i].get_session_id(),
                                                                err);
                         if (!err.is_empty()) {
