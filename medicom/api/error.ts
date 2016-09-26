@@ -40,6 +40,18 @@ export class ErrorMessages
                 }
                 return answer;
         }
+
+        public to_string(): string
+        {
+                var a = this.fetch_all();
+                var ans = "";
+                for (var i = 0; i < a.length; i ++) {
+                        ans += a[i].toString();
+                        if (i != a.length - 1)
+                                ans += ", ";
+                }
+                return ans;
+        }
         
         public clear(): void
         {
