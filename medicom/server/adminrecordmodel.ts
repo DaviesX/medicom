@@ -14,7 +14,7 @@
 
 import {Mongo} from "meteor/mongo";
 import {MongoUtil} from "../api/mongoutil.ts";
-import {AdminRecord, admin_record_copy} from "../api/adminrecord.ts";
+import {AdminRecord} from "../api/adminrecord.ts";
 
 /*
  * <AdminRecordModel> AdminRecord storage model.
@@ -57,13 +57,13 @@ export class AdminRecordModel
         public get_record_by_id(account_id: number): AdminRecord
         {
                 var record = this.m_admin_records.findOne({account_id: account_id});
-                return record != null ? admin_record_copy(record) : null;
+                return record != null ? AdminRecord.recover(record) : null;
         }
 
         public get_record_by_auth_code(auth_code: string): AdminRecord
         {
                 var record = this.m_admin_records.findOne({authcode: auth_code});
-                return record != null ? admin_record_copy(record) : null;
+                return record != null ? AdminRecord.recover(record) : null;
         }
 
         public update_record(record: AdminRecord): void
