@@ -16,18 +16,25 @@ import {IDataTransaction} from "./idatatransaction.ts";
 
 export class MedicalSession implements IDataTransaction
 {
-        public session_id:    number;
-        public isactive:     boolean = false;
+        private session_id:     number;
+        private isactive:       boolean = false;
 
-        public start_time:    number;
-        public end_time:      number = null;
+        private start_time:     number;
+        private end_time:       number = null;
 
-        public notes:         string;
+        private notes:          string;
 
         constructor(session_id: number)
         {
                 this.start_time = new Date().getTime();
                 this.session_id = session_id;
+        }
+
+        public toString(): string
+        {
+                return "MedicalSession[" + this.session_id + ", " + this.isactive + ", " 
+                                         + this.start_time + ", " + this.end_time + ", "
+                                         + this.notes + "]";
         }
 
         public get_session_id(): number
@@ -71,15 +78,16 @@ export class MedicalSession implements IDataTransaction
         {
                 return new Date(this.end_time);
         }
-}
 
-export function medical_session_copy(pod): MedicalSession
-{
-        var obj = new MedicalSession(null);
-        obj.session_id = pod.session_id;
-        obj.isactive = pod.isactive;
-        obj.notes = pod.notes;
-        obj.start_time = pod.start_time;
-        obj.end_time = pod.end_time;
-        return obj;
-}
+        public static recover(pod: any): MedicalSession
+        {
+                var obj = new MedicalSession(null);
+                obj.session_id = pod.session_id;
+                obj.isactive = pod.isactive;
+                obj.notes = pod.notes;
+                obj.start_time = pod.start_time;
+                obj.end_time = pod.end_time;
+                return obj;
+        }
+};
+

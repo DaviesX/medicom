@@ -16,12 +16,12 @@ import {IDataTransaction} from "./idatatransaction.ts";
 
 export class AdminRecord implements IDataTransaction
 {
-        public account_id:              number;
-        public usergroup:               number;
-        public internal_pass:           number;
-        public isactive:                boolean = false;
-        public authcode:                string;
-        public privilege_ref:           number;
+        private account_id:             number;
+        private usergroup:              number;
+        private internal_pass:          number;
+        private isactive:               boolean = false;
+        private authcode:               string;
+        private privilege_ref:          number;
 
         private hash33(s: string): number
         {
@@ -40,6 +40,12 @@ export class AdminRecord implements IDataTransaction
                 this.internal_pass = password != null ? this.hash33(password) : 0;
                 this.authcode = auth_code;
                 this.privilege_ref = privi_ref;
+        }
+
+        public toString(): string
+        {
+                return "AdminRecord = [" + this.account_id + ", " + this.usergroup + ", " 
+                                         + this.isactive + ", " + this.authcode + ", " + this.privilege_ref + "]";
         }
 
         public is_equal(other: AdminRecord): boolean
@@ -111,16 +117,17 @@ export class AdminRecord implements IDataTransaction
         {
                 return this.privilege_ref;
         }
-}
 
-export function admin_record_copy(pod)
-{
-        var obj = new AdminRecord(null, null, null, null, null);
-        obj.account_id = pod.account_id;
-        obj.privilege_ref = pod.privilege_ref;
-        obj.usergroup = pod.usergroup;
-        obj.internal_pass = pod.internal_pass;
-        obj.isactive = pod.isactive;
-        obj.authcode = pod.authcode;
-        return obj;
-}
+        public static recover(pod: any): AdminRecord
+        {
+                var obj = new AdminRecord(null, null, null, null, null);
+                obj.account_id = pod.account_id;
+                obj.privilege_ref = pod.privilege_ref;
+                obj.usergroup = pod.usergroup;
+                obj.internal_pass = pod.internal_pass;
+                obj.isactive = pod.isactive;
+                obj.authcode = pod.authcode;
+                return obj;
+        }
+};
+

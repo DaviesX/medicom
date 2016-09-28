@@ -13,11 +13,11 @@
  */
 
 import {IDataTransaction} from "./idatatransaction.ts";
-import {identity_copy} from "./identity.ts";
-import {admin_record_copy} from "./adminrecord.ts";
-import {account_info_copy} from "./accountinfo.ts";
-import {medical_session_copy} from "./medicalsession.ts";
-import {value_table_copy} from "./valuetable.ts";
+import {Identity} from "./identity.ts";
+import {AdminRecord} from "./adminrecord.ts";
+import {AccountInfo} from "./accountinfo.ts";
+import {MedicalSession} from "./medicalsession.ts";
+import {ValueTable} from "./valuetable.ts";
 
 export enum DataTransObject
 {
@@ -32,15 +32,15 @@ export function data_transaction_copy(object: DataTransObject, pod: any): IDataT
 {
         switch (object) {
                 case DataTransObject.Identity:
-                        return identity_copy(pod);
+                        return Identity.recover(pod);
                 case DataTransObject.AdminRecord:
-                        return admin_record_copy(pod);
+                        return AdminRecord.recover(pod);
                 case DataTransObject.AccountInfo:
-                        return account_info_copy(pod);
+                        return AccountInfo.recover(pod);
                 case DataTransObject.MedicalSession:
-                        return medical_session_copy(pod);
+                        return MedicalSession.recover(pod);
                 case DataTransObject.ValueTable:
-                        return value_table_copy(pod);
+                        return ValueTable.recover(pod);
                 default:
                         throw Error("Unknown data transaction object: " + object);
         }

@@ -13,14 +13,14 @@
  */
 
 import {IDataTransaction} from "./idatatransaction.ts";
-import {AdminRecord, admin_record_copy} from "./adminrecord.ts";
+import {AdminRecord} from "./adminrecord.ts";
 
 export class Identity implements IDataTransaction
 {
-        public session_id:      string;
-        public elev_stack:      Array<AdminRecord>;
-        public record:          AdminRecord;
-        public date:            Date;
+        private session_id:     string;
+        private elev_stack:     Array<AdminRecord>;
+        private record:         AdminRecord;
+        private date:           Date;
 
         constructor(session_id: string, record: AdminRecord)
         {
@@ -28,6 +28,11 @@ export class Identity implements IDataTransaction
                 this.elev_stack.push(record);
                 this.record = record;
                 this.date = new Date();
+        }
+
+        public toString(): string
+        {
+                return "Identity = [" + this.session_id + ", " + this.record.toString() + ", " + this.date + "]"
         }
 
         public elevate(record: AdminRecord): void
@@ -68,21 +73,10 @@ export class Identity implements IDataTransaction
                 obj.session_id = pod.session_id;
                 obj.elev_stack = pod.elev_stack;
                 for (var i = 0; i < obj.elev_stack.length; i ++)
-                        obj.elev_stack[i] = admin_record_copy(obj.elev_stack[i]);
-                obj.record = admin_record_copy(pod.record);
+                        obj.elev_stack[i] = AdminRecord.recover(obj.elev_stack[i]);
+                obj.record = AdminRecord.recover(pod.record);
                 obj.date = pod.date;
                 return obj;
         }
 };
 
-export function identity_copy(pod): Identity
-{
-        var obj = new Identity(null, null);
-        obj.session_id = pod.session_id;
-        obj.elev_stack = pod.elev_stack;
-        for (var i = 0; i < obj.elev_stack.length; i ++)
-                obj.elev_stack[i] = admin_record_copy(obj.elev_stack[i]);
-        obj.record = admin_record_copy(pod.record);
-        obj.date = pod.date;
-        return obj;
-}

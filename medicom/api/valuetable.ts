@@ -493,14 +493,5 @@ export class ValueTable
                 obj.LineDelimiter = pod.LineDelimiter;
                 return obj;
         }
-}
+};
 
-export function value_table_copy(pod): ValueTable
-{
-        var obj = new ValueTable();
-        obj.m_pairs = pod.m_pairs;
-        obj.m_is_sorted = pod.m_is_sorted;
-        obj.Delimiter = pod.Delimiter;
-        obj.LineDelimiter = pod.LineDelimiter;
-        return obj;
-}

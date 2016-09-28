@@ -13,58 +13,60 @@
  */
 
 import {IDataTransaction} from "./idatatransaction.ts";
-import {AdminRecord, admin_record_copy} from "./adminrecord.ts";
+import {AdminRecord} from "./adminrecord.ts";
+
 
 export class AccountInfo implements IDataTransaction
 {
-        public m_record:       AdminRecord; 
-        public m_account_id:   number;
-        public m_name:         string;
-        public m_email:        string;
+        private record:       AdminRecord; 
+        private account_id:   number;
+        private name:         string;
+        private email:        string;
 
         public constructor(record: AdminRecord, account_id: number, name: string, email: string)
         {
-                this.m_record = record;
-                this.m_account_id = account_id;
-                this.m_name = name;
-                this.m_email = email;
+                this.record = record;
+                this.account_id = account_id;
+                this.name = name;
+                this.email = email;
         }
 
         public is_equal(other: AccountInfo): boolean
         {
-                return this.m_record.is_equal(other.m_record) &&
-                       this.m_account_id == other.m_account_id &&
-                       this.m_name == other.m_name &&
-                       this.m_email == other.m_email;
+                return this.record.is_equal(other.record) &&
+                       this.account_id == other.account_id &&
+                       this.name == other.name &&
+                       this.email == other.email;
         }
         
         public get_admin_record(): AdminRecord
         {
-                return this.m_record;
+                return this.record;
         }
         
         public get_account_id(): number
         {
-                return this.m_account_id;
+                return this.account_id;
         }
         
         public get_name(): string
         {
-                return this.m_name;
+                return this.name;
         }
         
         public get_email(): string
         {
-                return this.m_email;
+                return this.email;
+        }
+
+        public static recover(pod: any): AccountInfo
+        {
+                var obj = new AccountInfo(null, null, null, null);
+                obj.record              = AdminRecord.recover(pod.record);
+                obj.account_id          = pod.account_id;
+                obj.name                = pod.name;
+                obj.email               = pod.email;
+                return obj;
         }
 };
 
-export function account_info_copy(pod: AccountInfo): AccountInfo
-{
-        var obj = new AccountInfo(null, null, null, null);
-        obj.m_record            = admin_record_copy(pod.m_record);
-        obj.m_account_id        = pod.m_account_id;
-        obj.m_name              = pod.m_name;
-        obj.m_email             = pod.m_email;
-        return obj;
-}

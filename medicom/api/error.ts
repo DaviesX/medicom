@@ -14,16 +14,16 @@
 
 export class ErrorMessages
 {
-        public m_queue:        Array<string>;
+        private queue:  Array<string>;
 
         constructor() 
         {
-                this.m_queue = new Array<string>();
+                this.queue = new Array<string>();
         }
         
         public log(message: string): void
         {
-                this.m_queue.push(message);
+                this.queue.push(message);
         }
         
         public is_empty(): boolean 
@@ -34,14 +34,14 @@ export class ErrorMessages
         public fetch_all(): Array<string> 
         {
                 var answer = [];
-                for (var i = 0, j = 0; i < this.m_queue.length; i ++) {
-                        if (this.m_queue[i] != null || this.m_queue[i] == "")
-                                answer[j ++] = this.m_queue[i];
+                for (var i = 0, j = 0; i < this.queue.length; i ++) {
+                        if (this.queue[i] != null || this.queue[i] == "")
+                                answer[j ++] = this.queue[i];
                 }
                 return answer;
         }
 
-        public to_string(): string
+        public toString(): string
         {
                 var a = this.fetch_all();
                 var ans = "";
@@ -55,13 +55,14 @@ export class ErrorMessages
         
         public clear(): void
         {
-                this.m_queue = [];
+                this.queue = [];
         }
-}
 
-export function error_messages_copy(pod): ErrorMessages
-{
-        var obj = new ErrorMessages();
-        obj.m_queue = pod.m_queue;
-        return obj;
-}
+        public static recover(pod: any): ErrorMessages
+        {
+                var obj = new ErrorMessages();
+                obj.queue = pod.queue;
+                return obj;
+        }
+};
+
