@@ -18,7 +18,7 @@ import {Measure, MeasureObject} from "./measure.ts";
 
 export class MeasureFitbit extends Measure
 {
-        public value:   SleepQuality;
+        private value:  SleepQuality;
 
         constructor(date: Date, value: SleepQuality)
         {
@@ -35,11 +35,12 @@ export class MeasureFitbit extends Measure
         {
                 return this.value;
         }
+
+        public static recover(pod: any): MeasureFitbit
+        {
+                var obj = new MeasureFitbit(null, null);
+                obj.value = pod.value;
+                return obj;
+        }
 };
 
-export function measure_fitbit_copy(pod): MeasureFitbit
-{
-        var obj = new MeasureFitbit(null, null);
-        obj.value = pod.value;
-        return obj;
-}

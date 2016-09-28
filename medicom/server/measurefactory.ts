@@ -13,10 +13,10 @@
  */
 
 import {Measure, MeasureObject} from "./measure.ts";
-import {measure_bp_copy} from "./measurebp.ts";
-import {measure_symptoms_copy} from "./measuresymptoms.ts";
-import {measure_fitbit_copy} from "./measurefitbit.ts";
-import {measure_pbc_copy} from "./measurepbc.ts";
+import {MeasureBP} from "./measurebp.ts";
+import {MeasureSymptoms} from "./measuresymptoms.ts";
+import {MeasureFitbit} from "./measurefitbit.ts";
+import {MeasurePBC} from "./measurepbc.ts";
 
 
 export function measure_copy(pod): Measure
@@ -24,21 +24,17 @@ export function measure_copy(pod): Measure
         var obj: Measure;
         switch (pod.object) {
                 case MeasureObject.BloodPressure:
-                        obj = measure_bp_copy(pod);
+                        obj = MeasureBP.recover(pod);
                         break;
                 case MeasureObject.PillBottleCap:
-                        obj = measure_pbc_copy(pod);
+                        obj = MeasurePBC.recover(pod);
                         break;
                 case MeasureObject.Symptoms:
-                        obj = measure_symptoms_copy(pod);
+                        obj = MeasureSymptoms.recover(pod);
                         break;
                 case MeasureObject.Fitbit:
-                        obj = measure_fitbit_copy(pod);
+                        obj = MeasureFitbit.recover(pod);
                         break;
         }
-        obj.measure_id = pod.measure_id;
-        obj.session_id = pod.session_id;
-        obj.object = pod.object;
-        obj.date = pod.date;
-        return obj;
+        return Measure.recover(obj, pod);
 }

@@ -18,7 +18,7 @@ import {Measure, MeasureObject} from "./measure.ts";
 
 export class MeasurePBC extends Measure 
 {
-        public value:   PillCapAction; 
+        private value:  PillCapAction; 
 
         constructor(date: Date, value: PillCapAction)
         {
@@ -35,11 +35,12 @@ export class MeasurePBC extends Measure
         { 
                 return this.value;
         }
+
+        public static recover(pod): MeasurePBC
+        {
+                var obj = new MeasurePBC(null, null);
+                obj.value = pod.value;
+                return obj;
+        }
 };
 
-export function measure_pbc_copy(pod): Measure
-{
-        var obj = new MeasurePBC(null, null);
-        obj.value = pod.value;
-        return obj;
-}

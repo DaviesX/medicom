@@ -22,10 +22,10 @@ export enum MeasureObject
 
 export class Measure
 {
-        public measure_id:      string = "-1";
-        public session_id:      number = -1;
-        public object:          MeasureObject;
-        public date:            number;
+        private measure_id:     string = "-1";
+        private session_id:     number = -1;
+        private object:         MeasureObject;
+        private date:           number;
 
         constructor(obj: MeasureObject, date: Date) 
         {
@@ -53,6 +53,11 @@ export class Measure
                 return this.measure_id;
         }
 
+        public get_type(): MeasureObject
+        {
+                return this.object;
+        }
+
         public set_date(date: Date): void
         { 
                  this.date = date.getTime();
@@ -68,5 +73,14 @@ export class Measure
         public get_internal_date(): number 
         { 
                 return this.date;
+        }
+
+        public static recover(obj: Measure, pod: any): Measure
+        {
+                obj.measure_id = pod.measure_id;
+                obj.session_id = pod.session_id;
+                obj.object = pod.object;
+                obj.date = pod.date;
+                return obj;
         }
 };

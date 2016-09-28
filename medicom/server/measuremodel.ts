@@ -32,8 +32,8 @@ export class MeasureModel
         private retain_measure(session_id: number, measure: Measure): Measure
         {
                 var result = this.measures.findOne({measure: session_id,
-                                                    date: measure.date,
-                                                    object: measure.object});
+                                                    date: measure.get_internal_date(),
+                                                    object: measure.get_type()});
                 return result != null ? measure_copy(result) : null;
         }
 
@@ -43,9 +43,9 @@ export class MeasureModel
                 if (old_measure != null) {
                         measure.set_session_id(old_measure.get_session_id());
                         measure.set_measure_id(old_measure.get_measure_id());
-                        this.measures.update({session_id: measure.session_id,
-                                              date: measure.date,
-                                              object: measure.object}, measure);
+                        this.measures.update({session_id: measure.get_session_id(),
+                                              date: measure.get_internal_date(),
+                                              object: measure.get_type()}, measure);
                 } else {
                         measure.set_session_id(session_id);
                         measure.set_measure_id(this.util.get_string_uuid());

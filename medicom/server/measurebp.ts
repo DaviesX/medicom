@@ -17,7 +17,7 @@ import {Measure, MeasureObject} from "./measure.ts";
 
 export class MeasureBP extends Measure
 {
-        public value:      BloodPressure;
+        private value:          BloodPressure;
         
         constructor(date: Date, value: BloodPressure)
         {
@@ -34,11 +34,12 @@ export class MeasureBP extends Measure
         { 
                 return this.value;
         }
+
+        public static recover(pod: any): MeasureBP
+        {
+                var obj = new MeasureBP(null, null);
+                obj.value = pod.value;
+                return obj;
+        }
 };
 
-export function measure_bp_copy(pod): MeasureBP
-{
-        var obj = new MeasureBP(null, null);
-        obj.value = pod.value;
-        return obj;
-}
