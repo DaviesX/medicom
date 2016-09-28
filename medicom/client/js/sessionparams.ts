@@ -14,10 +14,10 @@
 
 /// <reference path="../../tslib/main.d.ts" />
 
-import {Identity,       identity_copy} from "../../api/identity.ts";
-import {AccountInfo,    account_info_copy} from "../../api/accountinfo.ts";
-import {MedicalSession, medical_session_copy} from "../../api/medicalsession.ts";
-import {ErrorMessages,  error_messages_copy} from "../../api/error.ts";
+import {Identity} from "../../api/identity.ts";
+import {AccountInfo} from "../../api/accountinfo.ts";
+import {MedicalSession} from "../../api/medicalsession.ts";
+import {ErrorMessages} from "../../api/error.ts";
 import {Session} from "meteor/session";
 
 
@@ -53,13 +53,13 @@ export class SessionParams
 
                 switch (object) {
                         case SessionParamObject.ErrorMessage:
-                                return error_messages_copy(param);
+                                return ErrorMessages.recover(param);
                         case SessionParamObject.Identity:
-                                return identity_copy(param);
+                                return Identity.recover(param);
                         case SessionParamObject.User:
-                                return account_info_copy(param);
+                                return AccountInfo.recover(param);
                         case SessionParamObject.MedicalSession:
-                                return medical_session_copy(param);
+                                return MedicalSession.recover(param);
                         case SessionParamObject.UserBrowserState:
                         case SessionParamObject.DataBrowserState:
                                 return param;
