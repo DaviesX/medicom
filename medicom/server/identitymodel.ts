@@ -16,7 +16,7 @@
 
 import {Mongo} from "meteor/mongo";
 import {MongoUtil} from "../api/mongoutil.ts";
-import {Identity, identity_copy} from "../api/identity.ts";
+import {Identity} from "../api/identity.ts";
 import {AdminRecord} from "../api/adminrecord.ts";
 
 /*
@@ -47,7 +47,7 @@ export class IdentityModel
                         return this.m_mem_identities.get(session_id);
                 else {
                         var iden = this.m_identities.findOne({session_id: session_id}); 
-                        return iden != null ? identity_copy(iden) : null;
+                        return iden != null ? Identity.recover(iden) : null;
                 }
         }
 
@@ -66,7 +66,7 @@ export class IdentityModel
                                 var identities = [];
                                 var result_set = result.fetch();
                                 for (var i = 0; i < result.count(); i ++)
-                                        identities[i] = identity_copy(result_set[i]);
+                                        identities[i] = Identity.recover(result_set[i]);
                                 return identities;
                         } else
                                 return null;
@@ -124,7 +124,7 @@ export class IdentityModel
         private elevate(identity: Identity, record: AdminRecord): Identity
         {
                 if (record == null)
-                        throw Error("Logic error: elevating to a null record");
+                        throw new Error("Logic error: elevating to a null record");
                 identity.elevate(record);
                 this.update(identity);
                 return identity;
@@ -147,7 +147,7 @@ export class IdentityModel
 
                 var db_iden = this.get_by_session_id(identity.get_session_id());
                 if (db_iden == null)
-                        throw new Error("Identity doesn't exist in our record");
+                        throw new Error("Identity doesn't exist in our record, Detail: " + identity.toString());
         
                 var db_account = db_iden.get_account_record();
                 var param_account = identity.get_account_record();

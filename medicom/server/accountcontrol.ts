@@ -188,8 +188,10 @@ export class AccountControl
                         err.log("Account ID given is invalid");
                         return false;
                 }
-                if (!this.identities.verify_identity(identity)) {
-                        err.log("Your identity is invalid");
+                try {
+                        this.identities.verify_identity(identity);
+                } catch (error){
+                        err.log(error.toString());
                         return false;
                 }
                 var record = this.accounts.get_account_record_by_id(account_id);
@@ -206,8 +208,10 @@ export class AccountControl
                         err.log("Email given is invalid");
                         return false;
                 }
-                if (!this.identities.verify_identity(identity)) {
-                        err.log("Your identity is invalid");
+                try {
+                        this.identities.verify_identity(identity);
+                } catch (error) {
+                        err.log(error.toString());
                         return false;
                 }
                 var record = this.accounts.get_account_record_by_email(email);
@@ -224,8 +228,12 @@ export class AccountControl
                         err.log("Account IDs given are invalid");
                         return null;
                 }
-                if (!this.identities.verify_identity(identity)) {
-                        err.log("Your identity is invalid");
+                try {
+                        this.identities.verify_identity(identity);
+                } catch (error) {
+                        if (error.name == "TypeError")
+                                throw error;
+                        err.log(error.toString());
                         return null;
                 }
                 var self_record = identity.get_account_record();
@@ -261,8 +269,10 @@ export class AccountControl
         
         public search_account_infos(identity: Identity, key_word: string, cap: number, err: ErrorMessages): Array<AccountInfo>
         {
-                if (!this.identities.verify_identity(identity)) {
-                        err.log("Your identity is invalid");
+                try {
+                        this.identities.verify_identity(identity);
+                } catch (error) {
+                        err.log(error.toString());
                         return null;
                 }
                 var profiles = this.accounts.search_account_profiles(key_word, null);
@@ -328,7 +338,7 @@ export class AccountControl
                 if (!this.privileges.has_action(identity.get_account_record().get_privilege_ref(),
                                                     "activate account",
                                                     [record.get_privilege_ref()]))
-                        throw Error("You don't have the permission to force activate the account: " + record.get_account_id());
+                        throw new Error("You don't have the permission to force activate the account: " + record.get_account_id());
                 this.accounts.activate_account(record);
         }
         
