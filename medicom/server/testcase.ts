@@ -38,6 +38,7 @@ export class TestCase
         // Helper functions.
         private static remove_test_accounts(): void
         {
+debugger;
                 var err = new ErrorMessages();
                 var account_ctrl = new AccountControl();
                 account_ctrl.remove_account_by_email(account_ctrl.get_root_identity(), "bob", err);
@@ -54,15 +55,22 @@ export class TestCase
         
                 var err = new ErrorMessages();
                 var account_ctrl = new AccountControl();
+debugger;
                 var bob = account_ctrl.register("provider", "bob", "bob", "", "", err);
                 var amy = account_ctrl.register("patient", "amy", "amy", "", "", err);
                 var janet = account_ctrl.register("patient", "janet", "janet", "", "", err);
                 var jack = account_ctrl.register("assistant", "jack", "jack", "", "", err);
                 var root_id = account_ctrl.get_root_identity();
-                account_ctrl.activate(bob.get_admin_record().get_auth_code(), err);
-                account_ctrl.activate(amy.get_admin_record().get_auth_code(), err);
-                account_ctrl.activate(janet.get_admin_record().get_auth_code(), err);
-                account_ctrl.activate(jack.get_admin_record().get_auth_code(), err);
+                if (!err.is_empty())
+                        throw new Error("Failed to prepare test accounts. Cause: " + err.toString());
+                if (!account_ctrl.activate(bob.get_admin_record().get_auth_code(), err))
+                        throw new Error ("Failed to activate bob");
+                if (!account_ctrl.activate(amy.get_admin_record().get_auth_code(), err))
+                        throw new Error ("Failed to activate amy");
+                if (!account_ctrl.activate(janet.get_admin_record().get_auth_code(), err))
+                        throw new Error ("Failed to activate janet");
+                if (!account_ctrl.activate(jack.get_admin_record().get_auth_code(), err))
+                        throw new Error ("Failed to activate jack");
                 bob = account_ctrl.get_account_info_by_id(root_id, bob.get_admin_record().get_account_id(), err);
                 amy = account_ctrl.get_account_info_by_id(root_id, amy.get_admin_record().get_account_id(), err);
                 jack = account_ctrl.get_account_info_by_id(root_id, jack.get_admin_record().get_account_id(), err);
@@ -79,7 +87,7 @@ export class TestCase
                                jack: jack, jack_id: jack_id};
                 if (!err.is_empty()) {
                         console.log(result);
-                        throw new Error("Failed to create test accounts. Cause: " + err.fetch_all());
+                        throw new Error("Failed to create test accounts. Cause: " + err.toString());
                 }
                 return result;
         }
@@ -133,6 +141,17 @@ export class TestCase
                 }
                 console.log("test_AdminRecordModel passed");
         }
+
+        public static identity_model(): void
+        {
+                var accounts = TestCase.prepare_test_accounts();
+                var identities = DataModelContext.get_identity_model();
+                identities.verify_identity(accounts.bob_id);
+                identities.verify_identity(accounts.amy_id);
+                identities.verify_identity(accounts.janet_id);
+                identities.verify_identity(accounts.jack_id);
+                console.log("test identity model passed");
+        }
         
         public static mongo_util(): void
         {
@@ -181,8 +200,7 @@ export class TestCase
                 var account_info = account_control.register(
                                            "provider", "zhaonias@uci.edu", "tomasds", "9495628820", "lzn19940830haha", errmq);
                 if (account_info == null) {
-                        console.log(errmq.fetch_all());
-                        throw Error("account_info fucked up");
+                        throw Error("account_info fucked up. Cause: " + errmq.toString());
                 }
                 // Login without activating the account.
                 var provider_id = account_control.login_by_email("zhaonias@uci.edu", "lzn19940830haha", errmq);

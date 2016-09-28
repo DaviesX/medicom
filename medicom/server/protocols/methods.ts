@@ -370,6 +370,16 @@ test_admin_record_model:
         },
 
         /**
+         * Unit test on the IdentityModel.
+         * @return {null}
+         */
+test_identity_model:
+        function(arg)
+        {
+                TestCase.identity_model();
+        },
+
+        /**
          * Unit test on the PrivilegeNetwork.
          * @return {null}
          */
