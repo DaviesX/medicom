@@ -14,7 +14,7 @@
 
 import {Mongo} from "meteor/mongo";
 import {MongoUtil} from "../api/mongoutil.ts";
-import {MedicalSession, medical_session_copy} from "../api/medicalsession.ts";
+import {MedicalSession} from "../api/medicalsession.ts";
 
 
 export class SessionModel
@@ -37,7 +37,7 @@ export class SessionModel
         public get_session(session_id: number): MedicalSession
         {
                 var result = this.m_sessions.findOne({session_id: session_id});
-                return result != null ? medical_session_copy(result) : null;
+                return result != null ? MedicalSession.recover(result) : null;
         }
 
         public has_session(session_id: number): boolean
@@ -52,7 +52,7 @@ export class SessionModel
 
         public update_session(new_session: MedicalSession): number 
         {
-                return this.m_sessions.update({session_id : new_session.session_id}, new_session);
+                return this.m_sessions.update({session_id : new_session.get_session_id()}, new_session);
         }
 
         public reset(): number
