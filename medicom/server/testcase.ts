@@ -38,7 +38,6 @@ export class TestCase
         // Helper functions.
         private static remove_test_accounts(): void
         {
-debugger;
                 var err = new ErrorMessages();
                 var account_ctrl = new AccountControl();
                 account_ctrl.remove_account_by_email(account_ctrl.get_root_identity(), "bob", err);
@@ -55,7 +54,6 @@ debugger;
         
                 var err = new ErrorMessages();
                 var account_ctrl = new AccountControl();
-debugger;
                 var bob = account_ctrl.register("provider", "bob", "bob", "", "", err);
                 var amy = account_ctrl.register("patient", "amy", "amy", "", "", err);
                 var janet = account_ctrl.register("patient", "janet", "janet", "", "", err);
