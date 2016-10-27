@@ -144,12 +144,11 @@ debugger;
 
         public static identity_model(): void
         {
-                var accounts = TestCase.prepare_test_accounts();
                 var identities = DataModelContext.get_identity_model();
-                identities.verify_identity(accounts.bob_id);
-                identities.verify_identity(accounts.amy_id);
-                identities.verify_identity(accounts.janet_id);
-                identities.verify_identity(accounts.jack_id);
+                var record = new AdminRecord(1342, UserGroupConst.Provider, "1234", "mmkl", 1);
+                record.activate();
+                var iden = identities.create_identity(record);
+                identities.verify_identity(iden);
                 console.log("test identity model passed");
         }
         
