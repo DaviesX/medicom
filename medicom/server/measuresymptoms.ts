@@ -33,12 +33,12 @@ export class MeasureSymptoms extends Measure
 
         public add_symptom(symp_name: string, scale: number): void
         {
-                this.value.symptoms.push([symp_name, scale]);
+                this.value.symptoms.set(symp_name, scale);
         }
         
         public add_lifestyle(lifestyle: string, ans: boolean): void
         {
-                this.value.lifestyles.push([lifestyle, ans]);
+                this.value.lifestyles.set(lifestyle, ans);
         }
 
         public set_description(description: string): void

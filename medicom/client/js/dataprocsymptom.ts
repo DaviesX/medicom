@@ -18,6 +18,7 @@ import {Identity} from "../../api/identity.ts";
 import {AccountInfo} from "../../api/accountinfo.ts";
 import {MedicalSession} from "../../api/medicalsession.ts";
 import {ValueTable} from "../../api/valuetable.ts";
+import {RowValueObject} from "../../api/irowvalue.ts";
 import {Symptom} from "../../api/symptom.ts";
 
 import {DataParams} from "./dataparams.ts";
@@ -80,36 +81,42 @@ export class DataProcSymptom extends IDataProcessor
                         chart.add_y("Nothing to Display", new Array<number>(), null);
                 } else {
                         var sym_table = data;
+                        var rows = sym_table.all_rows();
+
+                        // Fill in x axis.
                         var x = new Array<Date>();
-                        var pairs = sym_table.get_pairs();
-                        for (var i = 0; i < pairs.length; i ++) {
-                                x.push(pairs[i].date);
-                        }
-                        // Scan the category of the symptoms.
+                        for (var i = 0; i < sym_table.num_rows(); i ++)
+                                x.push(rows[i].get_date());
+
+                        // Find the union of all symptoms.
                         var categories = new Map<string, number>();
-                        var n_symps = 0;
-                        for (var i = 0; i < pairs.length; i ++) {
-                                var val = <Symptom> pairs[j].value;
-                                for (var j = 0; j < val.symptoms.length; j ++) {
-                                        if (!categories.has(val.symptoms[j][0]))
-                                                categories.set(val.symptoms[j][0], n_symps ++);
-                                }
+                        var slot_alloc = 0;
+                        for (var i = 0; i < sym_table.num_rows(); i ++) {
+                                var val = <Symptom> rows[j].get_value(RowValueObject.RowValueSymptom);
+                                val.symptoms.forEach(function (scale: number, sym_name: string, map: Map<string, number>) {
+                                        if (!categories.has(sym_name))
+                                                categories.set(sym_name, slot_alloc ++);
+                                });
                         }
-                        // Generate values.
+
+                        // Generate y values for all symptoms.
                         var ys = new Array<Array<number>>();
-                        for (var j = 0; j < pairs.length; j ++) {
-                                var val = <Symptom> pairs[j].value;
-                                // Initialize to null for all categories.
+                        for (var j = 0; j < sym_table.num_rows(); j ++) {
+                                var val = <Symptom> rows[j].get_value(RowValueObject.RowValueSymptom);
+
+                                // Initialize all slots to null
+                                // because not every row has value for all categories of symptom
+                                // hence some of them don't get filled in the next step.
                                 for (var i = 0; i < 0; i ++)
                                         ys[i][j] = null;
 
-                                for (var i = 0; i < 0; i ++) {
-                                        if (val.symptoms[i] != null) {
-                                                var slot = categories.get(val.symptoms[i][0]);
-                                                ys[slot][j] = val.symptoms[slot][1];
-                                        }
-                                }
+                                // Expand every row of symptom into y values.
+                                val.symptoms.forEach(function (scale: number, sym_name: string, map: Map<string, number>) {
+                                        var slot = categories.get(sym_name);
+                                        ys[slot][j] = scale;
+                                });
                         }
+
                         // Put in chart.
                         categories.forEach(function(slot: number, sym_name: string, map: Map<string, number>) {
                                 chart.add_y(sym_name, ys[slot], null);

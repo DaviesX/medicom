@@ -11,83 +11,56 @@
  * You should have received a copy of the GNU General Public License along with this program; if not,
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
-import { Template } from "meteor/templating";
-import * as TestCase from "./testcases.js";
+import {Template} from "meteor/templating";
+import {TestCase} from "./testcases.ts";
 
-Router.route("/test-admin-record-model", function() {
-             TestCase.test_admin_record_model();
-             });
 
-Router.route("/inject-test-data", function() {
+Router.route("/inject_test_data", function() {
              TestCase.inject_test_data();
              });
 
-Router.route("/reset-data", function() {
+Router.route("/reset_data", function() {
              TestCase.reset_data();
              });
 
-Router.route("/test-privilege-network", function() {
+Router.route("/test_admin_record_model", function() {
+             TestCase.test_admin_record_model();
+             });
+
+Router.route("/test_privilege_network", function() {
              TestCase.test_privilege_network();
              });
 
-Router.route("/test-account-control", function() {
+Router.route("/test_account_control", function() {
              TestCase.test_account_control();
              });
 
-Router.route("/test-session-control", function() {
+Router.route("/test_session_control", function() {
              TestCase.test_session_control();
              });
 
-Router.route("/test-measure", function() {
+Router.route("/test_measure", function() {
              TestCase.test_measure();
              });
 
-Router.route("/test-mongodb", function() {
+Router.route("/test_mongodb", function() {
              TestCase.test_mongodb();
              });
 
-Router.route("/test-error-message-queue", function() {
-             TestCase.test_ErrorMessageQueue();
+Router.route("/test_error_messages", function() {
+             TestCase.test_error_messages();
              });
 
-Router.route("/test-profile", function() {
-             TestCase.test_profile();
-             });
-
-Router.route("/test-provider", function() {
-             TestCase.test_provider();
-             });
-
-Router.route("/test-patient", function() {
-             TestCase.test_patient();
-             });
-
-Router.route("/test-identity", function() {
-             TestCase.test_identity();
-             });
-
-Router.route("/test-participated-session", function() {
-             TestCase.test_participated_session();
-             });
-
-Router.route("/test-account-type", function() {
-             TestCase.test_account_type();
-             });
-
-Router.route("/test-account-info", function() {
-             TestCase.test_account_info();
-             });
-
-Router.route("/test-admin-record", function() {
-             TestCase.test_admin_record();
-             });
-
-Router.route("/test-value-table", function() {
+Router.route("/test_value_table", function() {
              TestCase.test_value_table();
              });
 
-Router.route("/test-value-table-bp", function() {
+Router.route("/test_value_table_bp", function() {
              TestCase.test_value_table_bp();
+             });
+
+Router.route("/test_login", function() {
+             TestCase.test_login();
              });
 
 Router.route("/", function () {

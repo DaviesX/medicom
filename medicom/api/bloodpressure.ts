@@ -12,7 +12,7 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-import {IRowValue} from "./irowvalue.ts";
+import {IRowValue, RowValueObject} from "./irowvalue.ts";
 
 export class BloodPressure implements IRowValue
 {
@@ -25,5 +25,57 @@ export class BloodPressure implements IRowValue
                 this.sys = sys;
                 this.dia = dia;
                 this.bpm = bpm;
+        }
+
+        // @override
+        public object(): RowValueObject
+        {
+                return RowValueObject.RowValueBloodPressure;
+        }
+
+        // @override
+        public add(_rhs: IRowValue): IRowValue
+        {
+                var rhs: BloodPressure = <BloodPressure> _rhs;
+                return new BloodPressure(this.sys + rhs.sys,
+                                         this.dia + rhs.dia,
+                                         this.bpm + rhs.bpm);
+        }
+
+        // @override
+        public scale(k: number): IRowValue
+        {
+                return new BloodPressure(k*this.sys,
+                                         k*this.dia,
+                                         k*this.bpm);
+        }
+
+        // @override
+        public lt(_rhs: IRowValue): boolean
+        {
+                var rhs: BloodPressure = <BloodPressure> _rhs;
+                return this.sys < rhs.sys;
+        }
+
+        // @override
+        public gt(_rhs: IRowValue): boolean
+        {
+                var rhs: BloodPressure = <BloodPressure> _rhs;
+                return this.sys > rhs.sys;
+        }
+
+        // @override
+        public eq(_rhs: IRowValue): boolean
+        {
+                var rhs: BloodPressure = <BloodPressure> _rhs;
+                return this.sys == rhs.sys &&
+                       this.dia == rhs.dia &&
+                       this.bpm == rhs.bpm;
+        }
+
+        // @override
+        public to_string(): string
+        {
+                return "BloodPressure = [" + this.sys + ", " + this.dia + ", " + this.bpm + "]";
         }
 }

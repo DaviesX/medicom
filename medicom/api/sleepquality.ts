@@ -12,7 +12,7 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-import {IRowValue} from "./irowvalue.ts";
+import {IRowValue, RowValueObject} from "./irowvalue.ts";
 
 export class SleepQuality implements IRowValue
 {
@@ -27,5 +27,63 @@ export class SleepQuality implements IRowValue
                 this.mins_awake = mins_awake;
                 this.number_awakenings = number_awakenings;
                 this.time_in_bed = time_in_bed;
+        }
+
+        // @override
+        public object(): RowValueObject
+        {
+                return RowValueObject.RowValueSleepQuality;
+        }
+
+        // @override
+        public add(_rhs: IRowValue): IRowValue
+        {
+                var rhs: SleepQuality = <SleepQuality> _rhs;
+                return new SleepQuality(this.mins_asleep + rhs.mins_asleep,
+                                        this.mins_awake + rhs.mins_awake,
+                                        this.number_awakenings + rhs.number_awakenings,
+                                        this.time_in_bed + rhs.time_in_bed);
+        }
+
+        // @override
+        public scale(k: number): IRowValue
+        {
+                return new SleepQuality(k*this.mins_asleep,
+                                        k*this.mins_awake,
+                                        k*this.number_awakenings,
+                                        k*this.time_in_bed);
+        }
+
+        // @override
+        public lt(_rhs: IRowValue): boolean
+        {
+                var rhs: SleepQuality = <SleepQuality> _rhs;
+                return this.mins_asleep/this.time_in_bed < rhs.mins_asleep/rhs.mins_asleep;
+        }
+
+        // @override
+        public gt(_rhs: IRowValue): boolean
+        {
+                var rhs: SleepQuality = <SleepQuality> _rhs;
+                return this.mins_asleep/this.time_in_bed > rhs.mins_asleep/rhs.mins_asleep;
+        }
+
+        // @override
+        public eq(_rhs: IRowValue): boolean
+        {
+                var rhs: SleepQuality = <SleepQuality> _rhs;
+                return this.mins_asleep == rhs.mins_asleep &&
+                       this.mins_awake == rhs.mins_awake &&
+                       this.number_awakenings == rhs.number_awakenings &&
+                       this.time_in_bed == rhs.time_in_bed;
+        }
+        
+        // @override
+        public to_string(): string
+        {
+                return "SleepQuality = [" + this.mins_asleep + "," 
+                                          + this.mins_awake + ","
+                                          + this.number_awakenings + ","
+                                          + this.time_in_bed + "]";
         }
 };

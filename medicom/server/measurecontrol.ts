@@ -51,9 +51,9 @@ export class MeasureControl
                         err.log(error.toString());
                         return false;
                 }
-                var pairs = table.get_pairs();
-                for (var i = 0; i < pairs.length; i ++) {
-                        var measure = f_Construct_Measure(pairs[i]);
+                var rows = table.all_rows();
+                for (var i = 0; i < rows.length; i ++) {
+                        var measure = f_Construct_Measure(rows[i]);
                         this.measures.update_measure(session_id, measure);
                 }
                 return true;

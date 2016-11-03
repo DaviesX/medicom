@@ -15,6 +15,7 @@ import {AdminRecord} from "../api/adminrecord.ts";
 import {Profile} from "../api/profile.ts";
 import {AccountInfo} from "../api/accountinfo.ts";
 import {ValueTable} from "../api/valuetable.ts";
+import {Symptom} from "../api/symptom.ts";
 import {Result} from "../api/result.ts";
 import {AccountManager} from "./accountmanager.ts"
 import {IdentityModel} from "./identitymodel.ts";
@@ -23,62 +24,66 @@ import {DataModelContext} from "./datamodelcontext.ts";
 import {MeteorMethods, METHODS} from "./protocols/methods.ts";
 
 
-const providers_name = [
-        "Chifeng Wen",
-        "Buck Stites",
-        "Anisa Trumbauer",
-        "Veronica Tijerina"
-];
-
-const patients_name = [
-        "Oliva Granger",
-        "Francesco Fan",
-        "Wilbur Bates",
-        "Frankie Engel",
-        "Flor Wierenga",
-        "Sharolyn Demont",
-        "Terina Pettey",
-        "Lizzie Fairbairn",
-        "Dillon Crippen",
-        "Alfonzo Redner",
-        "Briana Siple",
-        "Ron Bonin",
-        "Darcel Hickmon",
-        "Mignon Dudney",
-        "Liza Locascio",
-        "Lamont Riggleman",
-        "Wendi Schw"
-];
-
-const patients_email = [
-        "en-bfcu@l-a48agtf.com",
-        "2halar@z9ay0ndczbe6.com",
-        "gcz_@axes4opsvq.com",
-        "9tv0ftkjw_k16@nl-q09pwc8.com",
-        "m0b42zzh@hum14vk36.com",
-        "ilwzktc8v.lalhc@c811d9jqxc.com",
-        "780@pdh-3rs5mc4x.com",
-        "7fg3@7754fj.com",
-        "kncfktis@s-0-5kb.com",
-        "e33k0rf5k--@tnf31i8-1eqh.com",
-        "h-1j@vwnlmxh4.com",
-        "d2-xcdo5ll4aq@hitvprkyb7bm.com",
-        "vbrve@fs1ivda7o3.com",
-        "_fnvw67j83ki--@3-oldu553o8.com",
-        "lugdtmqc9j9ed@wokumcu.com",
-        "yqsdxcdf@wekdosk.com",
-        "dgwq3mdf9j9ed@23ci0zk.com",
-];
-
-const providers_email = [
-        "chifenw@uci.edu",
-        "bucks@gmail.com",
-        "anisa@yahoo.com",
-        "veronica@live.com"
-];
-
+/*
+ * <TestData> Generate mockup data for testing.
+ */
 export class TestData
 {
+
+        private static providers_name: Array<string> = [
+                "Chifeng Wen",
+                "Buck Stites",
+                "Anisa Trumbauer",
+                "Veronica Tijerina"
+        ];
+
+        private static patients_name: Array<string> = [
+                "Oliva Granger",
+                "Francesco Fan",
+                "Wilbur Bates",
+                "Frankie Engel",
+                "Flor Wierenga",
+                "Sharolyn Demont",
+                "Terina Pettey",
+                "Lizzie Fairbairn",
+                "Dillon Crippen",
+                "Alfonzo Redner",
+                "Briana Siple",
+                "Ron Bonin",
+                "Darcel Hickmon",
+                "Mignon Dudney",
+                "Liza Locascio",
+                "Lamont Riggleman",
+                "Wendi Schw"
+        ];
+
+        private static patients_email: Array<string> = [
+                "en-bfcu@l-a48agtf.com",
+                "2halar@z9ay0ndczbe6.com",
+                "gcz_@axes4opsvq.com",
+                "9tv0ftkjw_k16@nl-q09pwc8.com",
+                "m0b42zzh@hum14vk36.com",
+                "ilwzktc8v.lalhc@c811d9jqxc.com",
+                "780@pdh-3rs5mc4x.com",
+                "7fg3@7754fj.com",
+                "kncfktis@s-0-5kb.com",
+                "e33k0rf5k--@tnf31i8-1eqh.com",
+                "h-1j@vwnlmxh4.com",
+                "d2-xcdo5ll4aq@hitvprkyb7bm.com",
+                "vbrve@fs1ivda7o3.com",
+                "_fnvw67j83ki--@3-oldu553o8.com",
+                "lugdtmqc9j9ed@wokumcu.com",
+                "yqsdxcdf@wekdosk.com",
+                "dgwq3mdf9j9ed@23ci0zk.com",
+        ];
+
+        private static providers_email: Array<string>  = [
+                "chifenw@uci.edu",
+                "bucks@gmail.com",
+                "anisa@yahoo.com",
+                "veronica@live.com"
+        ];
+
         public static inject_test_data() : void
         {
                 console.log("injecting test data...");
@@ -87,51 +92,51 @@ export class TestData
 
                 // Create patient's account
                 var patient_ids = [];
-                for (var i = 0; i < patients_name.length; i ++) {
+                for (var i = 0; i < TestData.patients_name.length; i ++) {
                         var result = METHODS.register_and_activate({
-                                user_group: "patient",
-                                email: patients_email[i],
-                                user_name: patients_name[i],
-                                phone: "310-100-0248",
-                                password: "111111"
+                                user_group:     "patient",
+                                email:          TestData.patients_email[i],
+                                user_name:      TestData.patients_name[i],
+                                phone:          "310-100-0248",
+                                password:       "111111"
                         });
                         if (!result.error.is_empty())
                                 throw Error(result.error.toString());
                         patient_ids[i] = result.get_result().get_admin_record().get_account_id();
                 }
                 // Create provider's account
-                for (var i = 0; i < providers_name.length; i ++) {
+                for (var i = 0; i < TestData.providers_name.length; i ++) {
                         METHODS.register_and_activate({
-                                user_group: "provider",
-                                email: providers_email[i],
-                                user_name: providers_name[i],
-                                phone: "310-100-0248",
-                                password: "111111"
+                                user_group:     "provider",
+                                email:          TestData.providers_email[i],
+                                user_name:      TestData.providers_name[i],
+                                phone:          "310-100-0248",
+                                password:       "111111"
                         });
                 }
                 // Login all providers
                 var identities = [];
-                for (var i = 0; i < providers_name.length; i ++) {
+                for (var i = 0; i < TestData.providers_name.length; i ++) {
                         identities[i] = METHODS.login_by_email({
-                                email: providers_email[i],
-                                password: "111111"
+                                email:          TestData.providers_email[i],
+                                password:       "111111"
                         }).get_result();
                 }
                 // Create sessions
                 for (var j = 0; j < 4; j ++) {
-                        for (var i = 0; i < providers_name.length; i ++) {
+                        for (var i = 0; i < TestData.providers_name.length; i ++) {
                                 METHODS.create_user_association({
-                                        identity: identities[i],
-                                        id: patient_ids[(Math.random()*patient_ids.length) | 0]
+                                        identity:       identities[i],
+                                        id:             patient_ids[(Math.random()*patient_ids.length) | 0]
                                 });
                         }
                 }
                 var session_ids = new Set();
                 for (var j = 0; j < 20; j ++) {
-                        for (var i = 0; i < providers_name.length; i ++) {
+                        for (var i = 0; i < TestData.providers_name.length; i ++) {
                                 var result2 = METHODS.create_medical_session({
-                                        identity: identities[i],
-                                        id: patient_ids[(Math.random()*patient_ids.length) | 0]
+                                        identity:       identities[i],
+                                        id:             patient_ids[(Math.random()*patient_ids.length) | 0]
                                 });
                                 if (result2.get_error().is_empty())
                                         session_ids.add(result2.get_result().get_session_id());
@@ -139,42 +144,56 @@ export class TestData
                 }
                 // Create symptom measures.
                 var sym_measures = new ValueTable();
-                sym_measures.add_row(new Date(2015, 10, 13), {
-                        patients_feel: 5,
-                        symptom_pairs: [{symp_name: "headache", scale: 4},
-                                {symp_name: "hot ear", scale: 1}],
-                                description: "Lorem ipsum dolor sit amet, ex nec sint idque, mel et mollis iisque appareat, lorem ubique disputationi qui cu. At veri fabellas pri. Equidem accusam adipiscing ut eam. Mei ut alia mollis, quo soleat theophrastus te, an has sumo nullam dignissim."
-                });
-                sym_measures.add_row(new Date(2015, 10, 14), {
-                        patients_feel: 4,
-                        symptom_pairs: [{symp_name: "headache", scale: 3},
-                                {symp_name: "hot ear", scale: 2}],
-                                description: "Primis assentior et has, ex pericula definitiones mea, sententiae scripserit mediocritatem ad quo. Et his volumus atomorum dignissim, impedit reprehendunt eam an. Apeirian definitiones signiferumque mei eu, eros assueverit mediocritatem ad qui, ea inani noluisse adipiscing usu. In stet eirmod sit. Veri adhuc sed et, per illum sapientem at. Eam omittam legendos facilisis an, etiam putent perpetua est no, iudico dolorum eu quo."
-                });
-                sym_measures.add_row(new Date(2015, 10, 15), {
-                        patients_feel: 2,
-                        symptom_pairs: [{symp_name: "headache", scale: 1}],
-                        description: "Sea ei option veritus, ea nonumy euismod torquatos duo. No suas epicuri est, ullum deserunt cum cu. His ut expetenda intellegam. An vocent tibique interesset cum, scripta officiis cum te. Usu eu postea integre explicari, vis te inani soluta deterruisset. Ius aliquip alterum facilisis at."
-                });
-                sym_measures.add_row(new Date(2015, 10, 16), {
-                        symptom_pairs: [{symp_name: "headache", scale: 2},
-                                {symp_name: "hot ear", scale: 3}],
-                                patients_feel: 3,
-                                description: "Animal euismod te vel. Ius putant numquam dolorum at. Pri eu timeam constituto, ex verear iuvaret vel. Modus dictas voluptua in nec."
-                });
-                sym_measures.add_row(new Date(2015, 10, 17), {
-                        symptom_pairs: [{symp_name: "headache", scale: 1},
-                                {symp_name: "finger numb", scale: 2}],
-                                patients_feel: 4,
-                                description: "Antiopam tractatos eu quo, et agam prompta mel, appareat adipiscing vis ne. Te eos simul bonorum, pri an elit dissentiet, vis semper docendi definitiones at. Pri ei principes disputationi. Id liber aeque persius qui, mea ut movet tibique praesent."
-                });
-                sym_measures.add_row(new Date(2015, 10, 18), {
-                        symptom_pairs: [{symp_name: "headache", scale: 0},
-                                {symp_name: "hot ear", scale: 1},
-                                {symp_name: "finger numb", scale: 4}],
-                                patients_feel: 5,
-                                description: "Antiopam tractatos eu quo, et agam prompta mel, appareat adipiscing vis ne. Te eos simul bonorum, pri an elit dissentiet, vis semper docendi definitiones at. Pri ei principes disputationi. Id liber aeque persius qui, mea ut movet tibique praesent."
-                });
+                sym_measures.add_row(new Date(2015, 10, 13), 
+                                     new Symptom([["headache", 4], ["hot ear", 1]],
+                                                 [],
+                                                 "Head exploded"));
+
+                sym_measures.add_row(new Date(2015, 10, 14), 
+                                     new Symptom([["headache", 3], ["hot ear", 2]],
+                                                 [],
+                                                 "Vomit"));
+
+                sym_measures.add_row(new Date(2015, 10, 15), 
+                                     new Symptom([["headache", 1]],
+                                                 [],
+                                                 "Light headed"));
+
+                sym_measures.add_row(new Date(2015, 10, 16), 
+                                     new Symptom([["headache", 1]],
+                                                 [],
+                                                 null));
+
+                sym_measures.add_row(new Date(2015, 10, 17), 
+                                     new Symptom([["headache", 1]],
+                                                 [],
+                                                 null));
+
+                sym_measures.add_row(new Date(2015, 10, 18), 
+                                     new Symptom([["headache", 0], ["finger numb", 2]],
+                                                 [],
+                                                 "My finger feels tickling"));
+
+                sym_measures.add_row(new Date(2015, 10, 19), 
+                                     new Symptom([["headache", 2], ["finger numb", 4], ["hot ear", 3]],
+                                                 [],
+                                                 null));
+
+                sym_measures.add_row(new Date(2015, 10, 20), 
+                                     new Symptom([["headache", 3], ["hot ear", 2]],
+                                                 [],
+                                                 null));
+
+                sym_measures.add_row(new Date(2015, 10, 21), 
+                                     new Symptom([["headache", 1], ["hot ear", 1], ["finger number", 2]],
+                                                 [],
+                                                 "A lot better"));
+
+                sym_measures.add_row(new Date(2015, 10, 22), 
+                                     new Symptom([["headache", 0], ["hot ear", 0], ["finger number", 1]],
+                                                 [],
+                                                 "I don't think I need to take any medicine today"));
+
                 session_ids.forEach(function (session_id, junk, set) {
                         for (var k = 0; k < identities.length; k ++) {
                                 var result = METHODS.update_measure_symptom({

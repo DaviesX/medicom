@@ -12,6 +12,25 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
+export enum RowValueObject
+{
+        RowValueSymptom,
+        RowValuePillCap,
+        RowValueBloodPressure,
+        RowValueSleepQuality,
+        RowValueMax
+};
+
+/*
+ * <IRowValue> Row value in a ValueTable.
+ */
 export interface IRowValue
 {
-}
+        object():               RowValueObject;
+        add(rhs: IRowValue):    IRowValue;
+        scale(k: number):       IRowValue;
+        lt(rhs: IRowValue):     boolean;
+        gt(rhs: IRowValue):     boolean;
+        eq(rhs: IRowValue):     boolean;
+        to_string():            string;
+};

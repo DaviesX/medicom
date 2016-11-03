@@ -12,7 +12,7 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-import {IRowValue} from "./irowvalue.ts";
+import {IRowValue, RowValueObject} from "./irowvalue.ts";
 import {BloodPressure} from "./bloodpressure.ts";
 import {PillCapAction} from "./pillcapaction.ts";
 import {SleepQuality} from "./sleepquality.ts";
@@ -23,23 +23,61 @@ export type DateComp = (a: Date, b: Date) => boolean;
 export class Row
 {
         public date:            Date;
-        public value:           IRowValue;
+        public values:          Array<IRowValue>;
         public num_insts:       number;
 
-        constructor(date: Date, value: IRowValue, num_insts: number)
+        constructor(date: Date, num_insts: number)
         {
                 this.date = date;
-                this.value = value;
                 this.num_insts = num_insts;
+                this.values = new Array<IRowValue>();
         }
-};
 
-interface RowValueOp
-{
-        scalar(v: IRowValue):                   number;
-        add(v0: IRowValue, v1: IRowValue):      IRowValue;
-        scale(k: number, v: IRowValue):         IRowValue;
-        merge(v0: IRowValue, v1: IRowValue):    IRowValue;
+        public merge(other: Row): Row
+        {
+                for (var i = 0; i < other.values.length; i ++) {
+                        this.set_value(other.values[i]);
+                }
+                this.num_insts = Math.max(this.num_insts, other.num_insts);
+                return this;
+        }
+
+        public get_date(): Date
+        {
+                return this.date;
+        }
+
+        public get_instance_count(): number
+        {
+                return this.num_insts;
+        }
+
+        public with_value(value: IRowValue): Row
+        {
+                this.values[value.object()] = value;
+                return this;
+        }
+
+        public set_value(value: IRowValue): void
+        {
+                this.with_value(value);
+        }
+
+        public get_value(object: RowValueObject): IRowValue
+        {
+                return this.values[object];
+        }
+
+        public to_string(): string
+        {
+                var s: string = "Row = [" + this.date + "\n\t, values=["; 
+                for (var i = 0; i < this.values.length; i ++) {
+                        s += this.values[i].to_string() + ",\n\t"; 
+                }
+                s += "]";
+                s += ", \n\t" + this.num_insts + "]";
+                return s;
+        }
 };
 
 
@@ -51,17 +89,17 @@ export class ValueTable
         public Delimiter:      string = ",";           // CSV delimiter and line break.
         public LineDelimiter:  string = "\n";
 
-        public m_pairs:        Array<Row>;             // m_pairs: array of {date, value, num_insts}.
+        public m_rows:        Array<Row>;             // m_rows: array of {date, value, num_insts}.
         public m_is_sorted:    boolean = true;         // A dirty flag to show whether the data set is sorted or not.
 
         constructor() 
         {
-                this.m_pairs = new Array<Row>();
+                this.m_rows = new Array<Row>();
         }
         
-        public construct_from_pairs(pairs: Array<Row>): void
+        public construct_from_rows(pairs: Array<Row>): void
         {
-                this.m_pairs = pairs;
+                this.m_rows = pairs;
                 this.m_is_sorted = false;
         }
         
@@ -279,14 +317,24 @@ export class ValueTable
         
         public add_row(date: Date, value: IRowValue)
         {
-                this.m_pairs.push(new Row(date, value, 1));
+                this.m_rows.push(new Row(date, 1).with_value(value));
                 this.m_is_sorted = false;
-                return this.m_pairs[this.m_pairs.length - 1];
+                return this.m_rows[this.m_rows.length - 1];
         }
 
+        public add_row_v(row: Row)
+        {
+                this.m_rows.push(row);
+                this.m_is_sorted = false;
+                return this.m_rows[this.m_rows.length - 1];
+        }
 
-        
-        private find_pairs(pairs: Array<Row>, pair: Row, date_cmp: DateComp): Row
+        public num_rows(): number
+        {
+                return this.m_rows.length;
+        }
+
+        private static find_row(pairs: Array<Row>, pair: Row, date_cmp: DateComp): Row
         {
                 var l = 0, h = pairs.length - 1;
                 while (l <= h) {
@@ -305,82 +353,84 @@ export class ValueTable
         {
                 if (!this.m_is_sorted) {
                         var target_time = date.getTime();
-                        for (var i = 0; i < this.m_pairs.length; i ++) {
-                                if (this.m_pairs[i].date.getTime() === target_time) {
-                                        return this.m_pairs[i];
+                        for (var i = 0; i < this.m_rows.length; i ++) {
+                                if (this.m_rows[i].date.getTime() === target_time) {
+                                        return this.m_rows[i];
                                 }
                         }
                         return null;
                 } else {
-                        return this.find_pairs(this.m_pairs, new Row(date, null, 0),
-                                                 function(a: Date, b: Date) {
-                                                        return a.getTime() === b.getTime();
-                                                 });
+                        return ValueTable.find_row(this.m_rows, new Row(date, 0),
+                                                     function(a: Date, b: Date) {
+                                                            return a.getTime() === b.getTime();
+                                                     });
                 }
         }
         
-        public get_pairs(): Array<Row>
+        public all_rows(): Array<Row>
         {
-                return this.m_pairs;
+                return this.m_rows;
         }
         
-        private min_pair(i: number, j: number, op: RowValueOp): Row
+        private min_pair(object: RowValueObject, i: number, j: number): Row
         {
-                var m = this.m_pairs[i];
+                var m: Row = this.m_rows[i];
                 for (var k = i + 1; k <= j; k ++) {
-                        if (op.scalar(this.m_pairs[k].value) < op.scalar(m.value))
-                                m = this.m_pairs[k];
+                        var row: Row = this.m_rows[k];
+                        if (row.get_value(object).lt(m.get_value(object)))
+                                m = row;
                 }
                 return m;
         }
         
-        private max_pair(i: number, j: number, op: RowValueOp): Row
+        private max_pair(object: RowValueObject, i: number, j: number): Row
         {
-                var m = this.m_pairs[i];
+                var m: Row = this.m_rows[i];
                 for (var k = i + 1; k <= j; k ++) {
-                        if (op.scalar(this.m_pairs[k].value) > op.scalar(m.value))
-                                m = this.m_pairs[k];
+                        var row: Row = this.m_rows[k];
+                        if (row.get_value(object).gt(m.get_value(object)))
+                                m = row; 
                 }
                 return m;
         }
         
-        private avg_pair(i: number, j: number, op: RowValueOp): Row
+        private avg_pair(object: RowValueObject, i: number, j: number): Row
         {
-                var sum = this.m_pairs[i].value;
+                var sum: IRowValue = this.m_rows[i].get_value(object);
                 for (var k = i + 1; k <= j; k ++) {
-                        sum = op.add(sum, this.m_pairs[k].value);
+                        sum = sum.add(this.m_rows[k].get_value(object));
                 }
-                return new Row(this.m_pairs[i].date, op.scale(1/(j - i + 1), sum), 1);
+                return new Row(this.m_rows[i].date, 1).merge(this.m_rows[i]).with_value(sum.scale(1/(j - i + 1)));
         }
         
-        public merge_adjacent_data(strategy: string, date_cmp: DateComp, op: RowValueOp): ValueTable
+        public merge_adjacent_data(object: RowValueObject, strategy: string, date_cmp: DateComp): ValueTable
         {
                 var new_table = new ValueTable();
-                if (this.m_pairs.length == 0 || strategy == "plain") {
-                        new_table.construct_from_pairs(this.m_pairs.slice(0));
+                if (this.m_rows.length == 0 || strategy == "plain") {
+                        new_table.construct_from_rows(this.m_rows.slice(0));
                         return new_table;
                 }
         
                 var last = 0;
-                for (var i = 0; i < this.m_pairs.length; i ++) {
-                        if (i + 1 == this.m_pairs.length ||
-                            !date_cmp(this.m_pairs[i].date, this.m_pairs[i + 1].date)) {
-                                var new_spot = new_table.m_pairs.length;
+                for (var i = 0; i < this.m_rows.length; i ++) {
+                        if (i + 1 == this.m_rows.length ||
+                            !date_cmp(this.m_rows[i].date, this.m_rows[i + 1].date)) {
+                                var new_spot = new_table.m_rows.length;
                                 switch (strategy) {
                                 case "uniform min":
-                                        new_table.m_pairs[new_spot] = this.min_pair(last, i, op);
+                                        new_table.m_rows[new_spot] = this.min_pair(object, last, i);
                                         break;
                                 case "uniform max":
-                                        new_table.m_pairs[new_spot] = this.max_pair(last, i, op);
+                                        new_table.m_rows[new_spot] = this.max_pair(object, last, i);
                                         break;
                                 case "uniform average":
-                                        new_table.m_pairs[new_spot] = this.avg_pair(last, i, op);
+                                        new_table.m_rows[new_spot] = this.avg_pair(object, last, i);
                                         break;
                                 case "first":
-                                        new_table.m_pairs[new_spot] = this.m_pairs[last];
+                                        new_table.m_rows[new_spot] = this.m_rows[last];
                                         break;
                                 }
-                                new_table.m_pairs[new_spot].num_insts = i - last + 1;
+                                new_table.m_rows[new_spot].num_insts = i - last + 1;
                                 last = i + 1;
                         }
                 }
@@ -388,41 +438,44 @@ export class ValueTable
                 return new_table;
         }
         
-        public intersect_with(value_table: ValueTable, date_cmp: DateComp, op: RowValueOp, is_return_new: boolean): ValueTable
+        public intersect_with(value_table: ValueTable, 
+                              date_cmp: DateComp, 
+                              object: RowValueObject, 
+                              is_return_new: boolean): ValueTable
         {
                 var new_table = new ValueTable();
         
                 // Find intersection on date. Sort the data first, then apply a series of binary search.
                 // O(nlogn) + O(mlogm) + O(MIN(m, n)*log(MAX(m, n))) = O(nlogn).
                 if (this.m_is_sorted == false)
-                        this.sort_pairs(false, this.m_pairs);
+                        this.sort_pairs(false, this.m_rows);
                 if (value_table.m_is_sorted == false)
-                        value_table.sort_pairs(false, value_table.m_pairs);
+                        value_table.sort_pairs(false, value_table.m_rows);
         
-                if (this.m_pairs.length < value_table.m_pairs.length) {
-                        for (var i = 0; i < this.m_pairs.length; i ++) {
-                                var other = this.find_pairs(value_table.m_pairs, this.m_pairs[i], date_cmp);
-                                if (other !== null) {
-                                        var v = op.merge(this.m_pairs[i].value, other.value);
-                                        var new_pair = new_table.add_row(other.date, v);
-                                        new_pair.num_insts = Math.max(this.m_pairs[i].num_insts, other.num_insts);
-                                }
+                if (this.num_rows() < value_table.num_rows()) {
+                        for (var i = 0; i < this.num_rows(); i ++) {
+                                var row: Row = this.m_rows[i];
+
+                                var other: Row = ValueTable.find_row(value_table.all_rows(), row, date_cmp);
+                                if (other !== null)
+                                        new_table.add_row_v(
+                                                new Row(row.get_date(), 1).merge(row).with_value(other.get_value(object)));
                         }
                 } else {
-                        for (var i = 0; i < value_table.m_pairs.length; i ++) {
-                                var other = this.find_pairs(this.m_pairs, value_table.m_pairs[i], date_cmp);
-                                if (other !== null) {
-                                        var v = op.merge(value_table.m_pairs[i].value, other.value);
-                                        var new_pair = new_table.add_row(other.date, v);
-                                        new_pair.num_insts = Math.max(value_table.m_pairs[i].num_insts, other.num_insts);
-                                }
+                        for (var i = 0; i < value_table.num_rows(); i ++) {
+                                var row: Row = value_table.m_rows[i];
+
+                                var local: Row = ValueTable.find_row(this.all_rows(), row, date_cmp);
+                                if (local !== null)
+                                        new_table.add_row_v(
+                                                new Row(local.get_date(), 1).merge(local).with_value(row.get_value(object)));
                         }
                 }
         
                 if (is_return_new)
                         return new_table;
                 else {
-                        this.construct_from_pairs(new_table.get_pairs());
+                        this.construct_from_rows(new_table.all_rows());
                         new_table = null;
                         return this;
                 }
@@ -444,10 +497,10 @@ export class ValueTable
         
         public sort_data(desc: boolean): ValueTable
         {
-                var new_pairs = this.sort_pairs(desc, this.m_pairs.slice(0));
+                var new_pairs = this.sort_pairs(desc, this.m_rows.slice(0));
         
                 var new_table = new ValueTable();
-                new_table.construct_from_pairs(new_pairs);
+                new_table.construct_from_rows(new_pairs);
                 if (desc === false)
                         new_table.m_is_sorted = true;
                 else
@@ -457,37 +510,48 @@ export class ValueTable
         
         public sample(start_date: Date, end_date: Date, num_samples: number): ValueTable
         {
-                var pairs = this.m_pairs;
+                var rows: Array<Row> = this.all_rows();
         
                 var s = start_date == null ? Number.MIN_VALUE : start_date.getTime();
                 var e = end_date == null ? Number.MAX_VALUE : end_date.getTime();
         
-                var valid_indices = [];
-                for (var i = 0, j = 0; j < pairs.length; j ++) {
-                        var millidate = pairs[j].date.getTime();
+                var valid_indices = new Array<number>();
+                for (var i = 0, j = 0; j < rows.length; j ++) {
+                        var millidate = rows[j].get_date().getTime();
                         if (millidate < s || millidate > e)
                                 continue;
                         valid_indices[i ++] = j;
                 }
         
-                var new_pairs = [];
+                var new_rows = new Array<Row>();
                 num_samples = num_samples != null ?
                         Math.min(valid_indices.length, Math.max(1, num_samples)) : valid_indices.length;
                 var interval = valid_indices.length/num_samples;
                 for (var i = 0, j = 0; j < num_samples; i += interval, j ++) {
-                        new_pairs[j] = pairs[valid_indices[Math.floor(i)]];
+                        new_rows[j] = rows[valid_indices[Math.floor(i)]];
                 }
         
                 var new_table = new ValueTable();
-                new_table.construct_from_pairs(new_pairs);
+                new_table.construct_from_rows(new_rows);
                 new_table.m_is_sorted = this.m_is_sorted;
                 return new_table;
+        }
+
+        public to_string(): string
+        {
+                var s: string = "ValueTable = [\n";
+                for (var i = 0; i < this.m_rows.length; i ++) {
+                        s += "\t" + this.m_rows[i].to_string();
+                        if (i != this.m_rows.length - 1)
+                                s += ",\n";
+                }
+                return s;
         }
 
         public static recover(pod): ValueTable
         {
                 var obj = new ValueTable();
-                obj.m_pairs = pod.m_pairs;
+                obj.m_rows = pod.m_rows;
                 obj.m_is_sorted = pod.m_is_sorted;
                 obj.Delimiter = pod.Delimiter;
                 obj.LineDelimiter = pod.LineDelimiter;

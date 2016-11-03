@@ -12,7 +12,7 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-import {IRowValue} from "./irowvalue.ts";
+import {IRowValue, RowValueObject} from "./irowvalue.ts";
 
 export class PillCapAction implements IRowValue
 {
@@ -21,5 +21,51 @@ export class PillCapAction implements IRowValue
         constructor(is_taken: boolean) 
         {
                 this.is_taken = is_taken;
+        }
+
+        // @override
+        public object(): RowValueObject
+        {
+                return RowValueObject.RowValuePillCap;
+        }
+
+        // @override
+        public add(_rhs: IRowValue): IRowValue
+        {
+                var rhs: PillCapAction = <PillCapAction> _rhs;
+                return new PillCapAction(this.is_taken || rhs.is_taken);
+        }
+
+        // @override
+        public scale(k: number): IRowValue
+        {
+                return new PillCapAction(k == 0 ? false : this.is_taken);
+        }
+
+        // @override
+        public lt(_rhs: IRowValue): boolean
+        {
+                var rhs: PillCapAction = <PillCapAction> _rhs;
+                return this.is_taken < rhs.is_taken;
+        }
+
+        // @override
+        public gt(_rhs: IRowValue):               boolean
+        {
+                var rhs: PillCapAction = <PillCapAction> _rhs;
+                return this.is_taken > rhs.is_taken;
+        }
+
+        // @override
+        public eq(_rhs: IRowValue):               boolean
+        {
+                var rhs: PillCapAction = <PillCapAction> _rhs;
+                return this.is_taken == rhs.is_taken;
+        }
+
+        // @override
+        public to_string(): string
+        {
+                return this.is_taken ? "true" : "false";
         }
 }
