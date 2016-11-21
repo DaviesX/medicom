@@ -22,6 +22,7 @@ import {UserGroup} from "../api/usergroup.ts";
 import {MedicalSession} from "../api/medicalsession.ts";
 import {Identity} from "../api/identity.ts";
 import {Profile} from "../api/profile.ts";
+import {Result} from "../api/result.ts";
 import {ErrorMessages} from "../api/error.ts";
 
 /// <reference path="../tslib/underscore.d.ts" />
@@ -71,8 +72,8 @@ export class TestCase {
                 }
 
                 // Test intersection.
-                var table_intersect: ValueTable = table.intersect_with(table2, function(a, b) {
-                        return a.getTime() === b.getTime();
+                var table_intersect: ValueTable = table.intersect_with(table2, function(a: Date, b: Date) {
+                        return a.getTime() == b.getTime();
                 }, RowValueObject.RowValueSymptom, true);
                 console.log(table_intersect.to_string());
                 console.log("test_value_table passed");
@@ -117,6 +118,17 @@ export class TestCase {
 
         public static test_login(): void
         {
+                Meteor.call("login_by_email", 
+                            {email: "chifenw@uci.edu", password: "111111"}, function (err, pod) {
+                        var result: Result<AccountInfo> = <Result<AccountInfo>> Result.recover(pod);
+                        if (result.get_result() == null) {
+                                console.log(result.get_error().toString());
+                                throw new Error("Failed to login the account");
+                        } else {
+                                console.log(result.get_result());
+                                console.log("test_login passed");
+                        }
+                });
         }
 
         public static test_error_messages(): void

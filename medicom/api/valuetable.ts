@@ -86,11 +86,11 @@ export class Row
  */
 export class ValueTable
 {
-        public Delimiter:      string = ",";           // CSV delimiter and line break.
-        public LineDelimiter:  string = "\n";
+        public Delimiter:       string = ",";           // CSV delimiter and line break.
+        public LineDelimiter:   string = "\n";
 
-        public m_rows:        Array<Row>;             // m_rows: array of {date, value, num_insts}.
-        public m_is_sorted:    boolean = true;         // A dirty flag to show whether the data set is sorted or not.
+        public m_rows:          Array<Row>;             // m_rows: array of {date, value, num_insts}.
+        public m_is_sorted:     boolean = true;         // A dirty flag to show whether the data set is sorted or not.
 
         constructor() 
         {
