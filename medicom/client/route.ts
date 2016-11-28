@@ -79,12 +79,8 @@ Router.route("/login", function () {
              this.render("tmpllogin");
              });
 
-Router.route("/provider", function () {
-             this.render("tmplprovider");
-             });
-
-Router.route("/patient", function () {
-             this.render("tmplpatient");
+Router.route("/datacenter", function () {
+             this.render("tmpldatacenter");
              });
 
 Router.route("/account-settings", function () {
