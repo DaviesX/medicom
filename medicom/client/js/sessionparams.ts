@@ -28,6 +28,7 @@ export enum SessionParamObject
         User,
         MedicalSession,
         BrowsingState,
+        ProfileState,
 };
 
 /*
@@ -67,6 +68,8 @@ export class SessionParams
                         case SessionParamObject.MedicalSession:
                                 return MedicalSession.recover(param);
                         case SessionParamObject.BrowsingState:
+                                return param;
+                        case SessionParamObject.ProfileState:
                                 return param;
                         default:
                                 throw new Error ("Undefined session param object: " + object);
