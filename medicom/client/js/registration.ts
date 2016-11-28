@@ -11,33 +11,32 @@
  * You should have received a copy of the GNU General Public License along with this program; if not,
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
+
 import {Template} from "meteor/templating";
-import {SessionModel} from "./session";
 import {ErrorMessages} from "../../api/error";
-import {account_info_copy} from "../../api/accountinfo";
+import {AccountInfo} from "../../api/accountinfo";
+import {Result} from "../../api/result";
+import {SessionParams, SessionParamObject} from "./sessionparams";
 
-var G_Session = new SessionModel();
 
-function option_make(value, text) {
-        return '<option value="' + value + '">' + text + "</option>";
+function make_option_ui(text: string): string
+{
+        return '<option value="' + text + '">' + text + "</option>";
 }
 
-Template.tmplreg.onRendered(function () {
+Template["tmplreg"].onRendered(function () {
         console.log("reg template rendered");
 
         $(".emo_central").fadeOut(0);
         $(".emo_central").fadeIn(800);
 
-        // inject acccount types.
-        Meteor.call("get_registerable_user_groups", null, function(error, result) {
-                for (var i = 0; i < result.length; i ++) {
-                        $("#sel-reg-as").append(option_make(result[i], result[i]));
-                }
-        });
+        $("#sel-reg-as").append(make_option_ui("patient"));
+        $("#sel-reg-as").append(make_option_ui("provider"));
+        $("#sel-reg-as").append(make_option_ui("assistant"));
 });
 
 
-Template.tmplreg.events({"submit"(event) {
+Template["tmplreg"].events({"submit"(event) {
         event.preventDefault();
 
         var regerror = new ErrorMessages();
@@ -49,7 +48,7 @@ Template.tmplreg.events({"submit"(event) {
                 console.log("password too short");
                 regerror.log("password too short");
         }
-        G_Session.set_error_message(regerror);
+        SessionParams.get_params().store(SessionParamObject.ErrorMessage, regerror);
         if (!regerror.is_empty()) {
                 Router.go("/regresult");
                 return;
@@ -63,33 +62,32 @@ Template.tmplreg.events({"submit"(event) {
         };
 
         console.log(form_content);
-        Meteor.call("register_and_activate", form_content, function(error, result) {
-                console.log(result.account_info);
-                console.log(result.error);
-                if (result.error != "") {
-                        console.log(result.error);
-                        regerror.log(result.error);
-                        G_Session.set_error_message(regerror);
+        Meteor.call("register_and_activate", form_content, function(error, pod) {
+                var result = <Result<AccountInfo>> Result.recover(pod);
+                if (result.get_result == null) {
+                        console.log(result.get_error().toString());
+                        regerror.log(result.get_error().toString());
+                        SessionParams.get_params().store(SessionParamObject.ErrorMessage, result.get_error());
+                } else {
+                        alert("Account has been created successfully! You may remember your account ID if you wish.");
                 }
-                G_Session.set_account_info(result.account_info);
+                SessionParams.get_params().store(SessionParamObject.User, result.get_result());
                 Router.go("/regresult");
         });
         return;
 }});
 
-Template.tmplregresult.onRendered(function () {
+Template["tmplregresult"].onRendered(function () {
         console.log("regresult template rendered");
-        var regerror = G_Session.get_error_message();
-        console.log(regerror);
+        var regerror = SessionParams.get_params().obtain(SessionParamObject.ErrorMessage);
         if (!regerror.is_empty()) {
                 $("#h-reg-info").css("color", "red");
-                $("#h-reg-info").html("Failed to register: " + regerror.fetch_all());
-                console.log("user input error: " + regerror.fetch_all());
+                $("#h-reg-info").html("Failed to register: " + regerror.toString());
+                console.log("user input error: " + regerror.toString());
         } else {
-                var reginfo = G_Session.get_account_info();
+                var reginfo: AccountInfo = SessionParams.get_params().obtain(SessionParamObject.User);
                 console.log(reginfo);
                 $("#h-reg-info").css("color", "green");
-                $("#h-reg-info").html("Registration is successful, your account ID is: " +
-                        reginfo.get_account_id());
+                $("#h-reg-info").html("Registration is successful, your account ID is: " + reginfo.get_account_id());
         }
 });
