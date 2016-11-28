@@ -21,7 +21,7 @@ import {ErrorMessages} from "../../api/error";
 import {SequentialEffect} from "./effects";
 import {SessionParams, SessionParamObject} from "./sessionparams";
 
-export type OnUserSelected = (account_id: number) => void;
+export type OnUserSelected = (info: AccountInfo) => void;
 
 export class UserBrowser
 {
@@ -118,7 +118,7 @@ export class UserBrowser
                                 "click", 
                                 function(event: Event) {
                                         var account_id: number = parseInt(event.srcElement.id, 10);
-                                        clazz.on_user_selected(account_id);
+                                        clazz.on_user_selected(clazz.users.get(account_id));
                                 }, 
                                 false
                         );
@@ -226,7 +226,7 @@ export class UserBrowser
         }
 };
 
-export var on_user_selected: OnUserSelected;
+export declare var on_user_selected: OnUserSelected;
 
 // Main
 Template["tmpluserbrowser"].onRendered(function () {

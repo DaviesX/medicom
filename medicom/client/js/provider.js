@@ -21,8 +21,6 @@ import {G_UserBrowser} from "./userbrowser";
 import {G_DataBrowser} from "./databrowser";
 import {G_ActivityCenter} from "./activitycenter";
 
-var G_AccountType = new UserGroup();
-
 
 function user_browser_on_select(obj) {
         var account_id = obj.get_selected_user().get_account_id();
@@ -47,9 +45,6 @@ Template.tmplprovider.onRendered(function () {
                 G_ActivityCenter.print_error_text("You don't have the permission to visit this page");
         } else {
                 // Set up activity center.
-                G_ActivityCenter.set_redirection_path("/account-settings");
-                G_ActivityCenter.set_identity(identity);
-                G_ActivityCenter.update_welcome_text();
                 // Set up user browser.
                 G_UserBrowser.enable_add_user(true, "Add Patient");
                 G_UserBrowser.register_on_update("get_associated_user_info", {});

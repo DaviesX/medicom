@@ -35,7 +35,7 @@ export class ActivityCenter
         // UIs.
         private jwelcome_label:         JQuery = $("#a-welcome-holder");
         private jlogout_link:           JQuery = $("#a-logout");
-        private redirect_path:          string;
+        private redirect_path:          string = "/account-settings";
 
         private bind_logout_handler(): void
         {
