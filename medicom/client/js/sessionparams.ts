@@ -14,10 +14,10 @@
 
 /// <reference path="../../tslib/main.d.ts" />
 
-import {Identity} from "../../api/identity.ts";
-import {AccountInfo} from "../../api/accountinfo.ts";
-import {MedicalSession} from "../../api/medicalsession.ts";
-import {ErrorMessages} from "../../api/error.ts";
+import {Identity} from "../../api/identity";
+import {AccountInfo} from "../../api/accountinfo";
+import {MedicalSession} from "../../api/medicalsession";
+import {ErrorMessages} from "../../api/error";
 import {Session} from "meteor/session";
 
 
@@ -39,6 +39,13 @@ export enum SessionParamObject
 export class SessionParams
 {
         constructor() {}
+
+        private static inst: SessionParams = new SessionParams();
+
+        public static get_params(): SessionParams
+        {
+                return SessionParams.inst;
+        }
 
         public store(object: SessionParamObject, param: any)
         {
@@ -69,9 +76,3 @@ export class SessionParams
         }
 }
 
-const g = new SessionParams();
-
-export function session_params_inst(): SessionParams
-{
-        return g;
-}

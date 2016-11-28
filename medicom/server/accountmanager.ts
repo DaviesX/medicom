@@ -12,14 +12,14 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-import {AdminRecordModel} from "./adminrecordmodel.ts";
-import {ProfileModel} from "./profilemodel.ts";
-import {IdentityModel} from "./identitymodel.ts";
-import {PrivilegeNetwork} from "./privilegenetwork.ts";
-import {MongoUtil} from "../api/mongoutil.ts";
-import {AdminRecord} from "../api/adminrecord.ts";
-import {Profile} from "../api/profile.ts";
-import {UserGroup, UserGroupConst} from "../api/usergroup.ts";
+import {AdminRecordModel} from "./adminrecordmodel";
+import {ProfileModel} from "./profilemodel";
+import {IdentityModel} from "./identitymodel";
+import {PrivilegeNetwork} from "./privilegenetwork";
+import {MongoUtil} from "../api/mongoutil";
+import {AdminRecord} from "../api/adminrecord";
+import {Profile} from "../api/profile";
+import {UserGroup, UserGroupConst} from "../api/usergroup";
 
 
 /*

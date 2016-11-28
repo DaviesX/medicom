@@ -13,7 +13,7 @@
  */
 
 import {Mongo} from "meteor/mongo";
-import {Association, association_copy} from "../api/association.ts";
+import {Association, association_copy} from "../api/association";
 
 export class AssociationModel
 {

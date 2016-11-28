@@ -12,18 +12,18 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 import {Meteor} from "meteor/meteor";
-import {PillCapAction} from "../api/pillcapaction.ts";
-import {BloodPressure} from "../api/bloodpressure.ts";
-import {ValueTable, Row} from "../api/valuetable.ts";
-import {IRowValue, RowValueObject} from "../api/irowvalue.ts";
-import {AdminRecord} from "../api/adminrecord.ts";
-import {AccountInfo} from "../api/accountinfo.ts";
-import {UserGroup} from "../api/usergroup.ts";
-import {MedicalSession} from "../api/medicalsession.ts";
-import {Identity} from "../api/identity.ts";
-import {Profile} from "../api/profile.ts";
-import {Result} from "../api/result.ts";
-import {ErrorMessages} from "../api/error.ts";
+import {PillCapAction} from "../api/pillcapaction";
+import {BloodPressure} from "../api/bloodpressure";
+import {ValueTable, Row} from "../api/valuetable";
+import {IRowValue, RowValueObject} from "../api/irowvalue";
+import {AdminRecord} from "../api/adminrecord";
+import {AccountInfo} from "../api/accountinfo";
+import {UserGroup} from "../api/usergroup";
+import {MedicalSession} from "../api/medicalsession";
+import {Identity} from "../api/identity";
+import {Profile} from "../api/profile";
+import {Result} from "../api/result";
+import {ErrorMessages} from "../api/error";
 
 /// <reference path="../tslib/underscore.d.ts" />
 

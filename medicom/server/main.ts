@@ -14,7 +14,7 @@
 // server
 import {Meteor} from "meteor/meteor";
 import {METHODS, 
-        MeteorMethods} from "./protocols/methods.ts";
+        MeteorMethods} from "./protocols/methods";
 
 
 Meteor.startup(() =>

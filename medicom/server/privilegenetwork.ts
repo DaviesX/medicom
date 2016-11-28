@@ -13,7 +13,7 @@
  */
 
 import {Mongo} from "meteor/mongo";
-import {PrivilegeAction, privilege_action_copy} from "../api/privilege.ts";
+import {PrivilegeAction, privilege_action_copy} from "../api/privilege";
 
 /*
  * <PrivilegeEdge>

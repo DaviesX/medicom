@@ -12,8 +12,8 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-import {Symptom} from "../api/symptom.ts";
-import {Measure, MeasureObject} from "./measure.ts";
+import {Symptom} from "../api/symptom";
+import {Measure, MeasureObject} from "./measure";
 
 
 export class MeasureSymptoms extends Measure

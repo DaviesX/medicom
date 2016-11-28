@@ -15,9 +15,9 @@
 /// <reference path = "../tslib/lib.es6.d.ts" />
 
 import {Mongo} from "meteor/mongo";
-import {MongoUtil} from "../api/mongoutil.ts";
-import {Identity} from "../api/identity.ts";
-import {AdminRecord} from "../api/adminrecord.ts";
+import {MongoUtil} from "../api/mongoutil";
+import {Identity} from "../api/identity";
+import {AdminRecord} from "../api/adminrecord";
 
 /*
  * <IdentityModel> Identities persistent storage.

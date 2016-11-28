@@ -12,22 +12,22 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 // Web APIs go here
-import {Profile} from "../../api/profile.ts";
-import {AccountInfo} from "../../api/accountinfo.ts";
-import {MedicalSession} from "../../api/medicalsession.ts";
-import {ValueTable} from "../../api/valuetable.ts";
-import {Identity} from "../../api/identity.ts";
-import {DataTransObject} from "../../api/datatransfactory.ts";
-import {Result} from "../../api/result.ts";
-import {ErrorMessages} from "../../api/error.ts";
-import {UserGroup, user_group_get_registerable} from "../../api/usergroup.ts";
-import {AccountControl} from "../accountcontrol.js";
-import {MeasureControl} from "../measurecontrol.js";
-import {SessionControl} from "../sessioncontrol.js";
-import {PrivilegeControl} from "../privilegecontrol.js";
-import {DataModelContext} from "../datamodelcontext.js";
-import {TestData} from "../testdata.ts";
-import {TestCase} from "../testcase.ts";
+import {Profile} from "../../api/profile";
+import {AccountInfo} from "../../api/accountinfo";
+import {MedicalSession} from "../../api/medicalsession";
+import {ValueTable} from "../../api/valuetable";
+import {Identity} from "../../api/identity";
+import {DataTransObject} from "../../api/datatransfactory";
+import {Result} from "../../api/result";
+import {ErrorMessages} from "../../api/error";
+import {UserGroup, user_group_get_registerable} from "../../api/usergroup";
+import {AccountControl} from "../accountcontrol";
+import {MeasureControl} from "../measurecontrol";
+import {SessionControl} from "../sessioncontrol";
+import {PrivilegeControl} from "../privilegecontrol";
+import {DataModelContext} from "../datamodelcontext";
+import {TestData} from "../testdata";
+import {TestCase} from "../testcase";
 
 export class MeteorMethods
 {

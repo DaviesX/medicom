@@ -12,8 +12,8 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-import {PillCapAction} from "../api/pillcapaction.ts";
-import {Measure, MeasureObject} from "./measure.ts";
+import {PillCapAction} from "../api/pillcapaction";
+import {Measure, MeasureObject} from "./measure";
 
 
 export class MeasurePBC extends Measure 

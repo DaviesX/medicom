@@ -12,8 +12,8 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-import {DataTransObject} from "./datatransfactory.ts";
-import {ErrorMessages} from "./error.ts";
+import {DataTransObject, data_transaction_copy} from "./datatransfactory";
+import {ErrorMessages} from "./error";
 
 /*
  * <Result> Represents a result returned from the server.
@@ -49,7 +49,7 @@ export class Result<T>
         public static recover(pod): Result<Object>
         {
                 var obj = new Result<Object>(null, null, null);
-                obj.result = pod.result;
+                obj.result = data_transaction_copy(pod.type_desc, pod.result);
                 obj.type_desc = pod.type_desc;
                 obj.error = pod.error;
                 return obj;

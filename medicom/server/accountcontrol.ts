@@ -12,26 +12,26 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-import {AccountManager} from "./accountmanager.ts";
-import {IdentityModel} from "./identitymodel.ts";
-import {ProfileModel} from "./profilemodel.ts";
-import {PrivilegeNetwork} from "./privilegenetwork.ts";
-import {DataModelContext} from "./datamodelcontext.ts";
-import {Profile} from "../api/profile.ts";
-import {Identity} from "../api/identity.ts";
-import {ErrorMessages} from "../api/error.ts";
-import {MongoUtil} from "../api/mongoutil.ts";
-import {AdminRecord} from "../api/adminrecord.ts";
-import {AccountInfo} from "../api/accountinfo.ts";
+import {AccountManager} from "./accountmanager";
+import {IdentityModel} from "./identitymodel";
+import {ProfileModel} from "./profilemodel";
+import {PrivilegeNetwork} from "./privilegenetwork";
+import {DataModelContext} from "./datamodelcontext";
+import {Profile} from "../api/profile";
+import {Identity} from "../api/identity";
+import {ErrorMessages} from "../api/error";
+import {MongoUtil} from "../api/mongoutil";
+import {AdminRecord} from "../api/adminrecord";
+import {AccountInfo} from "../api/accountinfo";
 import {ROOT_ACTIONS, 
         ADMIN_ACTIONS,
         TEMPORARY_ACTIONS,
         PROVIDER_ACTIONS,
         ASSISTANT_ACTIONS,
-        PATIENT_ACTIONS} from "../api/privilege.ts";
+        PATIENT_ACTIONS} from "../api/privilege";
 import {UserGroup, 
         UserGroupConst,
-        user_group_get_registerable} from "../api/usergroup.ts";
+        user_group_get_registerable} from "../api/usergroup";
 
 
 /*

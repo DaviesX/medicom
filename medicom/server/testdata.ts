@@ -11,17 +11,17 @@
  * You should have received a copy of the GNU General Public License along with this program; if not,
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
-import {AdminRecord} from "../api/adminrecord.ts";
-import {Profile} from "../api/profile.ts";
-import {AccountInfo} from "../api/accountinfo.ts";
-import {ValueTable} from "../api/valuetable.ts";
-import {Symptom} from "../api/symptom.ts";
-import {Result} from "../api/result.ts";
-import {AccountManager} from "./accountmanager.ts"
-import {IdentityModel} from "./identitymodel.ts";
-import {AccountControl} from "./accountcontrol.ts";
-import {DataModelContext} from "./datamodelcontext.ts";
-import {MeteorMethods, METHODS} from "./protocols/methods.ts";
+import {AdminRecord} from "../api/adminrecord";
+import {Profile} from "../api/profile";
+import {AccountInfo} from "../api/accountinfo";
+import {ValueTable} from "../api/valuetable";
+import {Symptom} from "../api/symptom";
+import {Result} from "../api/result";
+import {AccountManager} from "./accountmanager"
+import {IdentityModel} from "./identitymodel";
+import {AccountControl} from "./accountcontrol";
+import {DataModelContext} from "./datamodelcontext";
+import {MeteorMethods, METHODS} from "./protocols/methods";
 
 
 /*

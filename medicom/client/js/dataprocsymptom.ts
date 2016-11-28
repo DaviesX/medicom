@@ -12,18 +12,18 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-import {IDataProcessor} from "./idataprocessor.ts";
-import {IDataTransaction} from "../../api/idatatransaction.ts";
-import {Identity} from "../../api/identity.ts";
-import {AccountInfo} from "../../api/accountinfo.ts";
-import {MedicalSession} from "../../api/medicalsession.ts";
-import {ValueTable} from "../../api/valuetable.ts";
-import {RowValueObject} from "../../api/irowvalue.ts";
-import {Symptom} from "../../api/symptom.ts";
+import {IDataProcessor} from "./idataprocessor";
+import {IDataTransaction} from "../../api/idatatransaction";
+import {Identity} from "../../api/identity";
+import {AccountInfo} from "../../api/accountinfo";
+import {MedicalSession} from "../../api/medicalsession";
+import {ValueTable} from "../../api/valuetable";
+import {RowValueObject} from "../../api/irowvalue";
+import {Symptom} from "../../api/symptom";
 
-import {DataParams} from "./dataparams.ts";
-import {DataBrowserUI} from "./databrowserui.ts";
-import {C3ChartRenderer, TemperalChart} from "./chartrenderer.ts";
+import {DataParams} from "./dataparams";
+import {DataBrowserUI} from "./databrowserui";
+import {C3ChartRenderer, TemperalChart} from "./chartrenderer";
 
 
 /*

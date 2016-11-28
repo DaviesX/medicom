@@ -12,11 +12,11 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-import {Measure, MeasureObject} from "./measure.ts";
-import {MeasureBP} from "./measurebp.ts";
-import {MeasureSymptoms} from "./measuresymptoms.ts";
-import {MeasureFitbit} from "./measurefitbit.ts";
-import {MeasurePBC} from "./measurepbc.ts";
+import {Measure, MeasureObject} from "./measure";
+import {MeasureBP} from "./measurebp";
+import {MeasureSymptoms} from "./measuresymptoms";
+import {MeasureFitbit} from "./measurefitbit";
+import {MeasurePBC} from "./measurepbc";
 
 
 export function measure_copy(pod): Measure

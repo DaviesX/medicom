@@ -12,16 +12,16 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-import {MongoUtil} from "../api/mongoutil.ts";
-import {AdminRecordModel} from "./adminrecordmodel.ts";
-import {ProfileModel} from "./profilemodel.ts";
-import {AccountManager} from "./accountmanager.ts";
-import {IdentityModel} from "./identitymodel.ts";
-import {SessionModel} from "./sessionmodel.ts";
-import {AssociationModel} from "./associationmodel.ts";
-import {SessionManager} from "./sessionmanager.ts";
-import {MeasureModel} from "./measuremodel.ts";
-import {PrivilegeNetwork} from "./privilegenetwork.ts";
+import {MongoUtil} from "../api/mongoutil";
+import {AdminRecordModel} from "./adminrecordmodel";
+import {ProfileModel} from "./profilemodel";
+import {AccountManager} from "./accountmanager";
+import {IdentityModel} from "./identitymodel";
+import {SessionModel} from "./sessionmodel";
+import {AssociationModel} from "./associationmodel";
+import {SessionManager} from "./sessionmanager";
+import {MeasureModel} from "./measuremodel";
+import {PrivilegeNetwork} from "./privilegenetwork";
 
 
 /*

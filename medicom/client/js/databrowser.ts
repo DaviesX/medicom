@@ -17,17 +17,17 @@
 
 import {Meteor} from "meteor/meteor";
 
-import {Identity} from "../../api/identity.ts";
-import {AccountInfo} from "../../api/accountinfo.ts";
-import {MedicalSession} from "../../api/medicalsession.ts";
-import {IDataTransaction} from "../../api/idatatransaction.ts";
-import {data_transaction_copy} from "../../api/datatransfactory.ts";
+import {Identity} from "../../api/identity";
+import {AccountInfo} from "../../api/accountinfo";
+import {MedicalSession} from "../../api/medicalsession";
+import {IDataTransaction} from "../../api/idatatransaction";
+import {data_transaction_copy} from "../../api/datatransfactory";
 
-import {DataBrowserUI} from "./databrowserui.ts";
-import {IDataProcessor} from "./idataprocessor.ts";
-import {data_proc_factory_create_all} from "./dataprocfactory.ts";
-import {SessionParamObject, session_params_inst} from "./sessionparams.ts";
-import {UI, UIObserver} from "./ui.ts";
+import {DataBrowserUI} from "./databrowserui";
+import {IDataProcessor} from "./idataprocessor";
+import {data_proc_factory_create_all} from "./dataprocfactory";
+import {SessionParams, SessionParamObject} from "./sessionparams";
+import {UI, UIObserver} from "./ui";
 
 
 class DataBrowserObserver implements UIObserver
@@ -152,9 +152,9 @@ export class DataBrowser
 
 export function data_browser_launcher(): void
 {
-        var identity = <Identity> session_params_inst().obtain(SessionParamObject.Identity);
-        var user     = <AccountInfo> session_params_inst().obtain(SessionParamObject.User);
-        var session  = <MedicalSession> session_params_inst().obtain(SessionParamObject.MedicalSession);
+        var identity = <Identity> SessionParams.get_params().obtain(SessionParamObject.Identity);
+        var user     = <AccountInfo> SessionParams.get_params().obtain(SessionParamObject.User);
+        var session  = <MedicalSession> SessionParams.get_params().obtain(SessionParamObject.MedicalSession);
         
         if (identity == null || user == null || session == null)
                 throw Error("Couldn't retrieve access info: [" 

@@ -12,7 +12,7 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 import {Template} from "meteor/templating";
-import {TestCase} from "./testcases.ts";
+import {TestCase} from "./testcases";
 
 
 Router.route("/inject_test_data", function() {

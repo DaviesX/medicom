@@ -12,12 +12,12 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-import {Identity} from "../../api/identity.ts";
-import {AccountInfo} from "../../api/accountinfo.ts";
-import {MedicalSession} from "../../api/medicalsession.ts";
+import {Identity} from "../../api/identity";
+import {AccountInfo} from "../../api/accountinfo";
+import {MedicalSession} from "../../api/medicalsession";
 
-import {IDataProcessor} from "./idataprocessor.ts";
-import {DataProcSymptom} from "./dataprocsymptom.ts";
+import {IDataProcessor} from "./idataprocessor";
+import {DataProcSymptom} from "./dataprocsymptom";
 
 
 export function data_proc_factory_create_all(identity: Identity, user: AccountInfo, session: MedicalSession): Array<IDataProcessor>

@@ -12,9 +12,9 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 import {Template} from "meteor/templating";
-import {SessionModel} from "./session.js";
-import {ErrorMessages} from "../../api/error.ts";
-import {account_info_copy} from "../../api/accountinfo.ts";
+import {SessionModel} from "./session";
+import {ErrorMessages} from "../../api/error";
+import {account_info_copy} from "../../api/accountinfo";
 
 var G_Session = new SessionModel();
 

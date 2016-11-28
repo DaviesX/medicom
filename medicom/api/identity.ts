@@ -12,8 +12,8 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-import {IDataTransaction} from "./idatatransaction.ts";
-import {AdminRecord} from "./adminrecord.ts";
+import {IDataTransaction} from "./idatatransaction";
+import {AdminRecord} from "./adminrecord";
 
 export class Identity implements IDataTransaction
 {

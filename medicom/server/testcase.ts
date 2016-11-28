@@ -12,22 +12,22 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-import {MongoUtil} from "../api/mongoutil.ts";
-import {Measure} from "./measure.ts";
-import {MeasureBP} from "./measurebp.ts";
-import {AccountControl} from "./accountcontrol.ts";
-import {SessionControl} from "./sessioncontrol.ts";
-import {ErrorMessages} from "../api/error.ts";
+import {MongoUtil} from "../api/mongoutil";
+import {Measure} from "./measure";
+import {MeasureBP} from "./measurebp";
+import {AccountControl} from "./accountcontrol";
+import {SessionControl} from "./sessioncontrol";
+import {ErrorMessages} from "../api/error";
 import {Privilege, 
         ROOT_ACTIONS,
         ADMIN_ACTIONS,
         ASSISTANT_ACTIONS,
         PROVIDER_ACTIONS,
-        PATIENT_ACTIONS} from "../api/privilege.ts";
-import {UserGroupConst, UserGroup} from "../api/usergroup.ts";
-import {DataModelContext} from "./datamodelcontext.ts";
-import {AdminRecordModel} from "./adminrecordmodel.ts";
-import {AdminRecord} from "../api/adminrecord.ts";
+        PATIENT_ACTIONS} from "../api/privilege";
+import {UserGroupConst, UserGroup} from "../api/usergroup";
+import {DataModelContext} from "./datamodelcontext";
+import {AdminRecordModel} from "./adminrecordmodel";
+import {AdminRecord} from "../api/adminrecord";
 
 
 /*

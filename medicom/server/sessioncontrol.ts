@@ -12,21 +12,21 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-import {DataModelContext} from "./datamodelcontext.ts";
-import {AdminRecordModel} from "./adminrecordmodel.ts";
-import {ProfileModel} from "./profilemodel.ts";
-import {SessionManager} from "./sessionmanager.ts";
-import {IdentityModel} from "./identitymodel.ts";
-import {AssociationModel} from "./associationmodel.ts";
-import {SessionModel} from "./sessionmodel.ts";
+import {DataModelContext} from "./datamodelcontext";
+import {AdminRecordModel} from "./adminrecordmodel";
+import {ProfileModel} from "./profilemodel";
+import {SessionManager} from "./sessionmanager";
+import {IdentityModel} from "./identitymodel";
+import {AssociationModel} from "./associationmodel";
+import {SessionModel} from "./sessionmodel";
 import {PrivilegeNetwork} from "./privilegenetwork";
-import {AccountInfo} from "../api/accountinfo.ts";
-import {MedicalSession} from "../api/medicalsession.ts";
-import {Association} from "../api/association.ts";
-import {Identity} from "../api/identity.ts";
-import {AdminRecord} from "../api/adminrecord.ts";
-import {ErrorMessages} from "../api/error.ts";
-import {UserGroupConst} from "../api/usergroup.js";
+import {AccountInfo} from "../api/accountinfo";
+import {MedicalSession} from "../api/medicalsession";
+import {Association} from "../api/association";
+import {Identity} from "../api/identity";
+import {AdminRecord} from "../api/adminrecord";
+import {ErrorMessages} from "../api/error";
+import {UserGroupConst} from "../api/usergroup";
 
 export class SessionControl
 {

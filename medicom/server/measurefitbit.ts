@@ -12,8 +12,8 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-import {SleepQuality} from "../api/sleepquality.ts";
-import {Measure, MeasureObject} from "./measure.ts";
+import {SleepQuality} from "../api/sleepquality";
+import {Measure, MeasureObject} from "./measure";
 
 
 export class MeasureFitbit extends Measure

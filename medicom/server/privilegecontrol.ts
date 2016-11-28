@@ -12,13 +12,13 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-import {DataModelContext} from "./datamodelcontext.ts";
-import {PrivilegeNetwork} from "./privilegenetwork.ts";
-import {AdminRecordModel} from "./adminrecordmodel.ts";
-import {IdentityModel} from "./identitymodel.ts";
-import {Privilege, PrivilegeAction} from "../api/privilege.ts";
-import {Identity} from "../api/identity.ts";
-import {ErrorMessages} from "../api/error.ts";
+import {DataModelContext} from "./datamodelcontext";
+import {PrivilegeNetwork} from "./privilegenetwork";
+import {AdminRecordModel} from "./adminrecordmodel";
+import {IdentityModel} from "./identitymodel";
+import {Privilege, PrivilegeAction} from "../api/privilege";
+import {Identity} from "../api/identity";
+import {ErrorMessages} from "../api/error";
 
 
 /*

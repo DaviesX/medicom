@@ -12,7 +12,7 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-import {ValueTable, ValueTable_create_from_POD} from "../../api/valuetable.js";
+import {ValueTable, ValueTable_create_from_POD} from "../../api/valuetable";
 
 export function FitbitDisplay()
 {

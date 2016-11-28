@@ -13,9 +13,9 @@
  */
 
 import {Mongo} from "meteor/mongo";
-import {MongoUtil} from "../api/mongoutil.ts";
-import {Measure, MeasureObject} from "./measure.ts";
-import {measure_copy} from "./measurefactory.ts";
+import {MongoUtil} from "../api/mongoutil";
+import {Measure, MeasureObject} from "./measure";
+import {measure_copy} from "./measurefactory";
 
 
 export class MeasureModel

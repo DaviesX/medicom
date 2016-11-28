@@ -12,14 +12,14 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 import {Template} from "meteor/templating";
-import {UserGroup} from "../../api/usergroup.js";
-import {AccountInfo_Create_From_POD} from "../../api/accountinfo.js";
-import {MedicalSession_Create_From_POD} from "../../api/medicalsession.js";
-import {G_Session} from "./session.js";
-import {G_SessionBrowser} from "./sessionbrowser.js";
-import {G_UserBrowser} from "./userbrowser.js";
-import {G_DataBrowser} from "./databrowser.js";
-import {G_ActivityCenter} from "./activitycenter.js";
+import {UserGroup} from "../../api/usergroup";
+import {AccountInfo_Create_From_POD} from "../../api/accountinfo";
+import {MedicalSession_Create_From_POD} from "../../api/medicalsession";
+import {G_Session} from "./session";
+import {G_SessionBrowser} from "./sessionbrowser";
+import {G_UserBrowser} from "./userbrowser";
+import {G_DataBrowser} from "./databrowser";
+import {G_ActivityCenter} from "./activitycenter";
 
 var G_AccountType = new UserGroup();
 

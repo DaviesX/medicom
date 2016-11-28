@@ -12,10 +12,10 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-import {IRowValue, RowValueObject} from "./irowvalue.ts";
-import {BloodPressure} from "./bloodpressure.ts";
-import {PillCapAction} from "./pillcapaction.ts";
-import {SleepQuality} from "./sleepquality.ts";
+import {IRowValue, RowValueObject} from "./irowvalue";
+import {BloodPressure} from "./bloodpressure";
+import {PillCapAction} from "./pillcapaction";
+import {SleepQuality} from "./sleepquality";
 
 
 export type DateComp = (a: Date, b: Date) => boolean;

@@ -12,13 +12,13 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-import {IDataTransaction} from "../../api/idatatransaction.ts";
-import {Identity} from "../../api/identity.ts";
-import {AccountInfo} from "../../api/accountinfo.ts";
-import {MedicalSession} from "../../api/medicalsession.ts";
+import {IDataTransaction} from "../../api/idatatransaction";
+import {Identity} from "../../api/identity";
+import {AccountInfo} from "../../api/accountinfo";
+import {MedicalSession} from "../../api/medicalsession";
 
-import {DataParams} from "./dataparams.ts";
-import {DataBrowserUI} from "./databrowserui.ts";
+import {DataParams} from "./dataparams";
+import {DataBrowserUI} from "./databrowserui";
 
 /*
  * <IDataProcessor> Process and Present data.

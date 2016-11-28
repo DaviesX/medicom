@@ -14,7 +14,7 @@
 
 /// <reference path="../tslib/lib.es6.d.ts" />
 
-import {IRowValue, RowValueObject} from "./irowvalue.ts";
+import {IRowValue, RowValueObject} from "./irowvalue";
 
 
 export class Symptom implements IRowValue

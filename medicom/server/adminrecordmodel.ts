@@ -13,8 +13,8 @@
  */
 
 import {Mongo} from "meteor/mongo";
-import {MongoUtil} from "../api/mongoutil.ts";
-import {AdminRecord} from "../api/adminrecord.ts";
+import {MongoUtil} from "../api/mongoutil";
+import {AdminRecord} from "../api/adminrecord";
 
 /*
  * <AdminRecordModel> AdminRecord storage model.

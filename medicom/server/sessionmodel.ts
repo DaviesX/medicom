@@ -13,8 +13,8 @@
  */
 
 import {Mongo} from "meteor/mongo";
-import {MongoUtil} from "../api/mongoutil.ts";
-import {MedicalSession} from "../api/medicalsession.ts";
+import {MongoUtil} from "../api/mongoutil";
+import {MedicalSession} from "../api/medicalsession";
 
 
 export class SessionModel

@@ -11,47 +11,48 @@
  * You should have received a copy of the GNU General Public License along with this program; if not,
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
-import { Template } from "meteor/templating";
-import {SessionModel} from "./session.js";
-import {Identity_create_from_POD} from "../../api/identity.js";
-import {UserGroup} from "../../api/usergroup.ts";
-import {ErrorMessages} from "../../api/error.ts";
+import {Template} from "meteor/templating";
+import {SessionParams, SessionParamObject} from "./sessionparams";
+import {Identity} from "../../api/identity";
+import {UserGroupConst} from "../../api/usergroup";
+import {AdminRecord} from "../../api/adminrecord";
+import {AccountInfo} from "../../api/accountinfo";
+import {Result} from "../../api/result";
+import {ErrorMessages} from "../../api/error";
 
 
-var G_Session = new SessionModel();
-
-Template.tmpllogin.onRendered(function () {
+Template["tmpllogin"].onRendered(function () {
         console.log("login template rendered");
         $(".emo_central").fadeOut(0);
         $(".emo_central").fadeIn(800);
 });
 
-function redirect_page_on(result) {
-        var identity = Identity_create_from_POD(result.identity);
-        console.log(identity);
-        G_Session.set_identity_info(identity);
+function redirect_page_on(result: Result<Identity>) 
+{
+        var identity = Identity.recover(result.get_result());
+        SessionParams.get_params().store(SessionParamObject.Identity, identity);
 
         // redirect according to account type.
-        var record = identity.get_account_record();
-        var user_group = new UserGroup(record.user_group()).to_string();
+        var record: AdminRecord = identity.get_account_record();
+        var user_group: number = record.user_group();
 
         switch (user_group) {
-        case "admin":
+        case UserGroupConst.Admin:
                 Router.go("/admin");
                 break;
-        case "provider":
+        case UserGroupConst.Provider:
                 Router.go("/provider");
                 break;
-        case "patient":
+        case UserGroupConst.Patient:
                 Router.go("/patient");
                 break;
-        case "super indendant":
-                Router.go("/super_indendant");
+        case UserGroupConst.Assistant:
+                Router.go("/assistant");
                 break;
         }
 }
 
-Template.tmpllogin.events({"submit"(event) {
+Template["tmpllogin"].events({"submit"(event) {
         event.preventDefault();
 
         var regerror = new ErrorMessages();
@@ -63,12 +64,14 @@ Template.tmpllogin.events({"submit"(event) {
                 password: password
         };
         console.log("logging in...");
-        Meteor.call("login_by_email", form_content, function(error, result) {
-                if (result.error != "") {
-                        Meteor.call("login_by_id", form_content, function(error, result) {
-                                if (result.error != "") {
-                                        console.log(result.error);
-                                        regerror.log(result.error);
+        Meteor.call("login_by_email", form_content, function(error, pod) {
+                var result = <Result<Identity>> Result.recover(pod);
+                if (result.get_result() == null){
+                        Meteor.call("login_by_id", form_content, function(error, pod) {
+                                var result = <Result<Identity>> Result.recover(pod);
+                                if (result.get_result() == null) {
+                                        console.log(result.get_error().toString());
+                                        regerror.log(result.get_error().toString());
                                         Router.go("/autherror");
                                 } else {
                                         redirect_page_on(result);

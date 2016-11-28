@@ -12,8 +12,8 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 import {Template} from "meteor/templating";
-import {G_Session} from "./session.js";
-import {AccountInfo_Create_From_POD} from "../../api/accountinfo.js";
+import {G_Session} from "./session";
+import {AccountInfo_Create_From_POD} from "../../api/accountinfo";
 
 export function ActivityCenter() {
         this.__identity = null;

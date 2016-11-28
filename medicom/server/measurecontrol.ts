@@ -12,18 +12,18 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-import {DataModelContext} from "./datamodelcontext.ts";
-import {MeasureModel} from "./measuremodel.ts";
-import {IdentityModel} from "./identitymodel.ts";
-import {SessionModel} from "./sessionmodel.ts";
-import {Measure, MeasureObject} from "./measure.ts";
-import {MeasureBP} from "./measurebp.ts";
-import {MeasurePBC} from "./measurepbc.ts";
-import {MeasureSymptoms} from "./measuresymptoms.ts";
-import {MeasureFitbit} from "./measurefitbit.ts";
-import {ErrorMessages} from "../api/error.ts";
-import {ValueTable} from "../api/valuetable.ts";
-import {Identity} from "../api/identity.ts";
+import {DataModelContext} from "./datamodelcontext";
+import {MeasureModel} from "./measuremodel";
+import {IdentityModel} from "./identitymodel";
+import {SessionModel} from "./sessionmodel";
+import {Measure, MeasureObject} from "./measure";
+import {MeasureBP} from "./measurebp";
+import {MeasurePBC} from "./measurepbc";
+import {MeasureSymptoms} from "./measuresymptoms";
+import {MeasureFitbit} from "./measurefitbit";
+import {ErrorMessages} from "../api/error";
+import {ValueTable} from "../api/valuetable";
+import {Identity} from "../api/identity";
 
 
 export class MeasureControl

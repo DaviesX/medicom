@@ -12,10 +12,10 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-import {MedicalSession} from "../api/medicalsession.ts";
-import {Association} from "../api/association.ts";
-import {SessionModel} from "./sessionmodel.ts";
-import {AssociationModel} from "./associationmodel.ts";
+import {MedicalSession} from "../api/medicalsession";
+import {Association} from "../api/association";
+import {SessionModel} from "./sessionmodel";
+import {AssociationModel} from "./associationmodel";
 
 /*
  * <SessionManager>

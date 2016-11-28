@@ -16,8 +16,8 @@
 /// <reference path="../../tslib/jqueryui.d.ts" />
 /// <reference path="../../tslib/lib.es6.d.ts" />
 
-import {DataParams} from "./dataparams.ts";
-import {UI, UIObserver} from "./ui.ts";
+import {DataParams} from "./dataparams";
+import {UI, UIObserver} from "./ui";
 
 class UIElement
 {

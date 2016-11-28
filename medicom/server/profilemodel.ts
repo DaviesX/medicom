@@ -13,8 +13,8 @@
  */
 
 import {Mongo} from "meteor/mongo";
-import {MongoUtil} from "../api/mongoutil.ts";
-import {Profile, profile_copy} from "../api/profile.ts";
+import {MongoUtil} from "../api/mongoutil";
+import {Profile, profile_copy} from "../api/profile";
 
 
 /*

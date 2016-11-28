@@ -12,8 +12,8 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-import {BloodPressure} from "../api/bloodpressure.ts";
-import {Measure, MeasureObject} from "./measure.ts";
+import {BloodPressure} from "../api/bloodpressure";
+import {Measure, MeasureObject} from "./measure";
 
 export class MeasureBP extends Measure
 {

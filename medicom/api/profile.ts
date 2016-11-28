@@ -12,7 +12,7 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-import {IDataTransaction} from "./idatatransaction.ts";
+import {IDataTransaction} from "./idatatransaction";
 
 /*
  * <Profile> Represents user profile storage object.
