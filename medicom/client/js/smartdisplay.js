@@ -53,7 +53,7 @@ SmartDisplay.prototype.set_charting_area = function(holder)
 SmartDisplay.prototype.set_access_info = function(identity, browsing_user, session)
 {
         this.__identity = identity
-                          this.__browsing_user = browsing_user;
+        this.__browsing_user = browsing_user;
         this.__session = session;
 }
 
@@ -92,6 +92,14 @@ SmartDisplay.prototype.set_holders = function(start_date, end_date, filter, expe
         });
         use_fb_qsleep.on("change", function(e) {
                 clazz.__options["use_fb_qsleep"] = use_fb_qsleep.is(':checked');
+                clazz.update();
+        });
+
+        $("#rb-corr-pbc").on("click", function(e) {
+                clazz.update();
+        });
+
+        $("#rb-corr-temporal").on("click", function(e) {
                 clazz.update();
         });
 }
@@ -172,157 +180,176 @@ SmartDisplay.prototype.__compile_data = function(start_date, end_date, filter, o
         return merged_result;
 }
 
-SmartDisplay.prototype.generate_smart_renderable = function(merged, options, expected_dose, charting_area)
+SmartDisplay.prototype.generate_smart_temporal = function(merged, options, expected_dose, charting_area)
 {
         var clazz = this;
 
+        // Generate a chart that represents the merged table.
+        var x = ["x"];
+        var y = ["pill bottle cap"];
+        var z = ["systolic blood pressure"];
+        var w = ["diastolic blood pressure"];
+        var b = ["sleep quality"];
+        var symptoms = [];
+
+        var types = [];
+        var colors = new Map();
+        var columns = [x];
+        var pairs = merged.get_pairs();
+        var max_height = 1;
+        // Fill in x.
+        for (var i = 0; i < pairs.length; i ++)
+                x[i + 1] = pairs[i].date;
+        // Fill in blood pressures.
+        if (options.use_bp === true) {
+                types["systolic blood pressure"] = "line";
+                types["diastolic blood pressure"] ="line";
+
+                colors.set("systolic blood pressure", d3.rgb(255, 118, 50).toString());
+                colors.set("diastolic blood pressure", d3.rgb(62, 65, 255).toString());
+
+                for (var i = 0; i < pairs.length; i ++) {
+                        z[i + 1] = pairs[i].value.systolic.toFixed(1);
+                        w[i + 1] = pairs[i].value.diastolic.toFixed(1);
+                        max_height = Math.max(max_height, z[i + 1]);
+                        max_height = Math.max(max_height, w[i + 1]);
+                }
+                columns.push(z);
+                columns.push(w);
+        }
+        // Fill in pill bottle cap records.
+        if (options.use_pbc === true) {
+                types["pill bottle cap"] ="bar";
+                colors.set("pill bottle cap", d3.rgb(0, 255, 0).toString());
+
+                for (var i = 0; i < pairs.length; i ++) {
+                        x[i + 1] = pairs[i].date;
+                        y[i + 1] = max_height;
+                        g_does_amount[i] = pairs[i].num_insts;
+                }
+                columns.push(y);
+                g_expected_amount = expected_dose;
+        }
+        // Fill in symptoms 
+        if (options.use_sym_feeling === true) {
+                const scale = 50;
+                var symp_map = G_SymptomsDisplay.get_symptoms(merged);
+                var adjusted_map = new Map();
+                var n = 0;
+                symp_map.forEach(function(v, k, m) {
+                        if (clazz.__active_symps.has(k)) {
+                                adjusted_map.set(k, n ++);
+                        }
+                });
+
+                // Set title.
+                adjusted_map.forEach(function(v, k, m) {
+                        symptoms.push([k]);
+                        types[k] ="line";
+                });
+
+                for (var i = 0; i < pairs.length; i ++) {
+                        adjusted_map.forEach(function(v, k, m) {
+                                symptoms[v][i + 1] = null;
+                        });
+
+                        var symps = pairs[i].value.symp_pairs;
+                        for (var l = 0; l < symps.length; l ++) {
+                                var v = adjusted_map.get(symps[l].symp_name);
+                                if (v == null)
+                                        continue;
+                                symptoms[v][i + 1] = Math.ceil(parseInt(symps[l].scale)/5*scale);
+                        }
+                }
+                for (var i = 0; i < symptoms.length; i ++)
+                        columns.push(symptoms[i]);
+        }
+
+        if (options.use_fb_qsleep === true) {
+                types["sleep quality"] = "line";
+                colors.set("sleep quality", d3.rgb(0, 40, 255).toString());
+
+                const scale = 50;
+                for (var i = 0; i < pairs.length; i ++) {
+                        b[i + 1] = Math.ceil(pairs[i].value.mins_asleep/pairs[i].value.time_in_bed*scale);
+                }
+                columns.push(b);
+        }
+
+        return {
+                bindto: charting_area,
+                data: {
+                        x: "x",
+                        columns: columns,
+                        types: types,
+                        colors: colors,
+                        color: function(color, d) {
+                                if (d.id === "pill bottle cap") {
+                                        var level = Math.min(Math.max(
+                                                                114 + (g_does_amount[d.index] - g_expected_amount)*50, 0), 360);
+                                        return d3.hsl(level, 0.4, 0.7);
+                                } else {
+                                        return color;
+                                }
+                        },
+                },
+                bar: {
+                        width: {
+                                ratio: 1.0
+                        }
+                },
+                axis: {
+                        x: {
+                                type: "timeseries",
+                                tick: {
+                                        format: "%Y-%m-%d"
+                                }
+                        },
+                        y: {
+                                max: max_height,
+                                min: 0,
+                                padding: {top: 0, bottom: 0}
+                        }
+                }
+        };
+}
+
+SmartDisplay.prototype.generate_smart_correlation = function(merged, axis, options, expected_dose, charting_area)
+{
+        return this.generate_empty(charting_area);
+}
+
+SmartDisplay.prototype.generate_empty = function(charting_area)
+{
+         return {
+                 bindto: charting_area,
+                 data:{
+                         x: "x",
+                         columns: [["x"], ["Nothing to display"]]
+                 },
+                 axis: {
+                         x: {
+                                 type: "timeseries",
+                                 tick: {
+                                         format: "%Y-%m-%d"
+                                 }
+                         }
+                 }
+         };
+}
+
+SmartDisplay.prototype.generate_smart_renderable = function(merged, options, expected_dose, charting_area)
+{
         if (merged == null) {
                 // Empty chart.
                 console.log("Returned empty chart");
-                return {
-                        bindto: charting_area,
-                        data:{
-                                x: "x",
-                                columns: [["x"], ["Nothing to display"]]
-                        },
-                        axis: {
-                                x: {
-                                        type: "timeseries",
-                                        tick: {
-                                                format: "%Y-%m-%d"
-                                        }
-                                }
-                        }
-                };
+                return this.generate_empty(charting_area);
         } else {
-                // Generate a chart that represents the merged table.
-                var x = ["x"];
-                var y = ["pill bottle cap"];
-                var z = ["systolic blood pressure"];
-                var w = ["diastolic blood pressure"];
-                var b = ["sleep quality"];
-                var symptoms = [];
-
-                var types = new Map();
-                var colors = new Map();
-                var columns = [x];
-                var pairs = merged.get_pairs();
-                var max_height = 1;
-                // Fill in x.
-                for (var i = 0; i < pairs.length; i ++)
-                        x[i + 1] = pairs[i].date;
-                // Fill in blood pressures.
-                if (options.use_bp === true) {
-                        types.set("systolic blood pressure", "line");
-                        types.set("diastolic blood pressure", "line");
-
-                        colors.set("systolic blood pressure", d3.rgb(255, 118, 50).toString());
-                        colors.set("diastolic blood pressure", d3.rgb(62, 65, 255).toString());
-
-                        for (var i = 0; i < pairs.length; i ++) {
-                                z[i + 1] = pairs[i].value.systolic.toFixed(1);
-                                w[i + 1] = pairs[i].value.diastolic.toFixed(1);
-                                max_height = Math.max(max_height, z[i + 1]);
-                                max_height = Math.max(max_height, w[i + 1]);
-                        }
-                        columns.push(z);
-                        columns.push(w);
+                if ($("#rb-corr-temporal").is(":checked")) {
+                        return this.generate_smart_temporal(merged, options, expected_dose, charting_area);
+                } else if ($("#rb-corr-pbc").is(":checked")) {
+                        return this.generate_smart_correlation(merged, "pbc", options, expected_dose, charting_area);
                 }
-                // Fill in pill bottle cap records.
-                if (options.use_pbc === true) {
-                        types.set("pill bottle cap", "bar");
-                        colors.set("pill bottle cap", d3.rgb(0, 255, 0).toString());
-
-                        for (var i = 0; i < pairs.length; i ++) {
-                                x[i + 1] = pairs[i].date;
-                                y[i + 1] = max_height;
-                                g_does_amount[i] = pairs[i].num_insts;
-                        }
-                        columns.push(y);
-                        g_expected_amount = expected_dose;
-                }
-                // Fill in symptoms 
-                if (options.use_sym_feeling === true) {
-                        const scale = 50;
-                        var symp_map = G_SymptomsDisplay.get_symptoms(merged);
-                        var adjusted_map = new Map();
-                        var n = 0;
-                        symp_map.forEach(function(v, k, m) {
-                                if (clazz.__active_symps.has(k)) {
-                                        adjusted_map.set(k, n ++);
-                                }
-                        });
-                        
-                        // Set title.
-                        adjusted_map.forEach(function(v, k, m) {
-                                symptoms.push([k]);
-                                types.set(k, "line");
-                        });
-
-                        for (var i = 0; i < pairs.length; i ++) {
-                                adjusted_map.forEach(function(v, k, m) {
-                                        symptoms[v][i + 1] = null;
-                                });
-                                
-                                var symps = pairs[i].value.symp_pairs;
-                                for (var l = 0; l < symps.length; l ++) {
-                                        var v = adjusted_map.get(symps[l].symp_name);
-                                        if (v == null)
-                                                continue;
-                                        symptoms[v][i + 1] = Math.ceil(parseInt(symps[l].scale)/5*scale);
-                                }
-                        }
-                        for (var i = 0; i < symptoms.length; i ++)
-                                columns.push(symptoms[i]);
-                }
-
-                if (options.use_fb_qsleep === true) {
-                        types.set("sleep quality", "line");
-                        colors.set("sleep quality", d3.rgb(0, 40, 255).toString());
-
-                        const scale = 50;
-                        for (var i = 0; i < pairs.length; i ++) {
-                                b[i + 1] = Math.ceil(pairs[i].value.mins_asleep/pairs[i].value.time_in_bed*scale);
-                        }
-                        columns.push(b);
-                }
-
-                return {
-                        bindto: charting_area,
-                        data: {
-                                x: "x",
-                                columns: columns,
-                                types: types,
-                                colors: colors,
-                                color: function(color, d) {
-                                        if (d.id === "pill bottle cap") {
-                                                var level = Math.min(Math.max(
-                                                        114 + (g_does_amount[d.index] - g_expected_amount)*50, 0), 360);
-                                                return d3.hsl(level, 0.4, 0.7);
-                                        } else {
-                                                return color;
-                                        }
-                                },
-                        },
-                        bar: {
-                                width: {
-                                        ratio: 1.0
-                                }
-                        },
-                        axis: {
-                                x: {
-                                        type: "timeseries",
-                                        tick: {
-                                                format: "%Y-%m-%d"
-                                        }
-                                },
-                                y: {
-                                        max: max_height,
-                                        min: 0,
-                                        padding: {top: 0, bottom: 0}
-                                }
-                        }
-                };
         }
 }
 
@@ -338,6 +365,7 @@ SmartDisplay.prototype.update = function()
                         var symp_table = G_SymptomsDisplay.get_processed_table(clazz.__start_date, clazz.__end_date);
                         var symp_map = G_SymptomsDisplay.get_symptoms(symp_table);
 
+                        $("#div-symptoms").empty();
                         symp_map.forEach(function(v, k, m) {
                                 $("#div-symptoms").append(clazz.make_symptom_checkbox_ui(k));
                         });
@@ -374,6 +402,7 @@ export var G_SmartDisplay = new SmartDisplay();
 
 Template.tmplsmartbrowser.onRendered(function() {
         console.log("smart browser rendered");
+        G_SmartDisplay.__active_symps = null;
         G_SmartDisplay.set_charting_area(this.find("#charting-area"));
         G_SmartDisplay.set_holders($("#ipt-start-date"),
                                    $("#ipt-end-date"),
