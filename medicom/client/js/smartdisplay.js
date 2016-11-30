@@ -316,7 +316,71 @@ SmartDisplay.prototype.generate_smart_temporal = function(merged, options, expec
 
 SmartDisplay.prototype.generate_smart_correlation = function(merged, axis, options, expected_dose, charting_area)
 {
-        return this.generate_empty(charting_area);
+        var x = ["x"];
+        var columns = [];
+        var pairs = merged.get_pairs();
+        var selected_is = new Set();
+
+        for (var i = 0; i < pairs.length; i ++) {
+                if (pairs[i].num_insts >= expected_dose)
+                        selected_is.add(i);
+        }
+        
+        // Fill in blood pressures.
+        if (options.use_bp === true) {
+                var sum_over_sys = 0;
+                var sum_over_dia = 0;
+                var n1 = 0;
+
+                var sum_over_sys2 = 0;
+                var sum_over_dia2 = 0;
+                var n2 = 0;
+
+                for (var i = 0; i < pairs.length; i ++) {
+                        if (selected_is.has(i)) {
+                                sum_over_sys += pairs[i].value.systolic;
+                                sum_over_dia += pairs[i].value.diastolic;
+                                n1 ++;
+                        } else {
+                                sum_over_sys2 += pairs[i].value.systolic;
+                                sum_over_dia2 += pairs[i].value.diastolic;
+                                n2 ++;
+                        }
+                }
+
+                sum_over_sys /= n1;
+                sum_over_dia /= n1;
+
+                sum_over_sys2 /= n2;
+                sum_over_dia2 /= n2;
+
+                columns.push(["sys w", sum_over_sys]);
+                columns.push(["sys w/o", sum_over_sys2]);
+                columns.push(["dia w", sum_over_dia]);
+                columns.push(["dia w/o", sum_over_dia2]);
+
+                x.push("systolic");
+                x.push("diastolic");
+        }
+
+        return {
+                bindto: charting_area,
+                data: {
+                        columns: columns,
+                        type: "bar",
+                },
+                bar: {
+                        width: {
+                                ratio: 1.0
+                        }
+                },
+                axis: {
+                        type: "category",
+                        y: {
+                                padding: {top: 0, bottom: 0}
+                        }
+                }
+        };
 }
 
 SmartDisplay.prototype.generate_empty = function(charting_area)
