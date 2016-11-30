@@ -139,7 +139,6 @@ FitbitDisplay.prototype.generate_bp_renderable = function(fbtable, target)
                 x[i + 1] = pairs[i].date;
                 y[i + 1] = (pairs[i].value.mins_asleep/pairs[i].value.time_in_bed).toFixed(2);
         }
-        console.log(y);
 
         return {
                 bindto: target,

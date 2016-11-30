@@ -138,39 +138,39 @@ export function PrepareTestData() {
         // Create symptom measures.
         var sym_measures = new ValueTable();
         sym_measures.add_row(new Date(2015, 10, 13), {
-                patients_feel: 5,
                 symptom_pairs: [{symp_name: "headache", scale: 4},
                                 {symp_name: "hot ear", scale: 1}],
+                lifestyle_pairs: [{factor_name: "salty food", answer: 1}],
                 description: "Lorem ipsum dolor sit amet, ex nec sint idque, mel et mollis iisque appareat, lorem ubique disputationi qui cu. At veri fabellas pri. Equidem accusam adipiscing ut eam. Mei ut alia mollis, quo soleat theophrastus te, an has sumo nullam dignissim."
         });
         sym_measures.add_row(new Date(2015, 10, 14), {
-                patients_feel: 4,
                 symptom_pairs: [{symp_name: "headache", scale: 3},
                                 {symp_name: "hot ear", scale: 2}],
+                lifestyle_pairs: [{factor_name: "salty food", answer: 0}],
                 description: "Primis assentior et has, ex pericula definitiones mea, sententiae scripserit mediocritatem ad quo. Et his volumus atomorum dignissim, impedit reprehendunt eam an. Apeirian definitiones signiferumque mei eu, eros assueverit mediocritatem ad qui, ea inani noluisse adipiscing usu. In stet eirmod sit. Veri adhuc sed et, per illum sapientem at. Eam omittam legendos facilisis an, etiam putent perpetua est no, iudico dolorum eu quo."
         });
         sym_measures.add_row(new Date(2015, 10, 15), {
-                patients_feel: 2,
                 symptom_pairs: [{symp_name: "headache", scale: 1}],
+                lifestyle_pairs: [{factor_name: "salty food", answer: 0}],
                 description: "Sea ei option veritus, ea nonumy euismod torquatos duo. No suas epicuri est, ullum deserunt cum cu. His ut expetenda intellegam. An vocent tibique interesset cum, scripta officiis cum te. Usu eu postea integre explicari, vis te inani soluta deterruisset. Ius aliquip alterum facilisis at."
         });
         sym_measures.add_row(new Date(2015, 10, 16), {
+                lifestyle_pairs: [{factor_name: "salty food", answer: 1}],
                 symptom_pairs: [{symp_name: "headache", scale: 2},
                                 {symp_name: "hot ear", scale: 3}],
-                patients_feel: 3,
                 description: "Animal euismod te vel. Ius putant numquam dolorum at. Pri eu timeam constituto, ex verear iuvaret vel. Modus dictas voluptua in nec."
         });
         sym_measures.add_row(new Date(2015, 10, 17), {
                 symptom_pairs: [{symp_name: "headache", scale: 1},
                                 {symp_name: "finger numb", scale: 2}],
-                patients_feel: 4,
+                lifestyle_pairs: [{factor_name: "salty food", answer: 0}],
                 description: "Antiopam tractatos eu quo, et agam prompta mel, appareat adipiscing vis ne. Te eos simul bonorum, pri an elit dissentiet, vis semper docendi definitiones at. Pri ei principes disputationi. Id liber aeque persius qui, mea ut movet tibique praesent."
         });
         sym_measures.add_row(new Date(2015, 10, 18), {
                 symptom_pairs: [{symp_name: "headache", scale: 0},
                                 {symp_name: "hot ear", scale: 1},
                                 {symp_name: "finger numb", scale: 4}],
-                patients_feel: 5,
+                lifestyle_pairs: [{factor_name: "salty food", answer: 0}],
                 description: "Antiopam tractatos eu quo, et agam prompta mel, appareat adipiscing vis ne. Te eos simul bonorum, pri an elit dissentiet, vis semper docendi definitiones at. Pri ei principes disputationi. Id liber aeque persius qui, mea ut movet tibique praesent."
         });
         session_ids.forEach(function (session_id, junk, set) {

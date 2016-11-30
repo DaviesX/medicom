@@ -314,7 +314,7 @@ function get_measure_symptom(identity, session_id, start_date, end_date, num_ite
                 for (var i = 0; i < n; i ++) {
                         sym_table.add_row(measures[i].__parent.get_date(), {
                                           symp_pairs: measures[i].get_symptom_pairs(),
-                                          patients_feel: measures[i].get_patients_feel(),
+                                          lifestyle_pairs: measures[i].get_lifestyle_pairs(),
                                           description: measures[i].get_description(),
                         });
                 }

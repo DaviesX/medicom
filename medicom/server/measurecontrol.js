@@ -101,12 +101,14 @@ MeasureControl.prototype.update_symptom_measures = function(identity, session_id
         var measure = new MeasureSymptoms();
         this.__update_measures_from_table(identity, session_id, symptomtable, function(pair) {
                 measure.__parent.set_date(pair.date);
-                measure.set_patients_feel(pair.value.patients_feel);
                 measure.set_description(pair.value.description);
                 var symptom_pairs = pair.value.symptom_pairs;
+                var lifestyle_pairs = pair.value.lifestyle_pairs;
                 if (symptom_pairs != null && symptom_pairs.length > 0) {
                         for (var i = 0 ; i < symptom_pairs.length; i ++)
                                 measure.add_symptom(symptom_pairs[i].symp_name, symptom_pairs[i].scale);
+                        for (var i = 0 ; i < lifestyle_pairs.length; i ++)
+                                measure.add_lifestyle(lifestyle_pairs[i].factor_name, lifestyle_pairs[i].answser);
                 }
                 return measure;
         }, err);

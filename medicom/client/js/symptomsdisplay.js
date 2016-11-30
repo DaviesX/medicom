@@ -104,6 +104,26 @@ SymptomsDisplay.prototype.get_processed_table = function(start_date, end_date)
         return sym_table;
 }
 
+SymptomsDisplay.prototype.get_symptoms = function(table)
+{
+        var pairs = table.get_pairs();
+
+        var imap = new Map();
+        var n = 0;
+        for (var i = 0; i < pairs.length; i ++) {
+                var syms = pairs[i].value.symp_pairs;
+                for (var j = 0; j < syms.length; j ++) {
+                        if (!imap.has(syms[j].symp_name))
+                                imap.set(syms[j].symp_name, n ++);
+                }
+        }
+        return imap;
+}
+
+SymptomsDisplay.prototype.get_lifestyles = function()
+{
+}
+
 SymptomsDisplay.prototype.render_local_data = function(start_date, end_date, i_page, num_items, target)
 {
         var table = this.get_processed_table(start_date, end_date);
@@ -133,23 +153,38 @@ SymptomsDisplay.prototype.render_local_data = function(start_date, end_date, i_p
                 var pairs = table.get_pairs();
 
                 // Render chart.
+                var map = this.get_symptoms(table);
                 var x = ["x"];
-                var y = ["general feeling"];
+                var y = [];
+                var types = new Map();
+
+                map.forEach(function(v, k, m) {
+                        y.push([k]);
+                        types.set(k, "line");
+                });
+
                 for (var i = 0; i < pairs.length; i ++) {
                         x[i + 1] = pairs[i].date;
-                        y[i + 1] = pairs[i].value.patients_feel;
+
+                        for (var k = 0; k < map.size; k ++) {
+                                y[k][i + 1] = null;
+                        }
+
+                        var syms = pairs[i].value.symp_pairs;
+                        for (var k = 0; k < syms.length; k ++) {
+                                var p = map.get(syms[k].symp_name);
+                                y[p][i + 1] = syms[k].scale;
+                        }
                 }
+
+                var columns = [x].concat(y);
+
                 c3.generate({
                         bindto: target,
                         data: {
                                 x: "x",
-                                columns: [x, y],
-                                types: {
-                                        "general feeling": "line",
-                                },
-                                colors: {
-                                        "general feeling": d3.rgb(255, 0, 0).toString(),
-                                },
+                                columns: columns,
+                                types: types,
                         },
                         axis: {
                                 x: {
