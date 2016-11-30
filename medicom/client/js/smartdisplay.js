@@ -193,7 +193,7 @@ SmartDisplay.prototype.generate_smart_temporal = function(merged, options, expec
         var symptoms = [];
 
         var types = [];
-        var colors = new Map();
+        var colors = [];
         var columns = [x];
         var pairs = merged.get_pairs();
         var max_height = 1;
@@ -205,8 +205,8 @@ SmartDisplay.prototype.generate_smart_temporal = function(merged, options, expec
                 types["systolic blood pressure"] = "line";
                 types["diastolic blood pressure"] ="line";
 
-                colors.set("systolic blood pressure", d3.rgb(255, 118, 50).toString());
-                colors.set("diastolic blood pressure", d3.rgb(62, 65, 255).toString());
+                colors["systolic blood pressure"] = d3.rgb(255, 118, 50).toString();
+                colors["diastolic blood pressure"] = d3.rgb(62, 65, 255).toString();
 
                 for (var i = 0; i < pairs.length; i ++) {
                         z[i + 1] = pairs[i].value.systolic.toFixed(1);
@@ -220,7 +220,7 @@ SmartDisplay.prototype.generate_smart_temporal = function(merged, options, expec
         // Fill in pill bottle cap records.
         if (options.use_pbc === true) {
                 types["pill bottle cap"] ="bar";
-                colors.set("pill bottle cap", d3.rgb(0, 255, 0).toString());
+                colors["pill bottle cap"] = d3.rgb(0, 255, 0).toString();
 
                 for (var i = 0; i < pairs.length; i ++) {
                         x[i + 1] = pairs[i].date;
@@ -267,7 +267,7 @@ SmartDisplay.prototype.generate_smart_temporal = function(merged, options, expec
 
         if (options.use_fb_qsleep === true) {
                 types["sleep quality"] = "line";
-                colors.set("sleep quality", d3.rgb(0, 40, 255).toString());
+                colors["sleep quality"] = d3.rgb(0, 40, 255).toString();
 
                 const scale = 50;
                 for (var i = 0; i < pairs.length; i ++) {
