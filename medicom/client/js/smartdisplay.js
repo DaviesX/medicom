@@ -38,6 +38,8 @@ export function SmartDisplay() {
                 "use_fb_qsleep": false,
         };
 
+        this.__active_symps = null;
+
         this.__charting_area = null;
 
 
@@ -56,7 +58,7 @@ SmartDisplay.prototype.set_access_info = function(identity, browsing_user, sessi
 }
 
 SmartDisplay.prototype.set_holders = function(start_date, end_date, filter, expected_dose,
-                                    use_bp, use_pbc, use_sym_feeling, use_fb_qsleep)
+                                    use_bp, use_pbc, use_fb_qsleep)
 {
         var clazz = this;
 
@@ -79,7 +81,6 @@ SmartDisplay.prototype.set_holders = function(start_date, end_date, filter, expe
         });
         use_bp.prop("checked", this.__options["use_bp"]);
         use_pbc.prop("checked", this.__options["use_pbc"]);
-        use_sym_feeling.prop("checked", this.__options["use_sym_feeling"]);
         use_fb_qsleep.prop("checked", this.__options["use_fb_qsleep"]);
         use_bp.on("change", function(e) {
                 clazz.__options["use_bp"] = use_bp.is(':checked');
@@ -89,40 +90,41 @@ SmartDisplay.prototype.set_holders = function(start_date, end_date, filter, expe
                 clazz.__options["use_pbc"] = use_pbc.is(':checked');
                 clazz.update();
         });
-        use_sym_feeling.on("change", function(e) {
-                clazz.__options["use_sym_feeling"] = use_sym_feeling.is(':checked');
-                clazz.update();
-        });
         use_fb_qsleep.on("change", function(e) {
                 clazz.__options["use_fb_qsleep"] = use_fb_qsleep.is(':checked');
                 clazz.update();
         });
 }
 
+SmartDisplay.prototype.make_symptom_checkbox_ui = function(symp_name)
+{
+        symp_name = symp_name.replace(" ", "-");
+        return '<input type="checkbox" id="' + symp_name + '"> ' + symp_name + '<br>';
+}
+
 SmartDisplay.prototype.prepare_local_data = function(start_date, end_date, filter, options, f_On_Display_Complete)
 {
-        for (var prop in options) {
-                if (options[prop] == true) {
-                        switch (prop) {
-                        case "use_bp":
-                                G_BPDisplay.set_local_data_from_remote_server(
-                                        start_date, end_date, null, f_On_Display_Complete);
-                                break;
-                        case "use_pbc":
-                                G_PBCDisplay.set_local_data_from_remote_server(
-                                        start_date, end_date, f_On_Display_Complete);
-                                break;
-                        case "use_sym_feeling":
-                                G_SymptomsDisplay.set_local_data_from_remote_server(
-                                        start_date, end_date, f_On_Display_Complete);
-                                break;
-                        case "use_fb_qsleep":
-                                G_FitbitDisplay.set_local_data_from_remote_server(
-                                        start_date, end_date, null, f_On_Display_Complete);
-                                break;
-                        }
-                }
-        }
+        const NUM_TASKS = 4;
+        var n_complete = 0;
+
+        G_BPDisplay.set_local_data_from_remote_server(start_date, end_date, null, function() {
+                if (++ n_complete == NUM_TASKS)
+                        f_On_Display_Complete();
+        });
+        G_PBCDisplay.set_local_data_from_remote_server(start_date, end_date, function () {
+                if (++ n_complete == NUM_TASKS)
+                        f_On_Display_Complete();
+        });
+        G_SymptomsDisplay.set_local_data_from_remote_server(start_date, end_date, function () {
+                if (++ n_complete == NUM_TASKS)
+                        f_On_Display_Complete();
+        });
+        G_FitbitDisplay.set_local_data_from_remote_server(start_date, end_date, null, function () {
+                if (++ n_complete == NUM_TASKS)
+                        f_On_Display_Complete();
+        });
+
+
         f_On_Display_Complete();
 }
 
@@ -172,6 +174,8 @@ SmartDisplay.prototype.__compile_data = function(start_date, end_date, filter, o
 
 SmartDisplay.prototype.generate_smart_renderable = function(merged, options, expected_dose, charting_area)
 {
+        var clazz = this;
+
         if (merged == null) {
                 // Empty chart.
                 console.log("Returned empty chart");
@@ -196,9 +200,11 @@ SmartDisplay.prototype.generate_smart_renderable = function(merged, options, exp
                 var y = ["pill bottle cap"];
                 var z = ["systolic blood pressure"];
                 var w = ["diastolic blood pressure"];
-                var a = ["general feeling"];
                 var b = ["sleep quality"];
+                var symptoms = [];
 
+                var types = new Map();
+                var colors = new Map();
                 var columns = [x];
                 var pairs = merged.get_pairs();
                 var max_height = 1;
@@ -207,6 +213,12 @@ SmartDisplay.prototype.generate_smart_renderable = function(merged, options, exp
                         x[i + 1] = pairs[i].date;
                 // Fill in blood pressures.
                 if (options.use_bp === true) {
+                        types.set("systolic blood pressure", "line");
+                        types.set("diastolic blood pressure", "line");
+
+                        colors.set("systolic blood pressure", d3.rgb(255, 118, 50).toString());
+                        colors.set("diastolic blood pressure", d3.rgb(62, 65, 255).toString());
+
                         for (var i = 0; i < pairs.length; i ++) {
                                 z[i + 1] = pairs[i].value.systolic.toFixed(1);
                                 w[i + 1] = pairs[i].value.diastolic.toFixed(1);
@@ -218,6 +230,9 @@ SmartDisplay.prototype.generate_smart_renderable = function(merged, options, exp
                 }
                 // Fill in pill bottle cap records.
                 if (options.use_pbc === true) {
+                        types.set("pill bottle cap", "bar");
+                        colors.set("pill bottle cap", d3.rgb(0, 255, 0).toString());
+
                         for (var i = 0; i < pairs.length; i ++) {
                                 x[i + 1] = pairs[i].date;
                                 y[i + 1] = max_height;
@@ -226,17 +241,45 @@ SmartDisplay.prototype.generate_smart_renderable = function(merged, options, exp
                         columns.push(y);
                         g_expected_amount = expected_dose;
                 }
-                // Fill in general feeling
+                // Fill in symptoms 
                 if (options.use_sym_feeling === true) {
                         const scale = 50;
+                        var symp_map = G_SymptomsDisplay.get_symptoms(merged);
+                        var adjusted_map = new Map();
+                        var n = 0;
+                        symp_map.forEach(function(v, k, m) {
+                                if (clazz.__active_symps.has(k)) {
+                                        adjusted_map.set(k, n ++);
+                                }
+                        });
+                        
+                        // Set title.
+                        adjusted_map.forEach(function(v, k, m) {
+                                symptoms.push([k]);
+                                types.set(k, "line");
+                        });
+
                         for (var i = 0; i < pairs.length; i ++) {
-                                a[i + 1] = Math.ceil(parseInt(pairs[i].value.patients_feel)/5*scale);
-                                max_height = Math.max(max_height, a[i + 1]);
+                                adjusted_map.forEach(function(v, k, m) {
+                                        symptoms[v][i + 1] = null;
+                                });
+                                
+                                var symps = pairs[i].value.symp_pairs;
+                                for (var l = 0; l < symps.length; l ++) {
+                                        var v = adjusted_map.get(symps[l].symp_name);
+                                        if (v == null)
+                                                continue;
+                                        symptoms[v][i + 1] = Math.ceil(parseInt(symps[l].scale)/5*scale);
+                                }
                         }
-                        columns.push(a);
+                        for (var i = 0; i < symptoms.length; i ++)
+                                columns.push(symptoms[i]);
                 }
 
                 if (options.use_fb_qsleep === true) {
+                        types.set("sleep quality", "line");
+                        colors.set("sleep quality", d3.rgb(0, 40, 255).toString());
+
                         const scale = 50;
                         for (var i = 0; i < pairs.length; i ++) {
                                 b[i + 1] = Math.ceil(pairs[i].value.mins_asleep/pairs[i].value.time_in_bed*scale);
@@ -249,20 +292,8 @@ SmartDisplay.prototype.generate_smart_renderable = function(merged, options, exp
                         data: {
                                 x: "x",
                                 columns: columns,
-                                types: {
-                                        "pill bottle cap": "bar",
-                                        "systolic blood pressure": "line",
-                                        "diastolic blood pressure": "line",
-                                        "general feeling": "line",
-                                        "sleep quality": "line",
-                                },
-                                colors: {
-                                        "pill bottle cap":d3.rgb(0, 255, 0).toString(),
-                                        "systolic blood pressure":d3.rgb(255, 118, 50).toString(),
-                                        "diastolic blood pressure":d3.rgb(62, 65, 255).toString(),
-                                        "general feeling":d3.rgb(255, 0, 0).toString(),
-                                        "sleep quality":d3.rgb(0, 40, 255).toString(),
-                                },
+                                types: types,
+                                colors: colors,
                                 color: function(color, d) {
                                         if (d.id === "pill bottle cap") {
                                                 var level = Math.min(Math.max(
@@ -298,6 +329,33 @@ SmartDisplay.prototype.generate_smart_renderable = function(merged, options, exp
 SmartDisplay.prototype.update = function()
 {
         var clazz = this;
+        
+        // Adjust symptom UI accordingly.
+        if (this.__active_symps == null) {
+                this.__active_symps = new Map();
+
+                G_SymptomsDisplay.set_local_data_from_remote_server(this.__start_date, this.__end_date, function () {
+                        var symp_table = G_SymptomsDisplay.get_processed_table(clazz.__start_date, clazz.__end_date);
+                        var symp_map = G_SymptomsDisplay.get_symptoms(symp_table);
+
+                        symp_map.forEach(function(v, k, m) {
+                                $("#div-symptoms").append(clazz.make_symptom_checkbox_ui(k));
+                        });
+
+                        symp_map.forEach(function(v, k, m) {
+                                var id = "#" + k.replace(" ", "-");
+                                $(id).on("change", {symp_name: k}, function(e) {
+                                        if (e.target.checked)
+                                                clazz.__active_symps.set(e.data.symp_name, true);
+                                        else
+                                                clazz.__active_symps.delete(e.data.symp_name);
+
+                                        clazz.__options["use_sym_feeling"] = clazz.__active_symps.size != 0;
+                                        clazz.update();
+                                });
+                        });
+                });
+        }
 
         this.prepare_local_data(this.__start_date, this.__end_date, this.__filtering, this.__options,
         function(obj) {
