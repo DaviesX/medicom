@@ -138,11 +138,6 @@ export var G_DataBrowser = new DataBrowser();
 Template.tmpldatabrowser.onRendered(function () {
         console.log("data browser rendered");
 
-        G_DataBrowser.set_display_type_holder($("#sel-chart-types"));
-        G_Session.set_data_display_mode(G_DataBrowser.get_current_display_mode());
-
-        G_DataBrowser.load_display();
-
         $("#btn-back").on("click", function(e) {
                 $("#div-left-panel").css("width", "25%");
                 $("#div-right-panel").css("width", "75%");
@@ -156,7 +151,11 @@ Template.tmpldatabrowser.onRendered(function () {
                 $("#div-right-panel").fadeIn(0);
 
                 var effect = new BatchedEffect("slide", 800);
-                effect.add_elm($("#data-panel"));
+                effect.add_elm($("#data-panel"), function() {
+                        G_DataBrowser.set_display_type_holder($("#sel-chart-types"));
+                        G_Session.set_data_display_mode(G_DataBrowser.get_current_display_mode());
+                        G_DataBrowser.load_display();
+                });
                 effect.finalize();
                 effect.animate();
 

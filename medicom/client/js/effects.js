@@ -22,7 +22,7 @@ export function BatchedEffect(type, duration) {
                 case "fade":
                 case "slide":
                         for (var i = 0; i < this.__elms.length; i ++) {
-                                this.__elms[i].fadeOut(0);
+                                this.__elms[i].element.fadeOut(0);
                         }
                         break;
                 default:
@@ -30,20 +30,20 @@ export function BatchedEffect(type, duration) {
                 }
         }
 
-        this.add_elm = function(elm) {
-                this.__elms[this.__elms.length] = elm;
+        this.add_elm = function(elm, f_complete) {
+                this.__elms[this.__elms.length] = {element: elm, complete: f_complete};
         }
 
         this.animate = function() {
                 switch(this.__type) {
                 case "fade":
                         for (var i = 0; i < this.__elms.length; i ++) {
-                                this.__elms[i].fadeIn(this.__eff_intv);
+                                this.__elms[i].element.fadeIn(this.__eff_intv, this.__elms[i].complete);
                         }
                         break;
                 case "slide":
                         for (var i = 0; i < this.__elms.length; i ++) {
-                                this.__elms[i].effect("slide", this.__eff_intv);
+                                this.__elms[i].element.effect("slide", this.__eff_intv, this.__elms[i].complete);
                         }
                         break;
                 default:
