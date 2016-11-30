@@ -40,12 +40,12 @@ function session_browser_on_quit(obj) {
 }
 
 // Main
-Template.tmplprovider.onRendered(function () {
-        console.log("provider template rendered");
+Template.tmplpatient.onRendered(function () {
+        console.log("patient template rendered");
 
         var identity = G_Session.get_identity_info();
         var user_group = G_AccountType.get_string_from_user_group(identity.get_account_record().user_group());
-        if (identity == null || user_group != "provider") {
+        if (identity == null || user_group != "patient") {
                 G_ActivityCenter.print_error_text("You don't have the permission to visit this page");
         } else {
                 // Set up activity center.
@@ -53,7 +53,7 @@ Template.tmplprovider.onRendered(function () {
                 G_ActivityCenter.set_identity(identity);
                 G_ActivityCenter.update_welcome_text();
                 // Set up user browser.
-                G_UserBrowser.enable_add_user(true, "Add Patient");
+                G_UserBrowser.enable_add_user(false, "Add Patient");
                 G_UserBrowser.register_on_update("get_associated_user_info", {});
                 G_UserBrowser.register_on_add_user("create_user_association", {});
                 G_UserBrowser.set_browser_on_select(user_browser_on_select);

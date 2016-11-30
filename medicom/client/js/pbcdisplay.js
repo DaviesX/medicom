@@ -11,7 +11,7 @@
  * You should have received a copy of the GNU General Public License along with this program; if not,
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
-import {ValueTable, ValueTable_create_from_POD} from "../../api/valuetable";
+import {ValueTable, ValueTable_create_from_POD} from "../../api/valuetable.js";
 
 // Nasty hacks to allow c3 chart to read the data.
 var g_does_amount = [];

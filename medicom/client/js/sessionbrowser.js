@@ -12,10 +12,10 @@
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
 import {Template} from "meteor/templating";
-import {MedicalSession_Create_From_POD} from "../../api/medicalsession";
-import {AccountInfo_Create_From_POD} from "../../api/accountinfo";
-import {SequentialEffect} from "./effects";
-import {G_Session} from "./session";
+import {MedicalSession_Create_From_POD} from "../../api/medicalsession.js";
+import {AccountInfo_Create_From_POD} from "../../api/accountinfo.js";
+import {SequentialEffect} from "./effects.js";
+import {G_Session} from "./session.js";
 
 
 export var G_SessionBrowser = new SessionBrowser();

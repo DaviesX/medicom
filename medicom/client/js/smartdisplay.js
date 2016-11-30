@@ -11,11 +11,11 @@
  * You should have received a copy of the GNU General Public License along with this program; if not,
  * write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  */
-import {ValueTable, ValueTable_create_from_POD} from "../../api/valuetable";
-import {G_BPDisplay} from "./bpdisplay";
-import {G_PBCDisplay} from "./pbcdisplay";
-import {G_SymptomsDisplay} from "./symptomsdisplay";
-import {G_FitbitDisplay} from "./fitbitdisplay";
+import {ValueTable, ValueTable_create_from_POD} from "../../api/valuetable.js";
+import {G_BPDisplay} from "./bpdisplay.js";
+import {G_PBCDisplay} from "./pbcdisplay.js";
+import {G_SymptomsDisplay} from "./symptomsdisplay.js";
+import {G_FitbitDisplay} from "./fitbitdisplay.js";
 
 // Nasty hacks to allow c3 chart to read the data.
 var g_does_amount = [];
@@ -42,19 +42,20 @@ export function SmartDisplay() {
 
 
 }
-SmartDisplay.set_charting_area = function(holder)
+
+SmartDisplay.prototype.set_charting_area = function(holder)
 {
         this.__charting_area = holder;
 }
 
-SmartDisplay.set_access_info = function(identity, browsing_user, session)
+SmartDisplay.prototype.set_access_info = function(identity, browsing_user, session)
 {
         this.__identity = identity
                           this.__browsing_user = browsing_user;
         this.__session = session;
 }
 
-SmartDisplay.set_holders = function(start_date, end_date, filter, expected_dose,
+SmartDisplay.prototype.set_holders = function(start_date, end_date, filter, expected_dose,
                                     use_bp, use_pbc, use_sym_feeling, use_fb_qsleep)
 {
         var clazz = this;
@@ -98,7 +99,7 @@ SmartDisplay.set_holders = function(start_date, end_date, filter, expected_dose,
         });
 }
 
-SmartDisplay.prepare_local_data = function(start_date, end_date, filter, options, f_On_Display_Complete)
+SmartDisplay.prototype.prepare_local_data = function(start_date, end_date, filter, options, f_On_Display_Complete)
 {
         for (var prop in options) {
                 if (options[prop] == true) {
@@ -125,7 +126,7 @@ SmartDisplay.prepare_local_data = function(start_date, end_date, filter, options
         f_On_Display_Complete();
 }
 
-SmartDisplay.__compile_data = function(start_date, end_date, filter, options)
+SmartDisplay.prototype.__compile_data = function(start_date, end_date, filter, options)
 {
         var merged_result = null;
 
@@ -169,7 +170,7 @@ SmartDisplay.__compile_data = function(start_date, end_date, filter, options)
         return merged_result;
 }
 
-SmartDisplay.generate_smart_renderable = function(merged, options, expected_dose, charting_area)
+SmartDisplay.prototype.generate_smart_renderable = function(merged, options, expected_dose, charting_area)
 {
         if (merged == null) {
                 // Empty chart.
@@ -294,7 +295,7 @@ SmartDisplay.generate_smart_renderable = function(merged, options, expected_dose
         }
 }
 
-SmartDisplay.update = function()
+SmartDisplay.prototype.update = function()
 {
         var clazz = this;
 
