@@ -138,19 +138,30 @@ export var G_DataBrowser = new DataBrowser();
 Template.tmpldatabrowser.onRendered(function () {
         console.log("data browser rendered");
 
-        var effect = new BatchedEffect("slide", 400);
-        effect.add_elm($("#data-panel"));
-        effect.finalize();
-        effect.animate();
-
         G_DataBrowser.set_display_type_holder($("#sel-chart-types"));
         G_Session.set_data_display_mode(G_DataBrowser.get_current_display_mode());
 
         G_DataBrowser.load_display();
 
         $("#btn-back").on("click", function(e) {
-                console.log("button clicked");
+                $("#div-left-panel").css("width", "25%");
+                $("#div-right-panel").css("width", "75%");
+                $("#div-left-panel").fadeIn(800);
                 G_Session.set_browsing_mode("session browser");
+        });
+
+        $("#div-right-panel").fadeOut(0);
+
+        $("#div-left-panel").fadeOut(0, function() {
+                $("#div-right-panel").fadeIn(0);
+
+                var effect = new BatchedEffect("slide", 800);
+                effect.add_elm($("#data-panel"));
+                effect.finalize();
+                effect.animate();
+
+                $("#div-left-panel").css("width", "0%");
+                $("#div-right-panel").css("width", "100%");
         });
 });
 
