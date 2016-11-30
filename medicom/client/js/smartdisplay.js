@@ -96,6 +96,8 @@ SmartDisplay.prototype.set_holders = function(start_date, end_date, filter, expe
         });
 
         $("#rb-corr-pbc").on("click", function(e) {
+                $("#cb-pbc").prop("checked", true);
+                clazz.__options["use_pbc"] = use_pbc.is(':checked');
                 clazz.update();
         });
 
@@ -131,9 +133,6 @@ SmartDisplay.prototype.prepare_local_data = function(start_date, end_date, filte
                 if (++ n_complete == NUM_TASKS)
                         f_On_Display_Complete();
         });
-
-
-        f_On_Display_Complete();
 }
 
 SmartDisplay.prototype.__compile_data = function(start_date, end_date, filter, options)
@@ -259,6 +258,7 @@ SmartDisplay.prototype.generate_smart_temporal = function(merged, options, expec
                                 if (v == null)
                                         continue;
                                 symptoms[v][i + 1] = Math.ceil(parseInt(symps[l].scale)/5*scale);
+                                max_height = Math.max(symptoms[v][i + 1], max_height);
                         }
                 }
                 for (var i = 0; i < symptoms.length; i ++)
@@ -316,6 +316,8 @@ SmartDisplay.prototype.generate_smart_temporal = function(merged, options, expec
 
 SmartDisplay.prototype.generate_smart_correlation = function(merged, axis, options, expected_dose, charting_area)
 {
+        var clazz = this;
+
         var x = ["x"];
         var columns = [];
         var pairs = merged.get_pairs();
@@ -361,6 +363,79 @@ SmartDisplay.prototype.generate_smart_correlation = function(merged, axis, optio
 
                 x.push("systolic");
                 x.push("diastolic");
+        }
+
+        // Fill in symptoms 
+        if (options.use_sym_feeling === true) {
+                const scale = 50;
+                var symp_map = G_SymptomsDisplay.get_symptoms(merged);
+                var adjusted_map = new Map();
+                var n = 0;
+                symp_map.forEach(function(v, k, m) {
+                        if (clazz.__active_symps.has(k)) {
+                                adjusted_map.set(k, n ++);
+                        }
+                });
+
+                var symptoms = [];
+                var symptoms2 = [];
+                var n1 = [];
+                var n2 = [];
+
+                // Set title.
+                adjusted_map.forEach(function(v, k, m) {
+                        symptoms.push([k + " w", 0]);
+                        symptoms2.push([k + " w/o", 0]);
+                        n1.push(0);
+                        n2.push(0);
+                });
+
+                for (var i = 0; i < pairs.length; i ++) {
+                        var symps = pairs[i].value.symp_pairs;
+                        for (var l = 0; l < symps.length; l ++) {
+                                var v = adjusted_map.get(symps[l].symp_name);
+                                if (v == null)
+                                        continue;
+                                if (selected_is.has(i)) {
+                                        symptoms[v][1] += scale;
+                                        n1[v] ++;
+                                } else {
+                                        symptoms2[v][1] += scale;
+                                        n2[v] ++;
+                                }
+                        }
+                }
+                for (var i = 0; i < symptoms.length; i ++) {
+                        symptoms[i][1] /= n1[i];
+                        symptoms2[i][1] /= n2[i];
+
+                        columns.push(symptoms[i]);
+                        columns.push(symptoms2[i]);
+                }
+        }
+
+        // Fill in sleep quality
+        if (options.use_fb_qsleep === true) {
+                var sum_over = 0.0;
+                var n1 = 0;
+
+                var sum_over2 = 0.0;
+                var n2 = 0;
+
+                for (var i = 0; i < pairs.length; i ++) {
+                        if (pairs[i].value.time_in_bed == 0)
+                                continue;
+                        var q = pairs[i].value.mins_asleep/pairs[i].value.time_in_bed;
+                        if (selected_is.has(i)) {
+                                sum_over += q;
+                                n1 ++;
+                        } else {
+                                sum_over2 += q;
+                                n2 ++;
+                        }
+                }
+                columns.push(["quality w", sum_over/n1]);
+                columns.push(["quality w/o", sum_over2/n2]);
         }
 
         return {
@@ -467,6 +542,7 @@ export var G_SmartDisplay = new SmartDisplay();
 Template.tmplsmartbrowser.onRendered(function() {
         console.log("smart browser rendered");
         G_SmartDisplay.__active_symps = null;
+
         G_SmartDisplay.set_charting_area(this.find("#charting-area"));
         G_SmartDisplay.set_holders($("#ipt-start-date"),
                                    $("#ipt-end-date"),
@@ -474,7 +550,6 @@ Template.tmplsmartbrowser.onRendered(function() {
                                    $("#ipt-expected-doses"),
                                    $("#cb-bp"),
                                    $("#cb-pbc"),
-                                   $("#cb-sym-feeling"),
                                    $("#cb-fb-qsleep"));
         G_SmartDisplay.update();
 });
