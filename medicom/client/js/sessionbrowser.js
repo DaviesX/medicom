@@ -260,6 +260,8 @@ Template.tmplsessionbrowser.onRendered(function ()
 
         G_SessionBrowser.set_session_holder($("#div-session-holder"));
         G_SessionBrowser.set_username_holder($("#div-patient-name"));
+        G_SessionBrowser.update_user();
+        G_SessionBrowser.update_session_list();
 });
 
 // Enter/Start/End/Recover Session Events

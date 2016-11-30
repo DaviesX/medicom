@@ -147,6 +147,11 @@ Template.tmpldatabrowser.onRendered(function () {
         G_Session.set_data_display_mode(G_DataBrowser.get_current_display_mode());
 
         G_DataBrowser.load_display();
+
+        $("#btn-back").on("click", function(e) {
+                console.log("button clicked");
+                G_Session.set_browsing_mode("session browser");
+        });
 });
 
 Template.tmpldatabrowser.helpers({
