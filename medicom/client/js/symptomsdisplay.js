@@ -104,12 +104,12 @@ SymptomsDisplay.prototype.get_processed_table = function(start_date, end_date)
         return sym_table;
 }
 
-SymptomsDisplay.prototype.get_symptoms = function(table)
+SymptomsDisplay.prototype.get_symptoms = function(table, s)
 {
         var pairs = table.get_pairs();
 
         var imap = new Map();
-        var n = 0;
+        var n = s;
         for (var i = 0; i < pairs.length; i ++) {
                 var syms = pairs[i].value.symp_pairs;
                 for (var j = 0; j < syms.length; j ++) {
@@ -120,8 +120,22 @@ SymptomsDisplay.prototype.get_symptoms = function(table)
         return imap;
 }
 
-SymptomsDisplay.prototype.get_lifestyles = function()
+SymptomsDisplay.prototype.get_lifestyles = function(table, s)
 {
+        var pairs = table.get_pairs();
+
+        var imap = new Map();
+        var n = s;
+        for (var i = 0; i < pairs.length; i ++) {
+                var styles = pairs[i].value.lifestyle_pairs;
+                if (styles == undefined)
+                        continue;
+                for (var j = 0; j < styles.length; j ++) {
+                        if (!imap.has(styles[j].factor_name))
+                                imap.set(styles[j].factor_name, n ++);
+                }
+        }
+        return imap;
 }
 
 SymptomsDisplay.prototype.render_local_data = function(start_date, end_date, i_page, num_items, target)
@@ -153,12 +167,18 @@ SymptomsDisplay.prototype.render_local_data = function(start_date, end_date, i_p
                 var pairs = table.get_pairs();
 
                 // Render chart.
-                var map = this.get_symptoms(table);
+                var map = this.get_symptoms(table, 0);
+                var map2 = this.get_lifestyles(table, map.size);
                 var x = ["x"];
                 var y = [];
                 var types = new Map();
 
                 map.forEach(function(v, k, m) {
+                        y.push([k]);
+                        types.set(k, "line");
+                });
+
+                map2.forEach(function(v, k, m) {
                         y.push([k]);
                         types.set(k, "line");
                 });
@@ -170,10 +190,24 @@ SymptomsDisplay.prototype.render_local_data = function(start_date, end_date, i_p
                                 y[k][i + 1] = null;
                         }
 
+                        for (var k = map.size; k < map2.size; k ++) {
+                                y[k][i + 1] = null;
+                        }
+
                         var syms = pairs[i].value.symp_pairs;
-                        for (var k = 0; k < syms.length; k ++) {
-                                var p = map.get(syms[k].symp_name);
-                                y[p][i + 1] = syms[k].scale;
+                        if (syms != undefined) {
+                                for (var k = 0; k < syms.length; k ++) {
+                                        var p = map.get(syms[k].symp_name);
+                                        y[p][i + 1] = syms[k].scale;
+                                }
+                        }
+
+                        var factors = pairs[i].value.lifestyle_pairs;
+                        if (factors != undefined) {
+                                for (var k = 0; k < factors.length; k ++) {
+                                        var p = map2.get(factors[k].factor_name);
+                                        y[p][i + 1] = factors[k].answer*2;
+                                }
                         }
                 }
 

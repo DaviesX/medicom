@@ -108,7 +108,7 @@ MeasureControl.prototype.update_symptom_measures = function(identity, session_id
                         for (var i = 0 ; i < symptom_pairs.length; i ++)
                                 measure.add_symptom(symptom_pairs[i].symp_name, symptom_pairs[i].scale);
                         for (var i = 0 ; i < lifestyle_pairs.length; i ++)
-                                measure.add_lifestyle(lifestyle_pairs[i].factor_name, lifestyle_pairs[i].answser);
+                                measure.add_lifestyle(lifestyle_pairs[i].factor_name, lifestyle_pairs[i].answer);
                 }
                 return measure;
         }, err);

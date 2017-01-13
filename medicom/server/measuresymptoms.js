@@ -61,6 +61,7 @@ export function MeasureSymptoms_Create_From_POD(pod) {
         var obj = new MeasureSymptoms();
         obj.__parent = Measure_Parent_Create_From_POD(pod.__parent);
         obj.__symptom_pairs = pod.__symptom_pairs;
+        obj.__lifestyle_pairs = pod.__lifestyle_pairs;
         obj.__description = pod.__description;
         return obj;
 }
